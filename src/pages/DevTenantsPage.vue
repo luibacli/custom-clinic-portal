@@ -1,0 +1,1157 @@
+<template>
+  <Toast />
+  <div
+    class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 p-3 sm:p-4 lg:p-6 transition-colors duration-300"
+  >
+    <div
+      v-if="isLoading"
+      class="h-[60vh] flex items-center justify-center text-slate-500 dark:text-slate-400"
+    >
+      <Loading />
+    </div>
+
+    <template v-else>
+      <div class="max-w-7xl mx-auto space-y-5">
+        <!-- Header / Hero -->
+        <section
+          class="relative overflow-hidden rounded-[28px] border border-slate-200/80 bg-gradient-to-br from-white via-slate-50 to-slate-100 shadow-sm dark:border-slate-800 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950"
+        >
+          <div class="absolute right-0 top-0 h-40 w-40 rounded-full bg-primary/10 blur-3xl"></div>
+          <div class="absolute left-10 bottom-0 h-28 w-28 rounded-full bg-sky-200/30 blur-2xl dark:bg-sky-500/10"></div>
+
+          <div class="relative p-4 sm:p-6 lg:p-7">
+            <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
+              <div class="flex items-start gap-4 min-w-0">
+                <div
+                  class="relative h-16 w-16 sm:h-20 sm:w-20 rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-sm flex items-center justify-center shrink-0 dark:border-slate-700 dark:bg-slate-900"
+                >
+                  <img
+                    v-if="tenantLogoUrl"
+                    :src="tenantLogoUrl"
+                    alt="Tenant Logo"
+                    class="h-full w-full object-cover"
+                  />
+                  <i v-else class="pi pi-building text-slate-400 dark:text-slate-500 text-2xl"></i>
+
+                  <button
+                    type="button"
+                    class="absolute bottom-1 right-1 h-7 w-7 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:hover:bg-slate-800"
+                    @click="openTenantDialog"
+                  >
+                    <i class="pi pi-pencil text-xs text-slate-600 dark:text-slate-300"></i>
+                  </button>
+                </div>
+
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <p class="text-xs sm:text-sm font-semibold text-primary uppercase tracking-[0.18em]">
+                      Tenant Profile
+                    </p>
+                    <Tag
+                      :value="formatStatus(tenantData?.status)"
+                      :severity="getStatusSeverity(tenantData?.status)"
+                      class="capitalize"
+                    />
+                  </div>
+
+                  <h1 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white leading-tight truncate">
+                    {{ tenantData?.name || 'Tenant Name' }}
+                  </h1>
+
+                  <div class="mt-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-slate-500 dark:text-slate-400">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <i class="pi pi-globe shrink-0"></i>
+                      <span class="truncate">{{ tenantData?.domain || 'No domain' }}</span>
+                    </div>
+
+                    <div class="hidden sm:block text-slate-300 dark:text-slate-700">•</div>
+
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-calendar"></i>
+                      <span>Created {{ formatDate(tenantData?.createdAt) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-2 w-full xl:w-auto">
+                <Button
+                  label="Back"
+                  icon="pi pi-arrow-left"
+                  severity="secondary"
+                  outlined
+                  class="rounded-2xl w-full sm:w-auto"
+                  @click="goBack"
+                />
+                <Button
+                  label="Edit Tenant"
+                  icon="pi pi-pencil"
+                  class="rounded-2xl w-full sm:w-auto"
+                  @click="openTenantDialog"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tenant Info Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div class="rounded-[24px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Status</p>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-white mt-1">
+                  {{ formatStatus(tenantData?.status) }}
+                </h2>
+              </div>
+              <div class="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center dark:bg-primary/15">
+                <i class="pi pi-verified text-primary text-xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-[24px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Total Users</p>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-white mt-1">
+                  {{ filteredUsers.length }}
+                </h2>
+              </div>
+              <div class="h-12 w-12 rounded-2xl bg-sky-100 flex items-center justify-center dark:bg-sky-500/15">
+                <i class="pi pi-users text-sky-600 dark:text-sky-300 text-xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-[24px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Patients</p>
+                <h2 class="text-xl font-bold text-green-600 dark:text-green-400 mt-1">
+                  {{ patientUsersCount }}
+                </h2>
+              </div>
+              <div class="h-12 w-12 rounded-2xl bg-green-100 flex items-center justify-center dark:bg-green-500/15">
+                <i class="pi pi-user text-green-600 dark:text-green-300 text-xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-[24px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Admins</p>
+                <h2 class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">
+                  {{ adminUsersCount }}
+                </h2>
+              </div>
+              <div class="h-12 w-12 rounded-2xl bg-amber-100 flex items-center justify-center dark:bg-amber-500/15">
+                <i class="pi pi-shield text-amber-600 dark:text-amber-300 text-xl"></i>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tenant Details -->
+        <section class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+          <div class="xl:col-span-2 rounded-[28px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <div>
+                <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-white">Tenant Information</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Core details for this facility portal.
+                </p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 dark:bg-slate-950 dark:border-slate-800">
+                <p class="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 font-semibold">Tenant Name</p>
+                <p class="mt-2 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 break-words">
+                  {{ tenantData?.name || '—' }}
+                </p>
+              </div>
+
+              <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 dark:bg-slate-950 dark:border-slate-800">
+                <p class="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 font-semibold">Domain</p>
+                <p class="mt-2 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 break-all">
+                  {{ tenantData?.domain || '—' }}
+                </p>
+              </div>
+
+              <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 dark:bg-slate-950 dark:border-slate-800">
+                <p class="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 font-semibold">Status</p>
+                <div class="mt-2">
+                  <Tag
+                    :value="formatStatus(tenantData?.status)"
+                    :severity="getStatusSeverity(tenantData?.status)"
+                    class="capitalize"
+                  />
+                </div>
+              </div>
+
+              <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 dark:bg-slate-950 dark:border-slate-800">
+                <p class="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 font-semibold">Created At</p>
+                <p class="mt-2 text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100">
+                  {{ formatDate(tenantData?.createdAt) }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-[28px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+            <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-white">Quick Actions</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Manage this tenant and its users.
+            </p>
+
+            <div class="mt-4 space-y-3">
+              <Button
+                label="Create User"
+                icon="pi pi-user-plus"
+                class="rounded-2xl w-full justify-center"
+                @click="openCreateUserDialog"
+              />
+              <Button
+                label="Edit Tenant"
+                icon="pi pi-pencil"
+                severity="secondary"
+                outlined
+                class="rounded-2xl w-full justify-center"
+                @click="openTenantDialog"
+              />
+              <Button
+                label="Refresh Users"
+                icon="pi pi-refresh"
+                severity="secondary"
+                outlined
+                class="rounded-2xl w-full justify-center"
+                @click="handleRefreshUsers"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- Users Section -->
+        <section class="rounded-[28px] bg-white border border-slate-200 shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+          <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+              <div>
+                <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-white">
+                  Tenant Users
+                </h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Manage users under this tenant.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-[minmax(0,1fr),180px,auto] gap-2 w-full xl:max-w-[760px]">
+                <IconField iconPosition="left" class="w-full">
+                  <InputIcon class="pi pi-search" />
+                  <InputText
+                    v-model="search"
+                    placeholder="Search name, email, role..."
+                    class="w-full rounded-2xl"
+                  />
+                </IconField>
+
+                <Select
+                  v-model="selectedRole"
+                  :options="roleOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Filter Role"
+                  class="w-full"
+                  showClear
+                />
+
+                <Button
+                  label="Create User"
+                  icon="pi pi-plus"
+                  class="rounded-2xl w-full md:w-auto"
+                  @click="openCreateUserDialog"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="p-2 sm:p-3">
+            <DataTable
+              :value="filteredUsers"
+              paginator
+              :rows="10"
+              dataKey="_id"
+              responsiveLayout="scroll"
+              class="p-datatable-sm tenant-users-table"
+              :rowHover="true"
+              paginatorTemplate="PrevPageLink PageLinks NextPageLink"
+            >
+              <template #empty>
+                <div class="text-center py-12">
+                  <div
+                    class="w-16 h-16 mx-auto rounded-3xl bg-slate-100 text-slate-600 flex items-center justify-center mb-4 dark:bg-slate-800 dark:text-slate-300"
+                  >
+                    <i class="pi pi-users text-2xl"></i>
+                  </div>
+                  <h3 class="text-lg font-semibold text-slate-800 dark:text-white">
+                    No users found
+                  </h3>
+                  <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    Try adjusting your filters or create a new user.
+                  </p>
+                </div>
+              </template>
+
+              <Column header="User" style="min-width: 280px">
+                <template #body="{ data }">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div
+                      class="h-11 w-11 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden dark:bg-slate-800 dark:border-slate-700"
+                    >
+                      <img
+                        v-if="data?.photo?.url"
+                        :src="data.photo.url"
+                        alt="User Photo"
+                        class="h-full w-full object-cover"
+                      />
+                      <i v-else class="pi pi-user text-slate-400 dark:text-slate-500"></i>
+                    </div>
+
+                    <div class="min-w-0">
+                      <p class="font-semibold text-slate-800 dark:text-slate-100 truncate">
+                        {{ fullName(data) }}
+                      </p>
+                      <p class="text-sm text-slate-500 dark:text-slate-400 truncate">
+                        {{ data.email || 'No email' }}
+                      </p>
+                    </div>
+                  </div>
+                </template>
+              </Column>
+
+              <Column field="username" header="Username" style="min-width: 180px">
+                <template #body="{ data }">
+                  <span class="text-slate-700 dark:text-slate-300 font-medium">
+                    {{ data.username || '—' }}
+                  </span>
+                </template>
+              </Column>
+
+              <Column field="role" header="Role" style="min-width: 140px">
+                <template #body="{ data }">
+                  <Tag
+                    :value="formatRole(data.role)"
+                    :severity="getRoleSeverity(data.role)"
+                    class="capitalize"
+                  />
+                </template>
+              </Column>
+
+              <Column field="type" header="Type" style="min-width: 140px">
+                <template #body="{ data }">
+                  <Tag
+                    :value="formatType(data.type)"
+                    severity="secondary"
+                    class="capitalize"
+                  />
+                </template>
+              </Column>
+
+              <Column header="Created" style="min-width: 160px">
+                <template #body="{ data }">
+                  <span class="text-slate-600 dark:text-slate-400">
+                    {{ formatDate(data.createdAt) }}
+                  </span>
+                </template>
+              </Column>
+
+              <Column header="Actions" style="min-width: 220px">
+                <template #body="{ data }">
+                  <div class="flex flex-wrap gap-2">
+                    <Button
+                      icon="pi pi-pencil"
+                      label="Edit"
+                      size="small"
+                      outlined
+                      class="rounded-xl"
+                      @click="openEditUserDialog(data)"
+                    />
+                    <Button
+                      icon="pi pi-trash"
+                      label="Delete"
+                      size="small"
+                      severity="danger"
+                      outlined
+                      class="rounded-xl"
+                      @click="deleteUser(data)"
+                    />
+                  </div>
+                </template>
+              </Column>
+            </DataTable>
+          </div>
+        </section>
+      </div>
+    </template>
+
+    <!-- User Dialog -->
+    <Dialog
+      v-model:visible="userDialogVisible"
+      modal
+      :header="isEditUserMode ? 'Edit User' : 'Create User'"
+      :style="{ width: '95vw', maxWidth: '720px' }"
+      class="rounded-3xl tenant-dialog"
+    >
+      <div class="space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">First Name</label>
+            <InputText
+              v-model="userForm.firstName"
+              placeholder="Enter first name"
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Middle Name</label>
+            <InputText
+              v-model="userForm.middleName"
+              placeholder="Enter middle name"
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Last Name</label>
+            <InputText
+              v-model="userForm.lastName"
+              placeholder="Enter last name"
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+            <InputText
+              v-model="userForm.email"
+              placeholder="Enter email"
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">PIN</label>
+            <InputText
+              v-model="userForm.pin"
+              placeholder="Enter PIN"
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Birthday</label>
+            <InputText
+              v-model="userForm.birthday"
+              type="date"
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Phone</label>
+            <InputText
+              v-model="userForm.phone"
+              placeholder="Enter phone number"
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Role</label>
+            <Select
+              v-model="userForm.role"
+              :options="roleOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select role"
+              class="w-full"
+            />
+          </div>
+
+          <div class="space-y-2 md:col-span-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+            <Password
+              v-model="userForm.password"
+              placeholder="Enter password"
+              class="w-full"
+              inputClass="w-full rounded-2xl"
+              :feedback="false"
+              toggleMask
+            />
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+          <Button
+            label="Cancel"
+            severity="secondary"
+            outlined
+            class="rounded-2xl w-full sm:w-auto"
+            @click="closeUserDialog"
+          />
+          <Button
+            :label="isSubmittingUser ? 'Saving...' : isEditUserMode ? 'Update User' : 'Create User'"
+            :icon="isEditUserMode ? 'pi pi-check' : 'pi pi-plus'"
+            :loading="isSubmittingUser"
+            class="rounded-2xl w-full sm:w-auto"
+            @click="submitUser"
+          />
+        </div>
+      </template>
+    </Dialog>
+
+    <!-- Tenant Dialog -->
+    <Dialog
+      v-model:visible="tenantDialogVisible"
+      modal
+      header="Edit Tenant"
+      :style="{ width: '95vw', maxWidth: '680px' }"
+      class="rounded-3xl tenant-dialog"
+    >
+      <div class="space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2 md:col-span-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Tenant Name</label>
+            <InputText
+              v-model="tenantForm.name"
+              placeholder="Enter tenant name"
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2 md:col-span-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Domain</label>
+            <InputText
+              v-model="tenantForm.domain"
+              placeholder="example.com"
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
+            <Select
+              v-model="tenantForm.status"
+              :options="tenantStore.statusOption"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select status"
+              class="w-full"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Logo URL</label>
+            <InputText
+              v-model="tenantForm.tenantLogo.url"
+              placeholder="https://..."
+              class="w-full rounded-2xl"
+            />
+          </div>
+
+          <div class="space-y-2 md:col-span-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Tenant Logo</label>
+
+            <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950">
+              <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div
+                  class="h-20 w-20 rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-sm flex items-center justify-center shrink-0 dark:border-slate-700 dark:bg-slate-900"
+                >
+                  <img
+                    v-if="tenantForm?.tenantLogo?.url"
+                    :src="tenantForm.tenantLogo.url"
+                    alt="Tenant Logo Preview"
+                    class="h-full w-full object-cover"
+                  />
+                  <i v-else class="pi pi-building text-slate-400 dark:text-slate-500 text-2xl"></i>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <p class="font-medium text-slate-700 dark:text-slate-200">Logo Preview</p>
+                  <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Upload a logo image or paste a direct image URL above.
+                  </p>
+
+                  <div class="mt-3 flex flex-col sm:flex-row gap-2">
+                    <input
+                      ref="logoInput"
+                      type="file"
+                      accept="image/*"
+                      class="hidden"
+                      @change="handleLogoChange"
+                    />
+
+                    <Button
+                      label="Upload Logo"
+                      icon="pi pi-upload"
+                      severity="secondary"
+                      outlined
+                      class="rounded-2xl w-full sm:w-auto"
+                      :loading="logoUploading"
+                      @click="logoInput?.click()"
+                    />
+
+                    <Button
+                      v-if="tenantForm?.tenantLogo?.url"
+                      label="Remove Preview"
+                      icon="pi pi-times"
+                      severity="danger"
+                      outlined
+                      class="rounded-2xl w-full sm:w-auto"
+                      @click="removeLogoPreview"
+                    />
+                  </div>
+
+                  <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                    Accepted: JPG, PNG, WEBP • Max 2MB
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+          <Button
+            label="Cancel"
+            severity="secondary"
+            outlined
+            class="rounded-2xl w-full sm:w-auto"
+            @click="tenantDialogVisible = false"
+          />
+          <Button
+            :label="isSubmittingTenant ? 'Saving...' : 'Save Tenant'"
+            icon="pi pi-check"
+            :loading="isSubmittingTenant"
+            class="rounded-2xl w-full sm:w-auto"
+            @click="submitTenant"
+          />
+        </div>
+      </template>
+    </Dialog>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useToast } from 'primevue/usetoast'
+import Loading from '../components/Loading.vue'
+import { useTenantStore } from '../stores/tenantStore'
+import { useAuthTenantStore } from '../stores/authTenantStore'
+
+const route = useRoute()
+const router = useRouter()
+const toast = useToast()
+
+const tenantStore = useTenantStore()
+const authTenantStore = useAuthTenantStore()
+
+const { tenantForm } = storeToRefs(tenantStore)
+const { userForm, roleOptions } = storeToRefs(authTenantStore)
+
+const tenantData = ref(null)
+const users = ref([])
+const isLoading = ref(false)
+const isSubmittingUser = ref(false)
+const isSubmittingTenant = ref(false)
+const logoUploading = ref(false)
+
+const userDialogVisible = ref(false)
+const tenantDialogVisible = ref(false)
+const isEditUserMode = ref(false)
+
+const search = ref('')
+const selectedRole = ref(null)
+const logoInput = ref(null)
+
+const tenantId = computed(() => route.params.id)
+
+const tenantLogoUrl = computed(() => {
+  return tenantData.value?.tenantLogo?.url || ''
+})
+
+const filteredUsers = computed(() => {
+  return users.value.filter((user) => {
+    const keyword = search.value.trim().toLowerCase()
+
+    const matchesSearch =
+      !keyword ||
+      fullName(user).toLowerCase().includes(keyword) ||
+      user?.email?.toLowerCase().includes(keyword) ||
+      user?.username?.toLowerCase().includes(keyword) ||
+      user?.role?.toLowerCase().includes(keyword)
+
+    const matchesRole =
+      !selectedRole.value || user?.role === selectedRole.value
+
+    return matchesSearch && matchesRole
+  })
+})
+
+const patientUsersCount = computed(() =>
+  users.value.filter((user) => user.role === 'patient').length
+)
+
+const adminUsersCount = computed(() =>
+  users.value.filter((user) => user.role === 'admin' || user.role === 'superadmin').length
+)
+
+const fullName = (user) => {
+  const first = user?.firstName || ''
+  const middle = user?.middleName || ''
+  const last = user?.lastName || ''
+  return `${first} ${middle} ${last}`.replace(/\s+/g, ' ').trim() || 'Unnamed User'
+}
+
+const formatDate = (date) => {
+  if (!date) return '—'
+  return new Date(date).toLocaleDateString('en-PH', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+const formatStatus = (status) => {
+  if (!status) return 'Unknown'
+  return status.charAt(0).toUpperCase() + status.slice(1)
+}
+
+const getStatusSeverity = (status) => {
+  if (status === 'active') return 'success'
+  if (status === 'inactive') return 'warn'
+  return 'secondary'
+}
+
+const formatRole = (role) => {
+  if (!role) return 'Unknown'
+  return role.charAt(0).toUpperCase() + role.slice(1)
+}
+
+const formatType = (type) => {
+  if (!type) return '—'
+  return type.charAt(0).toUpperCase() + type.slice(1)
+}
+
+const getRoleSeverity = (role) => {
+  if (role === 'admin') return 'success'
+  if (role === 'superadmin') return 'warn'
+  if (role === 'patient') return 'info'
+  return 'secondary'
+}
+
+const goBack = () => {
+  router.back()
+}
+
+const resetUserFormFields = () => {
+  userForm.value.tenantId = tenantId.value
+  userForm.value.email = ''
+  userForm.value.pin = ''
+  userForm.value.firstName = ''
+  userForm.value.middleName = ''
+  userForm.value.lastName = ''
+  userForm.value.birthday = ''
+  userForm.value.phone = ''
+  userForm.value.password = ''
+  userForm.value.role = ''
+  userForm.value.id = null
+}
+
+const fetchPageData = async () => {
+  isLoading.value = true
+  try {
+    const tenantRes = await tenantStore.fetchTenant(tenantId.value)
+    tenantData.value = tenantRes?.data || tenantRes || null
+
+    const usersRes = await authTenantStore.fetchTenantUsers(tenantId.value)
+    users.value = usersRes?.data || []
+  } catch (error) {
+    console.error('Failed to fetch tenant details page:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to load tenant details.',
+      life: 3000
+    })
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const openCreateUserDialog = () => {
+  isEditUserMode.value = false
+  resetUserFormFields()
+  userDialogVisible.value = true
+}
+
+const openEditUserDialog = (user) => {
+  isEditUserMode.value = true
+  userForm.value.id = user._id
+  userForm.value.tenantId = tenantId.value
+  userForm.value.email = user.email || ''
+  userForm.value.pin = user.pin || ''
+  userForm.value.firstName = user.firstName || ''
+  userForm.value.middleName = user.middleName || ''
+  userForm.value.lastName = user.lastName || ''
+  userForm.value.birthday = user.birthday || ''
+  userForm.value.phone = user.phone || ''
+  userForm.value.password = ''
+  userForm.value.role = user.role || ''
+  userDialogVisible.value = true
+}
+
+const closeUserDialog = () => {
+  userDialogVisible.value = false
+  isEditUserMode.value = false
+  resetUserFormFields()
+}
+
+const submitUser = async () => {
+  isSubmittingUser.value = true
+  try {
+    userForm.value.tenantId = tenantId.value
+
+    let res
+    if (isEditUserMode.value && userForm.value.id) {
+      res = await authTenantStore.updateUser(userForm.value.id)
+    } else {
+      res = await authTenantStore.addUser()
+    }
+
+    if (!res?.success) {
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: res?.message || 'Failed to save user.',
+        life: 3000
+      })
+      return
+    }
+
+    toast.add({
+      severity: 'success',
+      summary: isEditUserMode.value ? 'Updated' : 'Created',
+      detail: res?.message || `User ${isEditUserMode.value ? 'updated' : 'created'} successfully.`,
+      life: 3000
+    })
+
+    closeUserDialog()
+    await fetchPageData()
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: error?.response?.data?.message || error?.message || 'Failed to save user.',
+      life: 3000
+    })
+  } finally {
+    isSubmittingUser.value = false
+  }
+}
+
+const deleteUser = async (user) => {
+  const res = await authTenantStore.removeUserTenant(user._id)
+
+  if (!res?.success) {
+    toast.add({
+      severity: 'error',
+      summary: 'Delete Failed',
+      detail: res?.message || 'Failed to delete user.',
+      life: 3000
+    })
+    return
+  }
+
+  toast.add({
+    severity: 'success',
+    summary: 'Deleted',
+    detail: 'User deleted successfully.',
+    life: 2500
+  })
+
+  await fetchPageData()
+}
+
+const syncTenantFormLogoFromData = () => {
+  tenantForm.value.tenantLogo = {
+    url: tenantData.value?.tenantLogo?.url || '',
+    publicId: tenantData.value?.tenantLogo?.publicId || ''
+  }
+}
+
+const openTenantDialog = () => {
+  tenantForm.value.id = tenantData.value?._id || tenantId.value
+  tenantForm.value.name = tenantData.value?.name || ''
+  tenantForm.value.domain = tenantData.value?.domain || ''
+  tenantForm.value.status = tenantData.value?.status || ''
+  syncTenantFormLogoFromData()
+  tenantDialogVisible.value = true
+}
+
+const removeLogoPreview = () => {
+  tenantForm.value.tenantLogo = {
+    url: '',
+    publicId: ''
+  }
+}
+
+const handleLogoChange = async (event) => {
+  const file = event.target.files?.[0]
+  if (!file || !tenantId.value) return
+
+  if (!file.type.startsWith('image/')) {
+    toast.add({
+      severity: 'error',
+      summary: 'Invalid file',
+      detail: 'Please select an image file only.',
+      life: 3000
+    })
+    event.target.value = ''
+    return
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    toast.add({
+      severity: 'error',
+      summary: 'File too large',
+      detail: 'Please upload an image below 2MB.',
+      life: 3000
+    })
+    event.target.value = ''
+    return
+  }
+
+  logoUploading.value = true
+
+  try {
+    const data = await tenantStore.uploadLogo(tenantId.value, file)
+
+    if (data?.tenantLogo) {
+      tenantForm.value.tenantLogo = {
+        url: data.tenantLogo.url || '',
+        publicId: data.tenantLogo.publicId || ''
+      }
+    }
+
+    await fetchPageData()
+    syncTenantFormLogoFromData()
+
+    toast.add({
+      severity: 'success',
+      summary: 'Logo uploaded',
+      detail: data?.message || 'Tenant logo uploaded successfully.',
+      life: 3000
+    })
+  } catch (error) {
+    console.error('Failed to upload logo:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Upload failed',
+      detail: error?.response?.data?.message || 'Failed to upload logo.',
+      life: 3000
+    })
+  } finally {
+    logoUploading.value = false
+    event.target.value = ''
+  }
+}
+
+const submitTenant = async () => {
+  isSubmittingTenant.value = true
+  try {
+    const payload = {
+      name: tenantForm.value.name,
+      domain: tenantForm.value.domain,
+      status: tenantForm.value.status,
+      tenantLogo: tenantForm.value.tenantLogo
+    }
+
+    const res = await tenantStore.updateTenant(tenantId.value, payload)
+
+    if (!res?.success) {
+      toast.add({
+        severity: 'error',
+        summary: 'Update Failed',
+        detail: res?.message || 'Failed to update tenant.',
+        life: 3000
+      })
+      return
+    }
+
+    toast.add({
+      severity: 'success',
+      summary: 'Updated',
+      detail: res?.message || 'Tenant updated successfully.',
+      life: 3000
+    })
+
+    tenantDialogVisible.value = false
+    await fetchPageData()
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: error?.response?.data?.message || error?.message || 'Failed to update tenant.',
+      life: 3000
+    })
+  } finally {
+    isSubmittingTenant.value = false
+  }
+}
+
+const handleRefreshUsers = async () => {
+  await fetchPageData()
+  toast.add({
+    severity: 'success',
+    summary: 'Refreshed',
+    detail: 'Tenant users refreshed.',
+    life: 2000
+  })
+}
+
+onMounted(async () => {
+  await fetchPageData()
+})
+</script>
+
+<style scoped>
+:deep(.tenant-dialog .p-dialog) {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+:deep(.tenant-dialog .p-dialog-header) {
+  padding-bottom: 0.75rem;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+:deep(.tenant-dialog .p-dialog-content) {
+  padding-top: 0.5rem;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+:deep(.tenant-dialog .p-dialog-footer) {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+:deep(.p-inputtext),
+:deep(.p-select),
+:deep(.p-password),
+:deep(.p-password-input) {
+  width: 100%;
+}
+
+:deep(.p-button) {
+  white-space: nowrap;
+}
+
+:deep(.tenant-users-table .p-datatable-table) {
+  min-width: 1100px;
+}
+
+:deep(.tenant-users-table .p-datatable-thead > tr > th) {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  border-color: rgba(226, 232, 240, 0.8);
+  vertical-align: middle;
+}
+
+:deep(.tenant-users-table .p-datatable-tbody > tr > td) {
+  background: transparent;
+  color: #0f172a;
+  border-color: rgba(226, 232, 240, 0.65);
+  vertical-align: middle;
+}
+
+:deep(.tenant-users-table .p-datatable-tbody > tr:hover) {
+  background: rgba(248, 250, 252, 0.8);
+}
+
+:deep(.tenant-users-table .p-paginator) {
+  border: 0;
+  background: transparent;
+  padding-top: 1rem;
+  padding-bottom: 0.25rem;
+}
+
+:deep(.tenant-users-table .p-paginator .p-paginator-page),
+:deep(.tenant-users-table .p-paginator .p-paginator-prev),
+:deep(.tenant-users-table .p-paginator .p-paginator-next) {
+  color: #475569;
+}
+
+:deep(.tenant-users-table .p-paginator .p-paginator-page.p-highlight) {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+  border-radius: 9999px;
+}
+
+.dark :deep(.tenant-dialog .p-dialog),
+.dark :deep(.tenant-dialog .p-dialog-header),
+.dark :deep(.tenant-dialog .p-dialog-content),
+.dark :deep(.tenant-dialog .p-dialog-footer) {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.dark :deep(.tenant-users-table .p-datatable-thead > tr > th) {
+  background: #0f172a;
+  color: #cbd5e1;
+  border-color: rgba(51, 65, 85, 0.9);
+}
+
+.dark :deep(.tenant-users-table .p-datatable-tbody > tr > td) {
+  color: #e2e8f0;
+  border-color: rgba(51, 65, 85, 0.65);
+}
+
+.dark :deep(.tenant-users-table .p-datatable-tbody > tr:hover) {
+  background: rgba(30, 41, 59, 0.6);
+}
+
+.dark :deep(.tenant-users-table .p-paginator .p-paginator-page),
+.dark :deep(.tenant-users-table .p-paginator .p-paginator-prev),
+.dark :deep(.tenant-users-table .p-paginator .p-paginator-next) {
+  color: #cbd5e1;
+}
+
+.dark :deep(.tenant-users-table .p-paginator .p-paginator-page.p-highlight) {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+@media (max-width: 640px) {
+  :deep(.tenant-dialog .p-dialog) {
+    margin: 0 0.5rem;
+  }
+
+  :deep(.tenant-users-table .p-datatable-wrapper) {
+    border-radius: 1rem;
+  }
+}
+</style>
