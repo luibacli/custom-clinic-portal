@@ -22,7 +22,7 @@ const TenantHomePage       = () => import('../pages/TenantHomePage.vue');
 const TenantMailsPage      = () => import('../pages/TenantMailsPage.vue');
 const TenantUsersPage      = () => import('../pages/TenantUsersPage.vue');
 const TenantPatientPage    = () => import('../pages/TenantPatientPage.vue');
-const TenantInboxPage      = () => import('../pages/TenantInboxPage.vue');
+const TenantMailPage       = () => import('../pages/TenantMailPage.vue');
 const TenantProfilePage    = () => import('../pages/TenantProfilePage.vue');
 const TenantChangePassPage = () => import('../pages/TenantChangePassPage.vue');
 const TenantResetPassPage  = () => import('../pages/TenantResetPassPage.vue');
@@ -106,7 +106,7 @@ const routes = [
       {
         path: '/inbox',
         name: 'Inbox',
-        component: TenantInboxPage,
+        component: TenantMailPage,
         meta: { roles: ['patient', 'admin', 'superadmin'] }
       },
       {
