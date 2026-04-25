@@ -374,16 +374,17 @@ watch(
 
 onMounted(async () => {
   try {
-    const user = await fetchUserTenant()
+    const result = await fetchUserTenant()
 
-    if (!user?.email) {
+    if (!result?.data?.email) {
       throw new Error('No Address Found')
     }
 
-    firstName.value = user.firstName || ''
-    lastName.value = user.lastName || ''
+    const userData = result.data
+    firstName.value = userData.firstName || ''
+    lastName.value = userData.lastName || ''
 
-    await fetchInboxByAddress(user.email)
+    await fetchInboxByAddress(userData.email)
 
     if (inbox.value.length && !selectedMessage.value) {
       selectedMessage.value = inbox.value[0]

@@ -935,7 +935,7 @@ onMounted(async () => {
     await loadMyAppointments()
 
     // Socket.io — real-time "It's Your Turn" notification
-    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3000'
+    const baseUrl = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:3000'
     socket = io(baseUrl, { transports: ['websocket'], reconnectionAttempts: 5 })
     const userId = user.value.id || user.value._id
     if (userId) {

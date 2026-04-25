@@ -219,8 +219,6 @@ export const useAuthTenantStore = defineStore('authTenant', {
                   localStorage.setItem("userEmail", response.data.email);
                 }
 
-                console.log("user:", response.data);
-
                 return {
                 success: true,
                 data: response.data
@@ -336,6 +334,10 @@ export const useAuthTenantStore = defineStore('authTenant', {
             try {
                 const token = localStorage.getItem("tenantToken");
                 if (!token) return false
+                if (isTokenExpired(token)) {
+                    this.logout();
+                    return false;
+                }
                 return true
             } catch (error) {
                 console.error('Authentication check failed', error.message);
@@ -374,6 +376,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
             this.isPatient = false;
             this.isAdmin = false;
             this.isSuperAdmin = false;
+            this.isDev = false;
 
             localStorage.removeItem("tenantToken");
             localStorage.removeItem("token");

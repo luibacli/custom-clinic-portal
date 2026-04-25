@@ -284,6 +284,7 @@ const msgContainer = ref(null)
 const isMobile = ref(window.innerWidth < 640)
 
 let pollInterval = null
+const handleResize = () => { isMobile.value = window.innerWidth < 640 }
 
 const isOwnMessage = (msg) => String(msg.senderId) === userId.value
 
@@ -368,7 +369,6 @@ const pollAdmin = async () => {
 }
 
 onMounted(async () => {
-  const handleResize = () => { isMobile.value = window.innerWidth < 640 }
   window.addEventListener('resize', handleResize)
 
   if (isPatient) {
@@ -390,7 +390,7 @@ onMounted(async () => {
 onUnmounted(() => {
   if (pollInterval) clearInterval(pollInterval)
   messageStore.clearMessages()
-  window.removeEventListener('resize', () => {})
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 

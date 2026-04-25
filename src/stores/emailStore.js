@@ -45,7 +45,7 @@ export const useEmailStore = defineStore('emails', {
                 if (!data) {
                     throw new Error("No emails found")
                 }
-                this.inbox = data.data
+                this.inbox = data.data || []
             } catch (error) {
                 console.error("Failed to fetch emails by address", error.message)
             }
