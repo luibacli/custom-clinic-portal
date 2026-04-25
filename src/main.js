@@ -29,6 +29,7 @@ import Menu from 'primevue/menu';
 import InputGroup from 'primevue/inputgroup';
 import ToggleSwitch from 'primevue/toggleswitch';
 import MultiSelect from 'primevue/multiselect';
+import Textarea from 'primevue/textarea';
 import Image from 'primevue/image';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
@@ -91,6 +92,7 @@ const bootstrap = async () => {
   app.component('Image', Image);
   app.component('ToggleSwitch', ToggleSwitch);
   app.component('MultiSelect', MultiSelect);
+  app.component('Textarea', Textarea);
   app.component('Drawer', Drawer);
   app.component('IconField', IconField);
   app.component('InputIcon', InputIcon);
