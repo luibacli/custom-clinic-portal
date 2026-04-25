@@ -19,7 +19,7 @@
     >
       <div class="space-y-4 py-1">
         <div class="space-y-1">
-          <label class="text-sm font-medium text-slate-700">Service Type</label>
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Service Type</label>
           <Select
             v-model="bookForm.serviceType"
             :options="serviceTypes"
@@ -28,7 +28,7 @@
           />
         </div>
         <div class="space-y-1">
-          <label class="text-sm font-medium text-slate-700">Preferred Date</label>
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Preferred Date</label>
           <InputText
             v-model="bookForm.appointmentDate"
             type="date"
@@ -37,7 +37,7 @@
           />
         </div>
         <div class="space-y-1">
-          <label class="text-sm font-medium text-slate-700">Notes <span class="text-slate-400 font-normal">(optional)</span></label>
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Notes <span class="text-slate-400 font-normal">(optional)</span></label>
           <Textarea
             v-model="bookForm.notes"
             rows="3"
@@ -66,9 +66,9 @@
       :style="{ width: 'min(420px, 95vw)' }"
     >
       <div class="py-2 space-y-3">
-        <p class="text-sm text-slate-600">Are you sure you want to cancel this appointment?</p>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Are you sure you want to cancel this appointment?</p>
         <div class="space-y-1">
-          <label class="text-sm font-medium text-slate-700">Reason <span class="text-slate-400 font-normal">(optional)</span></label>
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Reason <span class="text-slate-400 font-normal">(optional)</span></label>
           <InputText v-model="cancelReason" placeholder="Reason for cancellation" class="w-full" />
         </div>
       </div>
@@ -81,19 +81,21 @@
     <div class="mx-auto w-full max-w-md sm:max-w-xl lg:max-w-5xl">
 
       <!-- Tab Bar -->
-      <div class="flex gap-2 mb-5">
-        <button
-          v-for="tab in tabs"
-          :key="tab.key"
-          @click="activeTab = tab.key"
-          class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-150"
-          :class="activeTab === tab.key
-            ? 'bg-white shadow-md text-sky-600 border border-sky-100'
-            : 'text-slate-500 hover:text-slate-700 hover:bg-white/60'"
-        >
-          <i :class="tab.icon" class="text-xs"></i>
-          {{ tab.label }}
-        </button>
+      <div class="mb-6 w-fit">
+        <div class="flex gap-1 bg-white/70 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-1 border border-slate-200/60 dark:border-white/10 shadow-sm">
+          <button
+            v-for="tab in tabs"
+            :key="tab.key"
+            @click="activeTab = tab.key"
+            class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-150"
+            :class="activeTab === tab.key
+              ? 'bg-white dark:bg-white/15 shadow text-sky-600 dark:text-sky-400 border border-sky-100 dark:border-sky-500/20'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+          >
+            <i :class="tab.icon" class="text-xs"></i>
+            {{ tab.label }}
+          </button>
+        </div>
       </div>
 
       <!-- TAB: MY ID -->
@@ -148,8 +150,8 @@
                   </div>
                   <div class="min-w-0">
                     <p class="text-[10px] sm:text-xs uppercase tracking-[0.22em] text-blue-50/80">Patient Name</p>
-                    <h2 class="mt-1 truncate text-lg sm:text-xl font-semibold">{{ fullName || 'No Name Available' }}</h2>
-                    <p class="mt-1 truncate text-xs sm:text-sm text-blue-50/85">{{ user.email || 'No email available' }}</p>
+                    <h2 class="mt-1 break-words text-lg sm:text-xl font-semibold leading-snug">{{ fullName || 'No Name Available' }}</h2>
+                    <p class="mt-1 break-all text-xs sm:text-sm text-blue-50/85">{{ user.email || 'No email available' }}</p>
                   </div>
                 </div>
 
@@ -194,10 +196,10 @@
                 <div>
                   <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Patient Information</p>
                   <h2 class="mt-1 text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">ID Details</h2>
-                  <p class="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">Registered portal details.</p>
                 </div>
-                <div class="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 text-sm sm:text-base font-bold text-white shadow-lg">
-                  ID
+                <div class="shrink-0 rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-2.5 shadow-lg text-center min-w-[4rem]">
+                  <p class="text-[9px] text-white/70 uppercase tracking-widest leading-none">REF ID</p>
+                  <p class="mt-1 text-xs font-black text-white tracking-wider leading-none">{{ patientDisplayId }}</p>
                 </div>
               </div>
 
@@ -210,7 +212,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div class="rounded-[1rem] border border-slate-200/80 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 shadow-sm">
                     <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Birthday</p>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white break-words">{{ user.birthday || '—' }}</p>
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white break-words">{{ formatBirthday }}</p>
                   </div>
                   <div class="rounded-[1rem] border border-slate-200/80 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 shadow-sm">
                     <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Phone Number</p>
@@ -224,7 +226,15 @@
                 </div>
 
                 <div class="rounded-[1rem] border border-sky-100 dark:border-sky-400/20 bg-gradient-to-r from-sky-50 to-cyan-50 dark:from-sky-500/10 dark:to-cyan-500/10 px-4 py-3.5 shadow-sm">
-                  <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">PIN</p>
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <p class="text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">PIN</p>
+                    <button
+                      @click="copyPin"
+                      class="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-500 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-200 transition-colors"
+                    >
+                      <i class="pi pi-copy text-[10px]"></i> Copy
+                    </button>
+                  </div>
                   <p class="text-sm sm:text-base font-bold tracking-[0.12em] text-sky-600 dark:text-sky-300 break-all">{{ user.pin || '—' }}</p>
                 </div>
               </div>
@@ -320,10 +330,11 @@
           </div>
           <button
             @click="openBookDialog"
-            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-150"
+            class="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-xs sm:text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-150 whitespace-nowrap"
           >
-            <i class="pi pi-plus text-xs"></i>
-            Book Appointment
+            <i class="pi pi-plus text-[10px] sm:text-xs"></i>
+            <span class="sm:hidden">Book</span>
+            <span class="hidden sm:inline">Book Appointment</span>
           </button>
         </div>
 
@@ -433,7 +444,7 @@ const { myAppointments, loading: appointmentLoading } = storeToRefs(appointmentS
 const activeTab = ref('id')
 const tenantId = ref(null)
 const isLoading = ref(false)
-const tenantName = ref('')
+const tenantName = computed(() => tenant.value?.name || 'Health Facility')
 
 const showBookDialog = ref(false)
 const showCancelDialog = ref(false)
@@ -484,6 +495,28 @@ const activeQueueAppointment = computed(() =>
 const confirmedAppointment = computed(() =>
   myAppointments.value.find(a => a.status === 'confirmed') || null
 )
+
+const patientDisplayId = computed(() => {
+  const id = user.value.id || user.value._id || ''
+  return id ? String(id).slice(-8).toUpperCase() : '—'
+})
+
+const formatBirthday = computed(() => {
+  if (!user.value.birthday) return '—'
+  try {
+    return new Date(user.value.birthday).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })
+  } catch { return user.value.birthday }
+})
+
+const copyPin = async () => {
+  if (!user.value.pin) return
+  try {
+    await navigator.clipboard.writeText(user.value.pin)
+    toast.add({ severity: 'success', summary: 'Copied', detail: 'PIN copied to clipboard', life: 2000 })
+  } catch {
+    toast.add({ severity: 'warn', summary: 'Copy failed', detail: 'Please copy your PIN manually', life: 2000 })
+  }
+}
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '—'
@@ -582,8 +615,7 @@ onMounted(async () => {
     tenantId.value = localStorage.getItem('tenantId')
 
     if (tenantId.value) {
-      const res = await fetchTenant(tenantId.value)
-      tenantName.value = res?.data?.name || ''
+      await fetchTenant(tenantId.value)
     }
 
     const result = await fetchUserTenant()

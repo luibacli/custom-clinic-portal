@@ -30,6 +30,7 @@ const TenantVerifyEmailPage = () => import('../pages/TenantVerifyEmailPage.vue')
 const MobileNotSupported   = () => import('../pages/MobileNotSupported.vue');
 
 const TenantAppointmentsPage = () => import('../pages/TenantAppointmentsPage.vue');
+const TenantMessagesPage     = () => import('../pages/TenantMessagesPage.vue');
 
 // Dev pages (accessed by users with role="dev" via tenant auth)
 const DevHomePage    = () => import('../pages/DevHomePage.vue');
@@ -112,6 +113,12 @@ const routes = [
         name: 'Appointments',
         component: TenantAppointmentsPage,
         meta: { roles: ['admin', 'superadmin'] }
+      },
+      {
+        path: '/messages',
+        name: 'Messages',
+        component: TenantMessagesPage,
+        meta: { roles: ['patient', 'admin', 'superadmin'] }
       },
       {
         path: '/profile',

@@ -57,10 +57,10 @@ export const useAuthTenantStore = defineStore('authTenant', {
         dialogVisible: false,
         dialogRemoveVisible: false,
         isLoading: false,
-        isPatient: false,
-        isAdmin: false,
-        isSuperAdmin: false,
-        isDev: false,
+        isPatient: localStorage.getItem("tenantRole") === "patient",
+        isAdmin: localStorage.getItem("tenantRole") === "admin",
+        isSuperAdmin: localStorage.getItem("tenantRole") === "superadmin",
+        isDev: localStorage.getItem("tenantRole") === "dev",
         roleOptions: [
             { label: "Admin", value: "admin" },
             { label: "Superadmin", value: "superadmin" },
@@ -215,6 +215,9 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 this.isDev = response.data.role === "dev";
 
                 localStorage.setItem("tenantRole", response.data.role);
+                if (response.data.email) {
+                  localStorage.setItem("userEmail", response.data.email);
+                }
 
                 console.log("user:", response.data);
 
@@ -376,6 +379,8 @@ export const useAuthTenantStore = defineStore('authTenant', {
             localStorage.removeItem("token");
             localStorage.removeItem("tenantId");
             localStorage.removeItem("tenantRole");
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("notif_appt_statuses");
         }
     }
 })
