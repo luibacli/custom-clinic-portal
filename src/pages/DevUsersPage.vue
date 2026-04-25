@@ -12,7 +12,7 @@
         <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
           <div class="max-w-2xl">
             <p class="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-[0.18em]">
-              CareBoard Dev
+              Portal Dev
             </p>
             <h1 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white leading-tight">
               User Management

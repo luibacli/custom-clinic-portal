@@ -49,7 +49,7 @@
           </div>
 
           <div class="text-xs text-white/80">
-            CareBoard Secure Access
+            Custom Clinic Portal PH — Secure Access
           </div>
         </div>
       </div>

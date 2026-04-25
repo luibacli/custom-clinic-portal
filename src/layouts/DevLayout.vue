@@ -15,7 +15,7 @@
     <div
       class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-gray-600 dark:text-gray-300">
       <p>Developed by Truly Yours Luigie C. Bacli</p>
-      <p>© 2026 CareBoard. All rights reserved.</p>
+      <p>© 2026 Custom Clinic Portal PH. All rights reserved.</p>
       <div class="flex gap-4 mt-2 sm:mt-0">
         <a href="#" class="hover:text-primary">Privacy Policy</a>
         <a href="#" class="hover:text-primary">Terms</a>

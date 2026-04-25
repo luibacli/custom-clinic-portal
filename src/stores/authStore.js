@@ -25,7 +25,7 @@ export const useAuthStore = defineStore("auth", {
             { label: "Dev", value: "dev"},
         ],
         typeOptions: [
-            { label: "Careboard", value: "careboard" },
+            { label: "System", value: "careboard" },
             { label: "Tenant", value: "tenant" }
         ],
         isLoading: false,

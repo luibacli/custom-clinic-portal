@@ -2,6 +2,20 @@ import { createRouter, createWebHistory } from 'vue-router';
 import isTokenExpired from '../lib/token';
 import { useAuthTenantStore } from '../stores/authTenantStore';
 
+// Landing / marketing pages — no auth required
+const LandingHomePage  = () => import('../pages/LandingHomePage.vue');
+const AboutPage        = () => import('../pages/AboutPage.vue');
+const MissionPage      = () => import('../pages/MissionPage.vue');
+const FeaturesPage     = () => import('../pages/FeaturesPage.vue');
+const HowItWorksPage   = () => import('../pages/HowItWorksPage.vue');
+const FaqPage          = () => import('../pages/FaqPage.vue');
+const BookDemoPage     = () => import('../pages/BookDemoPage.vue');
+
+// Legal / informational pages — no auth required
+const PrivacyPolicyPage = () => import('../pages/PrivacyPolicyPage.vue');
+const TermsPage         = () => import('../pages/TermsPage.vue');
+const ContactPage       = () => import('../pages/ContactPage.vue');
+
 // Tenant pages — lazy loaded
 const TenantLoginPage      = () => import('../pages/TenantLoginPage.vue');
 const TenantHomePage       = () => import('../pages/TenantHomePage.vue');
@@ -24,20 +38,29 @@ const DevUsersPage   = () => import('../pages/DevUsersPage.vue');
 const TenantLayout = () => import('../layouts/TenantLayout.vue');
 
 const routes = [
-  // Smart root entry — always redirects to tenant routes
+  // Root — landing page for unauthenticated visitors, dashboard redirect for authenticated users
   {
     path: '/',
-    name: 'Root',
+    name: 'LandingHome',
+    component: LandingHomePage,
     beforeEnter: (to, from, next) => {
       const tenantToken = localStorage.getItem('tenantToken');
       const tenantRole  = localStorage.getItem('tenantRole');
 
-      if (!tenantToken) return next('/signin');
+      if (!tenantToken || isTokenExpired(tenantToken)) return next();
       if (tenantRole === 'patient') return next('/patient');
       if (tenantRole === 'dev')     return next('/dev');
       return next('/tenant-home');
     }
   },
+
+  // Marketing / landing pages
+  { path: '/about',        name: 'About',       component: AboutPage      },
+  { path: '/mission',      name: 'Mission',     component: MissionPage    },
+  { path: '/features',     name: 'Features',    component: FeaturesPage   },
+  { path: '/how-it-works', name: 'HowItWorks',  component: HowItWorksPage },
+  { path: '/faq',          name: 'Faq',         component: FaqPage        },
+  { path: '/book-demo',    name: 'BookDemo',    component: BookDemoPage   },
 
   // Tenant login
   {
@@ -111,6 +134,23 @@ const routes = [
     ]
   },
 
+  // Public legal & informational pages
+  {
+    path: '/privacy',
+    name: 'PrivacyPolicy',
+    component: PrivacyPolicyPage
+  },
+  {
+    path: '/terms',
+    name: 'Terms',
+    component: TermsPage
+  },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component: ContactPage
+  },
+
   {
     path: '/mobile',
     name: 'Mobile',
@@ -156,10 +196,12 @@ router.beforeEach((to, from, next) => {
     return next('/tenant-home');
   }
 
-  // Expire token check
+  // Expire token check — only force redirect on protected routes
   if (tenantToken && isTokenExpired(tenantToken)) {
     authTenantStore.logout();
-    return next('/signin');
+    if (to.meta.requiresTenantAuth || (to.meta.roles && to.meta.roles.length)) {
+      return next('/signin');
+    }
   }
 
   // Role-based access control

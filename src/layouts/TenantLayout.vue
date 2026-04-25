@@ -11,18 +11,7 @@
     </main>
   </div>
 
-  <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700">
-    <div
-      class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-      <p>Developed by Truly Yours Luigie C. Bacli</p>
-      <p>© 2026 CareBoard. All rights reserved.</p>
-      <div class="flex gap-4 mt-2 sm:mt-0">
-        <a href="#" class="hover:text-primary">Privacy Policy</a>
-        <a href="#" class="hover:text-primary">Terms</a>
-        <a href="#" class="hover:text-primary">Contact</a>
-      </div>
-    </div>
-  </footer>
+  <AppFooter />
 </template>
 
 <script setup>
@@ -30,6 +19,7 @@ import { ref, onMounted, computed } from "vue";
 import { useAuthTenantStore } from "../stores/authTenantStore";
 import { useTenantStore } from "../stores/tenantStore";
 import TenantNavBar from "../components/TenantNavBar.vue";
+import AppFooter from "../components/AppFooter.vue";
 import { storeToRefs } from "pinia";
 
 const authTenantStore = useAuthTenantStore();

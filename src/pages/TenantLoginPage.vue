@@ -190,10 +190,23 @@
             />
           </form>
 
-          <div class="mt-6 border-t border-slate-200 pt-4">
+          <div class="mt-6 border-t border-slate-200 pt-4 space-y-3">
             <p class="text-center text-xs sm:text-sm text-slate-500">
               Protected access for authorized users only.
             </p>
+            <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs text-slate-400">
+              <router-link to="/" class="hover:text-blue-600 transition-colors">Home</router-link>
+              <span class="text-slate-300">&bull;</span>
+              <router-link to="/features" class="hover:text-blue-600 transition-colors">Features</router-link>
+              <span class="text-slate-300">&bull;</span>
+              <router-link to="/book-demo" class="hover:text-blue-600 transition-colors font-medium">Book a Demo</router-link>
+              <span class="text-slate-300">&bull;</span>
+              <router-link to="/privacy" class="hover:text-blue-600 transition-colors">Privacy Policy</router-link>
+              <span class="text-slate-300">&bull;</span>
+              <router-link to="/terms" class="hover:text-blue-600 transition-colors">Terms</router-link>
+              <span class="text-slate-300">&bull;</span>
+              <router-link to="/contact" class="hover:text-blue-600 transition-colors">Contact</router-link>
+            </div>
           </div>
         </div>
       </div>

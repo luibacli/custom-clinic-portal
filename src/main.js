@@ -109,8 +109,8 @@ const bootstrap = async () => {
       () => tenantStore.tenant?.name,
       (tenantName) => {
         document.title = tenantName
-          ? `${tenantName} | Clinic Portal`
-          : 'Clinic Portal';
+          ? `${tenantName} | Custom Clinic Portal PH`
+          : 'Custom Clinic Portal PH';
       },
       { immediate: true }
     );
