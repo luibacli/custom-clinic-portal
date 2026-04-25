@@ -113,6 +113,9 @@
                   <button @click="navigateTo('/inbox')" class="flex-1 py-2.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors">
                     <i class="pi pi-envelope mr-1 text-[10px]"></i> Emails
                   </button>
+                  <button v-if="props.isAdmin || props.isSuperAdmin" @click="navigateTo('/scan')" class="flex-1 py-2.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors">
+                    <i class="pi pi-qrcode mr-1 text-[10px]"></i> Scan QR
+                  </button>
                 </div>
               </div>
             </Transition>
@@ -158,16 +161,18 @@ const profileMenuRef = ref()
 
 const items = computed(() => {
   const adminItems = [
-    { label: 'Home',         icon: 'pi pi-home',     command: () => router.push('/tenant-home') },
+    { label: 'Home',         icon: 'pi pi-home',      command: () => router.push('/tenant-home') },
     { label: 'Appointments', icon: 'pi pi-calendar',  command: () => router.push('/appointments') },
+    { label: 'Scan QR',      icon: 'pi pi-qrcode',    command: () => router.push('/scan') },
     { label: 'Messages',     icon: 'pi pi-comments',  command: () => router.push('/messages') },
     { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
     { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },
     { label: 'Profile',      icon: 'pi pi-user',      command: () => router.push('/profile') },
   ]
   const superAdminItems = [
-    { label: 'Home',         icon: 'pi pi-home',     command: () => router.push('/tenant-home') },
+    { label: 'Home',         icon: 'pi pi-home',      command: () => router.push('/tenant-home') },
     { label: 'Appointments', icon: 'pi pi-calendar',  command: () => router.push('/appointments') },
+    { label: 'Scan QR',      icon: 'pi pi-qrcode',    command: () => router.push('/scan') },
     { label: 'Messages',     icon: 'pi pi-comments',  command: () => router.push('/messages') },
     { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
     { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },

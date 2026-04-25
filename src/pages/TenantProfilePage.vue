@@ -406,11 +406,13 @@ const triggerFileInput = () => {
 const loadProfile = async () => {
   isLoading.value = true
   try {
-    const data = await fetchUserTenant()
+    const result = await fetchUserTenant()
 
-    if (!data) {
+    if (!result?.success) {
       throw new Error('Profile not found')
     }
+
+    const data = result.data
 
     user.value = {
       ...data,

@@ -9,6 +9,35 @@
   >
     <Toast />
 
+    <!-- "It's Your Turn" full-screen overlay -->
+    <Transition name="turn-fade">
+      <div
+        v-if="showTurnAlert"
+        class="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        @click="showTurnAlert = false"
+      >
+        <div class="relative mx-4 max-w-sm w-full rounded-[2rem] bg-gradient-to-br from-emerald-500 to-teal-400 text-white shadow-2xl overflow-hidden" @click.stop>
+          <div class="absolute -top-10 -right-10 h-36 w-36 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+          <div class="relative z-10 flex flex-col items-center gap-4 px-6 py-10 text-center">
+            <div class="flex h-20 w-20 items-center justify-center rounded-[1.5rem] bg-white/20 border-2 border-white/30 shadow-xl">
+              <i class="pi pi-ticket text-4xl"></i>
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-[0.25em] text-emerald-100/80 mb-1">Now Serving</p>
+              <h2 class="text-4xl font-black">It's Your Turn!</h2>
+              <p class="mt-2 text-sm text-emerald-50/90">Queue #{{ queueStore.myQueueNumber }} — please proceed to the clinic desk.</p>
+            </div>
+            <button
+              @click="showTurnAlert = false"
+              class="mt-2 w-full rounded-2xl bg-white/20 border border-white/30 py-3 text-sm font-semibold hover:bg-white/30 transition-colors"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Booking Dialog -->
     <Dialog
       v-model:visible="showBookDialog"
@@ -78,6 +107,82 @@
       </template>
     </Dialog>
 
+    <!-- Show to Staff Modal -->
+    <Dialog
+      v-model:visible="showStaffModal"
+      modal
+      :draggable="false"
+      :showHeader="false"
+      :style="{ width: 'min(420px, 100vw)', borderRadius: '1.5rem', overflow: 'hidden' }"
+      :contentStyle="{ padding: 0 }"
+    >
+      <div class="relative bg-gradient-to-br from-sky-500 via-blue-600 to-cyan-400 text-white">
+        <!-- Close -->
+        <button
+          @click="showStaffModal = false"
+          class="absolute top-4 right-4 h-9 w-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors z-10"
+        >
+          <i class="pi pi-times text-sm"></i>
+        </button>
+
+        <!-- Decorative blobs -->
+        <div class="absolute -top-8 -left-8 h-32 w-32 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+        <div class="absolute bottom-0 right-0 h-40 w-40 rounded-full bg-cyan-200/20 blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 flex flex-col items-center px-8 pt-10 pb-8 gap-5">
+          <!-- Avatar -->
+          <div class="flex h-24 w-24 items-center justify-center rounded-[1.5rem] bg-white/20 border-2 border-white/30 text-3xl font-black shadow-xl">
+            {{ initials }}
+          </div>
+
+          <!-- Name -->
+          <div class="text-center">
+            <p class="text-xs uppercase tracking-[0.2em] text-blue-100/80 mb-1">Patient Name</p>
+            <h2 class="text-2xl sm:text-3xl font-black leading-snug break-words text-center">{{ fullName || 'No Name' }}</h2>
+          </div>
+
+          <!-- QR Code (large, for scanning from counter) -->
+          <div class="rounded-2xl bg-white p-3 shadow-xl">
+            <img
+              v-if="qrDataUrl"
+              :src="qrDataUrl"
+              alt="Patient QR"
+              class="h-44 w-44 rounded-xl"
+            />
+            <div v-else class="h-44 w-44 flex items-center justify-center rounded-xl bg-slate-50">
+              <i class="pi pi-spin pi-spinner text-slate-300 text-2xl"></i>
+            </div>
+          </div>
+
+          <!-- REF ID -->
+          <div class="w-full rounded-2xl bg-white/15 border border-white/20 px-5 py-4 text-center backdrop-blur-md">
+            <p class="text-[10px] uppercase tracking-[0.2em] text-blue-100/70 mb-1">Patient REF ID</p>
+            <p class="text-3xl font-black tracking-[0.18em]">{{ patientDisplayId }}</p>
+          </div>
+
+          <!-- Queue number if active -->
+          <div
+            v-if="queueStore.hasActiveQueue"
+            class="w-full rounded-2xl px-5 py-4 text-center"
+            :class="queueStore.isMyTurn ? 'bg-emerald-500/40 border border-emerald-300/30' : 'bg-amber-400/30 border border-amber-300/30'"
+          >
+            <p class="text-[10px] uppercase tracking-[0.2em] text-blue-100/80 mb-1">
+              {{ queueStore.isMyTurn ? 'Now Being Served' : 'Queue Number' }}
+            </p>
+            <p class="text-4xl font-black">#{{ queueStore.myQueueNumber }}</p>
+          </div>
+
+          <!-- Today's appointment -->
+          <div v-if="todayAppointment" class="w-full rounded-2xl bg-white/10 border border-white/15 px-5 py-3 text-center">
+            <p class="text-[10px] uppercase tracking-[0.18em] text-blue-100/70 mb-1">Today's Appointment</p>
+            <p class="font-semibold text-sm">{{ todayAppointment.serviceType }}</p>
+          </div>
+
+          <p class="text-[10px] text-blue-100/50 text-center">Show this screen to clinic front desk staff for verification.</p>
+        </div>
+      </div>
+    </Dialog>
+
     <div class="mx-auto w-full max-w-md sm:max-w-xl lg:max-w-5xl">
 
       <!-- Tab Bar -->
@@ -99,8 +204,90 @@
       </div>
 
       <!-- TAB: MY ID -->
-      <div v-if="activeTab === 'id'">
+      <div v-if="activeTab === 'id'" class="space-y-4">
+
+        <!-- Item 1: Live Queue Strip -->
+        <Transition name="queue-fade">
+          <div
+            v-if="queueStore.hasActiveQueue"
+            class="flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-white text-sm font-medium shadow-lg transition-colors duration-500"
+            :class="queueStore.isMyTurn
+              ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
+              : queueStore.isAlmostTurn
+                ? 'bg-gradient-to-r from-amber-400 to-orange-400'
+                : 'bg-gradient-to-r from-sky-500 to-cyan-400'"
+          >
+            <div class="flex items-center gap-3">
+              <i class="pi pi-ticket text-base shrink-0"></i>
+              <div>
+                <p class="text-[10px] uppercase tracking-widest opacity-80 leading-none mb-0.5">
+                  {{ queueStore.isMyTurn ? 'Currently Being Served' : 'You Are In Queue' }}
+                </p>
+                <p class="font-black text-xl leading-none">Queue #{{ queueStore.myQueueNumber }}</p>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="text-[10px] opacity-75 leading-none mb-0.5">Now Serving</p>
+              <p class="font-bold text-lg leading-none">
+                {{ queueStore.nowServing != null ? `#${queueStore.nowServing}` : '—' }}
+              </p>
+              <p v-if="!queueStore.isMyTurn && queueStore.peopleAhead != null" class="text-[10px] opacity-75 mt-0.5">
+                {{ queueStore.peopleAhead === 0 ? "You're next!" : `${queueStore.peopleAhead} ahead` }}
+              </p>
+            </div>
+          </div>
+        </Transition>
+
+        <!-- Item 2: Today's Appointment Banner -->
+        <Transition name="queue-fade">
+          <div
+            v-if="todayAppointment && !queueStore.hasActiveQueue"
+            class="flex items-center justify-between gap-3 rounded-2xl border border-blue-100 dark:border-blue-500/20 bg-gradient-to-r from-blue-50 to-sky-50 dark:from-blue-500/10 dark:to-sky-500/10 px-4 py-3"
+          >
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="shrink-0 h-9 w-9 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
+                <i class="pi pi-calendar text-blue-500 dark:text-blue-400 text-sm"></i>
+              </div>
+              <div class="min-w-0">
+                <p class="text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500 leading-none mb-0.5">Today's Appointment</p>
+                <p class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{{ todayAppointment.serviceType }}</p>
+              </div>
+            </div>
+            <span
+              class="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+              :class="todayAppointment.status === 'confirmed'
+                ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300'
+                : 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300'"
+            >
+              <span class="h-1.5 w-1.5 rounded-full"
+                :class="todayAppointment.status === 'confirmed' ? 'bg-blue-500' : 'bg-amber-500'"
+              ></span>
+              {{ statusLabel(todayAppointment.status) }}
+            </span>
+          </div>
+        </Transition>
+
+        <!-- Show to Staff + Download buttons -->
+        <div class="flex items-center justify-end gap-2">
+          <button
+            @click="downloadId"
+            :disabled="downloadingId"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-white/15 transition-all duration-150 disabled:opacity-60"
+          >
+            <i :class="downloadingId ? 'pi pi-spin pi-spinner' : 'pi pi-download'" class="text-emerald-500 text-xs"></i>
+            {{ downloadingId ? 'Saving…' : 'Save ID' }}
+          </button>
+          <button
+            @click="showStaffModal = true"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-white/15 transition-all duration-150"
+          >
+            <i class="pi pi-eye text-sky-500 text-xs"></i>
+            Show to Staff
+          </button>
+        </div>
+
         <div
+          ref="idCardRef"
           class="relative overflow-hidden rounded-[2rem] border border-white/50 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
         >
           <div class="absolute inset-0 bg-gradient-to-br from-sky-500 via-blue-500 to-cyan-400"></div>
@@ -135,7 +322,7 @@
                 <div>
                   <h1 class="text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Patient Digital ID</h1>
                   <p class="mt-2 max-w-sm text-xs sm:text-sm text-blue-50/90 leading-5">
-                    Secure patient identity card for portal access, YAKAP verification, and clinic reference.
+                    Secure patient identity card for portal access, clinic verification, and facility reference.
                   </p>
                 </div>
                 <div class="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-md shadow-lg">
@@ -160,7 +347,7 @@
                     <i class="pi pi-shield text-[10px]"></i> Active
                   </span>
                   <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/12 px-2.5 py-1 text-[11px] sm:text-xs">
-                    <i class="pi pi-heart text-[10px]"></i> YAKAP Enrolled
+                    <i class="pi pi-star text-[10px]"></i> Portal Member
                   </span>
                 </div>
               </div>
@@ -172,7 +359,7 @@
                     <i v-else class="pi pi-building text-white text-base"></i>
                   </div>
                   <div class="min-w-0">
-                    <p class="text-[10px] sm:text-xs uppercase tracking-[0.18em] text-blue-50/80">YAKAP Facility</p>
+                    <p class="text-[10px] sm:text-xs uppercase tracking-[0.18em] text-blue-50/80">Registered Facility</p>
                     <p class="mt-1 text-sm sm:text-base lg:text-lg font-semibold leading-snug truncate">{{ tenantName || 'Health Facility' }}</p>
                   </div>
                 </div>
@@ -236,6 +423,7 @@
                     </button>
                   </div>
                   <p class="text-sm sm:text-base font-bold tracking-[0.12em] text-sky-600 dark:text-sky-300 break-all">{{ user.pin || '—' }}</p>
+                  <p class="mt-1.5 text-[10px] text-slate-400 dark:text-slate-500">Present this PIN to front desk staff when checking in or verifying your identity.</p>
                 </div>
               </div>
 
@@ -249,18 +437,43 @@
                 </div>
                 <div class="rounded-[1rem] border border-slate-200/80 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5">
                   <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Card Type</p>
-                  <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">YAKAP Digital ID</p>
+                  <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Digital Patient ID</p>
                 </div>
               </div>
 
-              <div class="mt-5 flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p class="text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Issued For</p>
-                  <p class="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-200">Patient Portal Access</p>
-                </div>
-                <div class="sm:text-right">
-                  <p class="text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Reference</p>
-                  <p class="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-200">DIGITAL VERIFIED ID</p>
+              <!-- QR Code Section -->
+              <div class="mt-5 border-t border-slate-200 dark:border-white/10 pt-5">
+                <div class="flex flex-col sm:flex-row items-center gap-5">
+                  <!-- QR Image -->
+                  <div class="shrink-0 flex flex-col items-center gap-2">
+                    <div class="rounded-2xl border-2 border-slate-100 dark:border-white/10 bg-white p-2 shadow-sm">
+                      <img
+                        v-if="qrDataUrl"
+                        :src="qrDataUrl"
+                        alt="Patient QR Code"
+                        class="h-[110px] w-[110px] rounded-lg"
+                      />
+                      <div v-else class="h-[110px] w-[110px] flex items-center justify-center rounded-lg bg-slate-50 dark:bg-white/5">
+                        <i class="pi pi-spin pi-spinner text-slate-300 text-xl"></i>
+                      </div>
+                    </div>
+                    <p class="text-[9px] text-slate-400 uppercase tracking-widest">Scan to verify</p>
+                  </div>
+
+                  <!-- QR Info -->
+                  <div class="flex-1 min-w-0 text-center sm:text-left">
+                    <p class="text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">Patient QR Code</p>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
+                      Show this QR code at the clinic front desk for instant check-in.
+                      <span v-if="todayAppointment" class="text-sky-500 dark:text-sky-400 font-medium">
+                        Linked to today's appointment.
+                      </span>
+                    </p>
+                    <div class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-white/10 px-3 py-1">
+                      <i class="pi pi-shield text-emerald-500 text-[10px]"></i>
+                      <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-300">REF: {{ patientDisplayId }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -268,8 +481,34 @@
         </div>
       </div>
 
+      <!-- Recent Visits -->
+      <div v-if="activeTab === 'id' && recentVisits.length > 0" class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 overflow-hidden">
+        <div class="px-4 py-3 border-b border-slate-100 dark:border-white/10 flex items-center gap-2">
+          <i class="pi pi-history text-slate-400 text-sm"></i>
+          <p class="text-sm font-semibold text-slate-800 dark:text-white">Recent Visits</p>
+        </div>
+        <div class="divide-y divide-slate-50 dark:divide-white/5">
+          <div
+            v-for="visit in recentVisits"
+            :key="visit._id"
+            class="flex items-center gap-3 px-4 py-3"
+          >
+            <div class="shrink-0 h-8 w-8 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+              <i class="pi pi-check-circle text-emerald-500 text-sm"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">{{ visit.serviceType }}</p>
+              <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ formatDate(visit.appointmentDate) }}</p>
+            </div>
+            <span class="shrink-0 inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 text-[10px] font-semibold">
+              Completed
+            </span>
+          </div>
+        </div>
+      </div>
+
       <!-- TAB: MY APPOINTMENTS -->
-      <div v-else-if="activeTab === 'appointments'" class="space-y-5">
+      <div v-if="activeTab === 'appointments'" class="space-y-5">
 
         <!-- Active Queue Card (shown when in-queue or ongoing) -->
         <div
@@ -417,10 +656,14 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { onMounted, onUnmounted, ref, computed, watch } from 'vue'
+import QRCode from 'qrcode'
+import html2pdf from 'html2pdf.js'
+import { io } from 'socket.io-client'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useTenantStore } from '../stores/tenantStore'
 import { useAppointmentStore } from '../stores/appointmentStore'
+import { useQueueStore } from '../stores/queueStore'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast'
@@ -434,6 +677,7 @@ import Loading from '../components/Loading.vue'
 const authTenantStore = useAuthTenantStore()
 const tenantStore = useTenantStore()
 const appointmentStore = useAppointmentStore()
+const queueStore = useQueueStore()
 const toast = useToast()
 
 const { fetchTenant } = tenantStore
@@ -446,12 +690,17 @@ const tenantId = ref(null)
 const isLoading = ref(false)
 const tenantName = computed(() => tenant.value?.name || 'Health Facility')
 
-const showBookDialog = ref(false)
+const showBookDialog  = ref(false)
 const showCancelDialog = ref(false)
+const showStaffModal  = ref(false)
+const showTurnAlert   = ref(false)
+const qrDataUrl       = ref('')
 const bookLoading = ref(false)
 const cancelLoading = ref(false)
+const downloadingId   = ref(false)
 const cancelReason = ref('')
 const cancelTarget = ref(null)
+const idCardRef = ref(null)
 
 const bookForm = ref({ serviceType: '', appointmentDate: '', notes: '' })
 
@@ -496,10 +745,52 @@ const confirmedAppointment = computed(() =>
   myAppointments.value.find(a => a.status === 'confirmed') || null
 )
 
+const todayAppointment = computed(() => {
+  const todayStr = new Date().toISOString().split('T')[0]
+  return myAppointments.value.find(a =>
+    !['cancelled', 'completed'].includes(a.status) &&
+    new Date(a.appointmentDate).toISOString().split('T')[0] === todayStr
+  ) || null
+})
+
 const patientDisplayId = computed(() => {
   const id = user.value.id || user.value._id || ''
   return id ? String(id).slice(-8).toUpperCase() : '—'
 })
+
+const recentVisits = computed(() =>
+  myAppointments.value
+    .filter(a => a.status === 'completed')
+    .slice(0, 3)
+)
+
+// QR payload — changes to include today's appointment when present (item 9)
+const qrPayload = computed(() => {
+  const pid = String(user.value.id || user.value._id || '')
+  if (!pid) return ''
+  const base = {
+    v: 1,
+    tid: localStorage.getItem('tenantId') || '',
+    pid,
+    ref: patientDisplayId.value,
+  }
+  if (todayAppointment.value?._id) {
+    base.aid = String(todayAppointment.value._id)
+  }
+  return JSON.stringify(base)
+})
+
+watch(qrPayload, async (payload) => {
+  if (!payload) { qrDataUrl.value = ''; return }
+  try {
+    qrDataUrl.value = await QRCode.toDataURL(payload, {
+      width: 220,
+      margin: 2,
+      color: { dark: '#0f172a', light: '#ffffff' },
+      errorCorrectionLevel: 'M',
+    })
+  } catch { qrDataUrl.value = '' }
+}, { immediate: true })
 
 const formatBirthday = computed(() => {
   if (!user.value.birthday) return '—'
@@ -559,6 +850,25 @@ const apptBorderClass = (status) => ({
   cancelled: 'border-red-100 dark:border-red-500/20 opacity-60',
 }[status] || 'border-slate-200')
 
+const downloadId = async () => {
+  if (!idCardRef.value || downloadingId.value) return
+  downloadingId.value = true
+  try {
+    await html2pdf()
+      .set({
+        margin: 0,
+        filename: `patient-id-${patientDisplayId.value}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: [210, 120], orientation: 'landscape' },
+      })
+      .from(idCardRef.value)
+      .save()
+  } finally {
+    downloadingId.value = false
+  }
+}
+
 const openBookDialog = () => {
   bookForm.value = { serviceType: '', appointmentDate: '', notes: '' }
   showBookDialog.value = true
@@ -608,6 +918,7 @@ const loadMyAppointments = async () => {
 }
 
 let pollInterval = null
+let socket = null
 
 onMounted(async () => {
   isLoading.value = true
@@ -622,6 +933,18 @@ onMounted(async () => {
     user.value = result.data
 
     await loadMyAppointments()
+
+    // Socket.io — real-time "It's Your Turn" notification
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3000'
+    socket = io(baseUrl, { transports: ['websocket'], reconnectionAttempts: 5 })
+    const userId = user.value.id || user.value._id
+    if (userId) {
+      socket.emit('join:patient', String(userId))
+    }
+    socket.on('appointment:ongoing', () => {
+      showTurnAlert.value = true
+      queueStore.setMyQueue(queueStore.myQueueNumber, 'ongoing')
+    })
   } catch (error) {
     console.error('Error fetching user', error)
   } finally {
@@ -633,5 +956,34 @@ onMounted(async () => {
 
 onUnmounted(() => {
   if (pollInterval) clearInterval(pollInterval)
+  if (socket) socket.disconnect()
 })
 </script>
+
+<style scoped>
+.queue-fade-enter-active,
+.queue-fade-leave-active {
+  transition: all 0.3s ease;
+}
+.queue-fade-enter-from,
+.queue-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+.turn-fade-enter-active,
+.turn-fade-leave-active {
+  transition: all 0.25s ease;
+}
+.turn-fade-enter-from,
+.turn-fade-leave-to {
+  opacity: 0;
+}
+.turn-fade-enter-active > div,
+.turn-fade-leave-active > div {
+  transition: transform 0.25s ease;
+}
+.turn-fade-enter-from > div,
+.turn-fade-leave-to > div {
+  transform: scale(0.92);
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 sm:p-6 space-y-5">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 sm:p-6 space-y-5">
     <Toast />
 
     <!-- Manage Dialog -->
@@ -47,22 +47,37 @@
       </template>
     </Dialog>
 
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Appointments</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400">Manage patient appointment requests and queue assignments</p>
+    <!-- Hero Header -->
+    <section class="relative overflow-hidden rounded-[28px] border border-slate-200/80 bg-gradient-to-br from-white via-slate-50 to-slate-100 shadow-sm dark:border-slate-800 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
+      <div class="absolute right-0 top-0 h-40 w-40 rounded-full bg-sky-500/10 blur-3xl pointer-events-none"></div>
+      <div class="relative p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-start gap-4 min-w-0">
+            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 text-white flex items-center justify-center shadow-lg shrink-0">
+              <i class="pi pi-calendar text-xl"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-[0.18em]">Clinic Management</p>
+              <h1 class="mt-1 text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">Appointments</h1>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Manage patient requests and queue assignments</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <div class="rounded-2xl border border-slate-200 bg-white/80 dark:border-slate-700 dark:bg-slate-900/80 px-3 py-2 text-center shadow-sm">
+              <p class="text-xs text-slate-400 dark:text-slate-500">Total</p>
+              <p class="text-lg font-bold text-slate-800 dark:text-white">{{ allAppointments.length }}</p>
+            </div>
+            <button
+              @click="loadAll"
+              class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-colors shadow-sm"
+            >
+              <i class="pi pi-refresh text-xs" :class="{ 'animate-spin': loading }"></i>
+              Refresh
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button
-          @click="loadAll"
-          class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition-colors"
-        >
-          <i class="pi pi-refresh text-xs" :class="{ 'animate-spin': loading }"></i>
-          Refresh
-        </button>
-      </div>
-    </div>
+    </section>
 
     <!-- Summary Chips -->
     <div class="flex flex-wrap gap-2">

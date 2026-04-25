@@ -156,6 +156,48 @@
         </div>
       </section>
 
+      <!-- Today's Operations Row -->
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="rounded-[24px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm text-slate-500 dark:text-slate-400">Today's Appointments</p>
+              <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mt-1">{{ todayApptCount }}</h2>
+              <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Scheduled for today.</p>
+            </div>
+            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0 dark:bg-sky-500/15 dark:text-sky-300">
+              <i class="pi pi-calendar text-xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-[24px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm text-slate-500 dark:text-slate-400">In Queue Now</p>
+              <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mt-1">{{ todayInQueueCount }}</h2>
+              <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Patients waiting in queue.</p>
+            </div>
+            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 dark:bg-amber-500/15 dark:text-amber-300">
+              <i class="pi pi-ticket text-xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-[24px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm text-slate-500 dark:text-slate-400">Completed Today</p>
+              <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mt-1">{{ todayCompletedCount }}</h2>
+              <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Appointments served today.</p>
+            </div>
+            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 dark:bg-emerald-500/15 dark:text-emerald-300">
+              <i class="pi pi-check-circle text-xl"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Activity Logs -->
       <section
         class="rounded-[28px] bg-white border border-slate-200 shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800"
@@ -331,6 +373,7 @@ import { ref, onMounted } from "vue";
 import { useTenantStore } from "../stores/tenantStore";
 import { useAuthTenantStore } from "../stores/authTenantStore";
 import { useEmailStore } from "../stores/emailStore";
+import { useAppointmentStore } from "../stores/appointmentStore";
 import Loading from "../components/Loading.vue";
 import { storeToRefs } from "pinia";
 import Tag from "primevue/tag";
@@ -338,10 +381,12 @@ import Tag from "primevue/tag";
 const tenantStore = useTenantStore();
 const authTenantStore = useAuthTenantStore();
 const emailStore = useEmailStore();
+const appointmentStore = useAppointmentStore();
 
 const { fetchTenant } = tenantStore;
 const { fetchTenantUsers, fetchActivityLogs } = authTenantStore;
 const { fetchLinksByTenant } = emailStore;
+const { fetchAllAppointments } = appointmentStore;
 
 const { emails } = storeToRefs(emailStore);
 
@@ -353,6 +398,9 @@ const logsLoading = ref(false);
 const activePatients = ref([]);
 const activeAdmin = ref([]);
 const activityLogs = ref([]);
+const todayApptCount = ref(0);
+const todayInQueueCount = ref(0);
+const todayCompletedCount = ref(0);
 
 const formatLogTime = (ts) => {
   if (!ts) return '—';
@@ -374,10 +422,19 @@ onMounted(async () => {
 
     logsLoading.value = true;
 
+    const todayStr = new Date().toISOString().split('T')[0];
     const [res, users] = await Promise.all([
       fetchTenant(tenantId.value),
       fetchTenantUsers(tenantId.value),
       fetchLinksByTenant(tenantId.value),
+      fetchAllAppointments(tenantId.value, { date: todayStr, limit: 500 }).then(result => {
+        if (result.success) {
+          const appts = appointmentStore.allAppointments;
+          todayApptCount.value = appts.length;
+          todayInQueueCount.value = appts.filter(a => a.status === 'in-queue').length;
+          todayCompletedCount.value = appts.filter(a => a.status === 'completed').length;
+        }
+      }),
     ]);
 
     if (res?.data) {

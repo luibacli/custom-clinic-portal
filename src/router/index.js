@@ -31,6 +31,7 @@ const MobileNotSupported   = () => import('../pages/MobileNotSupported.vue');
 
 const TenantAppointmentsPage = () => import('../pages/TenantAppointmentsPage.vue');
 const TenantMessagesPage     = () => import('../pages/TenantMessagesPage.vue');
+const TenantQRScanPage       = () => import('../pages/TenantQRScanPage.vue');
 
 // Dev pages (accessed by users with role="dev" via tenant auth)
 const DevHomePage    = () => import('../pages/DevHomePage.vue');
@@ -119,6 +120,12 @@ const routes = [
         name: 'Messages',
         component: TenantMessagesPage,
         meta: { roles: ['patient', 'admin', 'superadmin'] }
+      },
+      {
+        path: '/scan',
+        name: 'QRScan',
+        component: TenantQRScanPage,
+        meta: { roles: ['admin', 'superadmin'] }
       },
       {
         path: '/profile',

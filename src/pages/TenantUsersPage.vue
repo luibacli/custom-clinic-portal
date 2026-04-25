@@ -29,7 +29,7 @@
             <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
             <InputText
               v-model="search"
-              placeholder="Search user"
+              placeholder="Search by name, email, or REF ID…"
               class="w-full pl-10 rounded-xl"
             />
           </span>
@@ -361,6 +361,14 @@
             <template #body="slotProps">
               <span class="font-medium text-slate-800 dark:text-white">
                 {{ slotProps.data.lastName || '—' }}
+              </span>
+            </template>
+          </Column>
+
+          <Column header="REF ID" style="min-width: 8rem">
+            <template #body="slotProps">
+              <span class="font-mono text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/10 rounded-lg px-2 py-1">
+                {{ slotProps.data._id ? slotProps.data._id.toString().slice(-8).toUpperCase() : '—' }}
               </span>
             </template>
           </Column>
