@@ -8,7 +8,6 @@ const resolveTenant = async () => {
     { params: { host } }
   );
 
-  console.log('Resolved tenant response:', data);
   return data;
 };
 

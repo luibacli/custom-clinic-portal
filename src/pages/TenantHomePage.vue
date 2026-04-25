@@ -427,7 +427,7 @@ onMounted(async () => {
       fetchTenant(tenantId.value),
       fetchTenantUsers(tenantId.value),
       fetchLinksByTenant(tenantId.value),
-      fetchAllAppointments(tenantId.value, { date: todayStr, limit: 500 }).then(result => {
+      fetchAllAppointments(tenantId.value, { date: todayStr, limit: 100 }).then(result => {
         if (result.success) {
           const appts = appointmentStore.allAppointments;
           todayApptCount.value = appts.length;

@@ -193,6 +193,12 @@ const routes = [
     path: '/verify-email',
     name: 'TenantVerifyEmail',
     component: TenantVerifyEmailPage
+  },
+
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    redirect: '/'
   }
 ];
 

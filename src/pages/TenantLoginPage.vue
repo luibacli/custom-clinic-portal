@@ -168,12 +168,7 @@
               </div>
             </div>
 
-            <div class="flex items-center justify-between gap-3 text-sm">
-              <label class="flex cursor-pointer items-center gap-2 text-slate-600">
-                <input v-model="remember" type="checkbox" class="rounded" />
-                <span>Remember me</span>
-              </label>
-
+            <div class="flex items-center justify-end text-sm">
               <button
                 type="button"
                 class="font-medium text-blue-600 transition hover:text-blue-700"
@@ -236,7 +231,6 @@ const { loginForm } = storeToRefs(authTenantStore)
 const { tenant, tenantResolved } = storeToRefs(tenantStore)
 
 const showPassword = ref(false)
-const remember = ref(false)
 const forgotDialogVisible = ref(false)
 const forgotEmail = ref('')
 const forgotLoading = ref(false)
@@ -281,8 +275,6 @@ const handleForgotPassword = async () => {
 }
 
 const handleLogin = async () => {
-  console.log("isTenant:,", tenantResolved.value);
-  console.log("tenant ID", tenant.value?.id);
   const res = await login(tenantResolved.value, tenant.value?.id)
 
   if (!res?.success) {

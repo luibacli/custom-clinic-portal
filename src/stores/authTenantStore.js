@@ -236,7 +236,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 const res = await api.get(`/tenants/${id}`)
                 this.tenant = res.data;
             } catch (error) {
-
+                console.error('Failed to fetch tenant', error.message);
             }
         },
         async fetchTenantUsers(id, search = '') {
@@ -253,7 +253,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 const res = await api.get(`/email/${id}/links`)
                 this.emails = res.data.emails;
             } catch (error) {
-
+                console.error('Failed to fetch email links', error.message);
             }
         },
         async fetchAllUsers({ page = 1, limit = 20, search = '', role = '', tenantId = '' } = {}) {

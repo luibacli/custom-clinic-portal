@@ -109,8 +109,6 @@ export const useTenantStore = defineStore('tenants', {
 
         this.tenant = await resolveTenant();
         this.tenantResolved = true;
-
-        console.log('Resolved tenant:', this.tenant);
       } catch (error) {
         console.error('Failed to load tenant', error);
         this.tenant = null;

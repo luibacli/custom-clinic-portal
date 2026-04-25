@@ -516,7 +516,7 @@ const save = async () => {
       const result = await addUser()
 
       if (!result.success) {
-        throw new Error(result.error)
+        throw new Error(result.message)
       }
 
       toast.add({
