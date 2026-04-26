@@ -138,6 +138,19 @@ export const useTenantStore = defineStore('tenants', {
       }
     },
 
+    async updateBranding(id, branding) {
+      try {
+        const { data } = await api.patch(`/tenants/${id}/branding`, { branding });
+        if (!data?.success) throw new Error('Failed to update branding');
+        if (this.tenant && String(this.tenant.id || this.tenant._id) === String(id)) {
+          this.tenant = { ...this.tenant, branding: data.data };
+        }
+        return { success: true, data: data.data, message: data.message };
+      } catch (error) {
+        return { success: false, message: error.response?.data?.message || 'Failed to update branding' };
+      }
+    },
+
     async updateFeatures(id, features) {
       try {
         const { data } = await api.patch(`/tenants/${id}/features`, { features });

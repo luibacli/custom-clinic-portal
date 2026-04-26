@@ -8,7 +8,8 @@
         <div>
           <div class="flex items-center gap-3">
             <div
-              class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white flex items-center justify-center shadow-md"
+              class="w-12 h-12 rounded-2xl text-white flex items-center justify-center shadow-md"
+              :style="brandGradientStyle"
             >
               <i class="pi pi-envelope text-lg"></i>
             </div>
@@ -312,7 +313,10 @@ import { useToast } from 'primevue/usetoast'
 import { useAuthStore } from '../stores/authStore'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useEmailStore } from '../stores/emailStore'
+import { useBranding } from '../composables/useBranding'
 import Loading from '../components/Loading.vue'
+
+const { brandGradientStyle } = useBranding()
 
 const toast = useToast()
 

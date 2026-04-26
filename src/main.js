@@ -38,6 +38,7 @@ import { Card, Button, Select, InputText, DatePicker, Drawer, PanelMenuStyle, Pa
 import { createPinia } from 'pinia';
 import { useTenantStore } from './stores/tenantStore';
 import { useAuthTenantStore } from './stores/authTenantStore';
+import { applyBrandingVars } from './composables/useBranding';
 
 const bootstrap = async () => {
   const app = createApp(App);
@@ -115,6 +116,12 @@ const bootstrap = async () => {
           : 'Custom Clinic Portal PH';
       },
       { immediate: true }
+    );
+
+    watch(
+      () => tenantStore.tenant?.branding,
+      (branding) => applyBrandingVars(branding),
+      { immediate: true, deep: true }
     );
   } catch (error) {
     console.error('Bootstrap auth/init failed:', error);

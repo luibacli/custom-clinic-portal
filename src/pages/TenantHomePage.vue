@@ -29,7 +29,8 @@
           >
             <div class="flex items-start gap-4 min-w-0">
               <div
-                class="w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-gradient-to-br from-blue-600 to-cyan-400 text-white flex items-center justify-center shadow-lg shrink-0"
+                class="w-14 h-14 sm:w-16 sm:h-16 rounded-3xl text-white flex items-center justify-center shadow-lg shrink-0"
+                :style="brandGradientStyle"
               >
                 <i class="pi pi-building text-xl sm:text-2xl"></i>
               </div>
@@ -50,9 +51,21 @@
                 <p
                   class="mt-2 text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl"
                 >
-                  Overview of patient accounts, pending users, and active
-                  administrators.
+                  {{ branding.welcomeMessage || 'Overview of patient accounts, pending users, and active administrators.' }}
                 </p>
+
+                <!-- Clinic contact info -->
+                <div v-if="branding.phone || branding.email || branding.address" class="mt-3 flex flex-wrap gap-2">
+                  <span v-if="branding.phone" class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+                    <i class="pi pi-phone text-[10px]"></i>{{ branding.phone }}
+                  </span>
+                  <span v-if="branding.email" class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+                    <i class="pi pi-envelope text-[10px]"></i>{{ branding.email }}
+                  </span>
+                  <span v-if="branding.address" class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+                    <i class="pi pi-map-marker text-[10px]"></i>{{ branding.address }}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -374,10 +387,12 @@ import { useTenantStore } from "../stores/tenantStore";
 import { useAuthTenantStore } from "../stores/authTenantStore";
 import { useEmailStore } from "../stores/emailStore";
 import { useAppointmentStore } from "../stores/appointmentStore";
+import { useBranding } from "../composables/useBranding";
 import Loading from "../components/Loading.vue";
 import { storeToRefs } from "pinia";
 import Tag from "primevue/tag";
 
+const { branding, brandGradientStyle } = useBranding();
 const tenantStore = useTenantStore();
 const authTenantStore = useAuthTenantStore();
 const emailStore = useEmailStore();

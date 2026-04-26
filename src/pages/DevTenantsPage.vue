@@ -277,6 +277,95 @@
           </div>
         </section>
 
+        <!-- Clinic Branding Section -->
+        <section class="rounded-[28px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-white">Clinic Branding</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Customize the clinic's portal appearance and contact info.
+              </p>
+            </div>
+            <Button
+              label="Save Branding"
+              icon="pi pi-check"
+              :loading="isSavingBranding"
+              class="rounded-2xl w-full sm:w-auto shrink-0"
+              @click="saveBranding"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Primary Color -->
+            <div class="md:col-span-2 space-y-2">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Primary Color</label>
+              <div class="flex items-center gap-3">
+                <div
+                  class="h-10 w-10 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm shrink-0 overflow-hidden cursor-pointer"
+                  :style="{ background: localBranding.primaryColor }"
+                  @click="colorInputRef?.click()"
+                >
+                  <input
+                    ref="colorInputRef"
+                    type="color"
+                    v-model="localBranding.primaryColor"
+                    class="opacity-0 w-full h-full cursor-pointer"
+                  />
+                </div>
+                <InputText
+                  v-model="localBranding.primaryColor"
+                  placeholder="#2563eb"
+                  class="w-40 rounded-2xl font-mono text-sm"
+                  maxlength="7"
+                />
+                <span class="text-xs text-slate-400 dark:text-slate-500">Click the swatch to open the color picker</span>
+              </div>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="md:col-span-2 space-y-2">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Welcome Message</label>
+              <Textarea
+                v-model="localBranding.welcomeMessage"
+                placeholder="Write a short welcome message shown on the login page and dashboard..."
+                class="w-full rounded-2xl resize-none"
+                rows="3"
+                autoResize
+              />
+            </div>
+
+            <!-- Address -->
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Clinic Address</label>
+              <InputText
+                v-model="localBranding.address"
+                placeholder="123 Clinic Street, Manila"
+                class="w-full rounded-2xl"
+              />
+            </div>
+
+            <!-- Phone -->
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Phone Number</label>
+              <InputText
+                v-model="localBranding.phone"
+                placeholder="+63 XXX XXX XXXX"
+                class="w-full rounded-2xl"
+              />
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Clinic Email</label>
+              <InputText
+                v-model="localBranding.email"
+                placeholder="clinic@example.com"
+                class="w-full rounded-2xl"
+              />
+            </div>
+          </div>
+        </section>
+
         <!-- Users Section -->
         <section class="rounded-[28px] bg-white border border-slate-200 shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800">
           <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800">
@@ -718,6 +807,17 @@ const isSubmittingUser = ref(false)
 const isSubmittingTenant = ref(false)
 const logoUploading = ref(false)
 const isSavingFeatures = ref(false)
+const isSavingBranding = ref(false)
+const colorInputRef    = ref(null)
+
+const BRANDING_DEFAULTS = {
+  primaryColor:   '#2563eb',
+  address:        '',
+  phone:          '',
+  email:          '',
+  welcomeMessage: '',
+}
+const localBranding = reactive({ ...BRANDING_DEFAULTS })
 
 const userDialogVisible = ref(false)
 const tenantDialogVisible = ref(false)
@@ -847,12 +947,20 @@ const syncLocalFeatures = (tenant) => {
   }
 }
 
+const syncLocalBranding = (tenant) => {
+  const b = tenant?.branding || {}
+  for (const key of Object.keys(BRANDING_DEFAULTS)) {
+    localBranding[key] = b[key] !== undefined ? b[key] : BRANDING_DEFAULTS[key]
+  }
+}
+
 const fetchPageData = async () => {
   isLoading.value = true
   try {
     const tenantRes = await tenantStore.fetchTenant(tenantId.value)
     tenantData.value = tenantRes?.data || tenantRes || null
     syncLocalFeatures(tenantData.value)
+    syncLocalBranding(tenantData.value)
 
     const usersRes = await authTenantStore.fetchTenantUsers(tenantId.value)
     users.value = usersRes?.data || []
@@ -867,6 +975,20 @@ const fetchPageData = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+const saveBranding = async () => {
+  isSavingBranding.value = true
+  const res = await tenantStore.updateBranding(tenantId.value, { ...localBranding })
+  isSavingBranding.value = false
+
+  if (!res?.success) {
+    toast.add({ severity: 'error', summary: 'Error', detail: res?.message || 'Failed to save branding.', life: 3000 })
+    return
+  }
+
+  if (tenantData.value) tenantData.value.branding = res.data
+  toast.add({ severity: 'success', summary: 'Saved', detail: 'Clinic branding updated.', life: 2500 })
 }
 
 const saveFeatures = async () => {

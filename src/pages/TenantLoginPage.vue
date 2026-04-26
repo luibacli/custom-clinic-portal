@@ -53,15 +53,15 @@
     ───────────────────────────────────────────── -->
     <div class="relative hidden lg:flex flex-col justify-center overflow-hidden px-10 xl:px-16 py-12">
 
-      <!-- Base gradient -->
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-800 via-blue-700 to-cyan-600"></div>
+      <!-- Base gradient — driven by --brand CSS var -->
+      <div class="absolute inset-0" :style="brandGradientStyle"></div>
 
       <!-- Dot pattern overlay -->
       <div class="absolute inset-0 dot-pattern opacity-30"></div>
 
-      <!-- Ambient glow blobs — subtle, not dominant -->
-      <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl pointer-events-none"></div>
-      <div class="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-cyan-400/15 blur-3xl pointer-events-none"></div>
+      <!-- Ambient glow blobs -->
+      <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl pointer-events-none" style="background: rgba(var(--brand-rgb, 37,99,235), 0.25)"></div>
+      <div class="absolute bottom-0 right-0 h-64 w-64 rounded-full blur-3xl pointer-events-none" style="background: rgba(var(--brand-rgb, 37,99,235), 0.15)"></div>
 
       <!-- Content -->
       <div class="relative z-10 max-w-lg">
@@ -80,10 +80,25 @@
           Powered by Custom Clinic Portal PH
         </p>
 
-        <p class="mt-4 text-base text-blue-100/80 leading-relaxed max-w-md">
-          A secure, clinic-managed digital platform for patient registration,
-          identity management, and real-time clinic communication.
+        <p class="mt-4 text-base text-white/80 leading-relaxed max-w-md">
+          {{ branding.welcomeMessage || 'A secure, clinic-managed digital platform for patient registration, identity management, and real-time clinic communication.' }}
         </p>
+
+        <!-- Clinic contact info -->
+        <div v-if="branding.phone || branding.email || branding.address" class="mt-4 flex flex-wrap gap-2">
+          <span v-if="branding.phone" class="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+            <i class="pi pi-phone text-white/70 text-[10px]"></i>
+            {{ branding.phone }}
+          </span>
+          <span v-if="branding.email" class="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+            <i class="pi pi-envelope text-white/70 text-[10px]"></i>
+            {{ branding.email }}
+          </span>
+          <span v-if="branding.address" class="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+            <i class="pi pi-map-marker text-white/70 text-[10px]"></i>
+            {{ branding.address }}
+          </span>
+        </div>
 
         <!-- SVG Illustration — Patient Digital ID Card -->
         <div class="mt-8 mb-8">
@@ -321,11 +336,13 @@ import Dialog from 'primevue/dialog'
 import CareBoardSVG from '../components/CareBoardSVG.vue'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useTenantStore } from '../stores/tenantStore'
+import { useBranding } from '../composables/useBranding'
 import router from '../router'
 
 const toast = useToast()
 const authTenantStore = useAuthTenantStore()
 const tenantStore = useTenantStore()
+const { branding, brandGradientStyle } = useBranding()
 
 const { login } = authTenantStore
 const { loginForm } = storeToRefs(authTenantStore)
