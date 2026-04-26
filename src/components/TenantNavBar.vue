@@ -144,10 +144,18 @@ import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useNotificationStore } from '../stores/notificationStore'
+import { useFeature } from '../composables/useFeature'
 import CareBoardSVG from './CareBoardSVG.vue'
 
 const authTenantStore = useAuthTenantStore()
 const notifStore = useNotificationStore()
+const { isEnabled } = useFeature()
+
+const featureMessaging    = isEnabled('messaging')
+const featureAppointments = isEnabled('appointments')
+const featureQrScan       = isEnabled('qrScan')
+const featureMails        = isEnabled('mails')
+const featureUsers        = isEnabled('users')
 
 const { logout } = authTenantStore
 const { isPatient, isAdmin } = storeToRefs(authTenantStore)
@@ -161,30 +169,30 @@ const profileMenuRef = ref()
 
 const items = computed(() => {
   const adminItems = [
-    { label: 'Home',         icon: 'pi pi-home',      command: () => router.push('/tenant-home') },
-    { label: 'Appointments', icon: 'pi pi-calendar',  command: () => router.push('/appointments') },
-    { label: 'Scan QR',      icon: 'pi pi-qrcode',    command: () => router.push('/scan') },
-    { label: 'Messages',     icon: 'pi pi-comments',  command: () => router.push('/messages') },
-    { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
-    { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },
-    { label: 'Profile',      icon: 'pi pi-user',      command: () => router.push('/profile') },
-  ]
+    { label: 'Home',                                                                            icon: 'pi pi-home',     command: () => router.push('/tenant-home') },
+    featureAppointments.value && { label: 'Appointments', icon: 'pi pi-calendar',  command: () => router.push('/appointments') },
+    featureQrScan.value       && { label: 'Scan QR',      icon: 'pi pi-qrcode',    command: () => router.push('/scan') },
+    featureMessaging.value    && { label: 'Messages',     icon: 'pi pi-comments',  command: () => router.push('/messages') },
+    featureMails.value        && { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
+    featureMails.value        && { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },
+    { label: 'Profile',                                                                         icon: 'pi pi-user',     command: () => router.push('/profile') },
+  ].filter(Boolean)
   const superAdminItems = [
-    { label: 'Home',         icon: 'pi pi-home',      command: () => router.push('/tenant-home') },
-    { label: 'Appointments', icon: 'pi pi-calendar',  command: () => router.push('/appointments') },
-    { label: 'Scan QR',      icon: 'pi pi-qrcode',    command: () => router.push('/scan') },
-    { label: 'Messages',     icon: 'pi pi-comments',  command: () => router.push('/messages') },
-    { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
-    { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },
-    { label: 'Users',        icon: 'pi pi-users',     command: () => router.push('/users') },
-    { label: 'Profile',      icon: 'pi pi-user',      command: () => router.push('/profile') },
-  ]
+    { label: 'Home',                                                                            icon: 'pi pi-home',     command: () => router.push('/tenant-home') },
+    featureAppointments.value && { label: 'Appointments', icon: 'pi pi-calendar',  command: () => router.push('/appointments') },
+    featureQrScan.value       && { label: 'Scan QR',      icon: 'pi pi-qrcode',    command: () => router.push('/scan') },
+    featureMessaging.value    && { label: 'Messages',     icon: 'pi pi-comments',  command: () => router.push('/messages') },
+    featureMails.value        && { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
+    featureMails.value        && { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },
+    featureUsers.value        && { label: 'Users',        icon: 'pi pi-users',     command: () => router.push('/users') },
+    { label: 'Profile',                                                                         icon: 'pi pi-user',     command: () => router.push('/profile') },
+  ].filter(Boolean)
   const patientItems = [
-    { label: 'My ID',     icon: 'pi pi-id-card',  command: () => router.push('/patient') },
-    { label: 'Messages',  icon: 'pi pi-comments', command: () => router.push('/messages') },
-    { label: 'Emails',    icon: 'pi pi-envelope', command: () => router.push('/inbox') },
-    { label: 'Profile',   icon: 'pi pi-user',     command: () => router.push('/profile') },
-  ]
+    { label: 'My ID',                                                                     icon: 'pi pi-id-card',  command: () => router.push('/patient') },
+    featureMessaging.value && { label: 'Messages', icon: 'pi pi-comments', command: () => router.push('/messages') },
+    featureMails.value     && { label: 'Emails',   icon: 'pi pi-envelope', command: () => router.push('/inbox') },
+    { label: 'Profile',                                                                   icon: 'pi pi-user',     command: () => router.push('/profile') },
+  ].filter(Boolean)
   const devItems = [
     { label: 'Home',    icon: 'pi pi-home',   command: () => router.push('/dev') },
     { label: 'Users',   icon: 'pi pi-users',  command: () => router.push('/manage-users') },

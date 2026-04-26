@@ -136,6 +136,19 @@ export const useTenantStore = defineStore('tenants', {
       } catch (error) {
         return { success: false, message: error.response?.data?.message || 'Failed to delete tenant' };
       }
+    },
+
+    async updateFeatures(id, features) {
+      try {
+        const { data } = await api.patch(`/tenants/${id}/features`, { features });
+        if (!data?.success) throw new Error('Failed to update features');
+        if (this.tenant && String(this.tenant.id || this.tenant._id) === String(id)) {
+          this.tenant = { ...this.tenant, features: data.data };
+        }
+        return { success: true, data: data.data, message: data.message };
+      } catch (error) {
+        return { success: false, message: error.response?.data?.message || 'Failed to update features' };
+      }
     }
   }
 });

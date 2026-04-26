@@ -233,6 +233,50 @@
           </div>
         </section>
 
+        <!-- Feature Toggles Section -->
+        <section class="rounded-[28px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-white">Feature Toggles</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Enable or disable portal features for this tenant.
+              </p>
+            </div>
+            <Button
+              label="Save Features"
+              icon="pi pi-check"
+              :loading="isSavingFeatures"
+              class="rounded-2xl w-full sm:w-auto shrink-0"
+              @click="saveFeatures"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+            <div
+              v-for="feat in featureList"
+              :key="feat.key"
+              class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950 transition-colors"
+              :class="localFeatures[feat.key] ? 'border-blue-200 bg-blue-50/50 dark:border-blue-800/50 dark:bg-blue-950/20' : ''"
+            >
+              <div class="flex items-center gap-3 min-w-0">
+                <div
+                  class="h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                  :class="localFeatures[feat.key]
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+                    : 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-500'"
+                >
+                  <i :class="['pi', feat.icon, 'text-sm']"></i>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{{ feat.label }}</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ feat.description }}</p>
+                </div>
+              </div>
+              <ToggleSwitch v-model="localFeatures[feat.key]" class="shrink-0" />
+            </div>
+          </div>
+        </section>
+
         <!-- Users Section -->
         <section class="rounded-[28px] bg-white border border-slate-200 shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800">
           <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800">
@@ -649,7 +693,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
@@ -673,10 +717,30 @@ const isLoading = ref(false)
 const isSubmittingUser = ref(false)
 const isSubmittingTenant = ref(false)
 const logoUploading = ref(false)
+const isSavingFeatures = ref(false)
 
 const userDialogVisible = ref(false)
 const tenantDialogVisible = ref(false)
 const isEditUserMode = ref(false)
+
+const FEATURE_DEFAULTS = {
+  messaging: true, appointments: true, qrScan: true,
+  mails: true, users: true, analytics: false,
+  exportReports: false, smsReminders: false,
+}
+
+const featureList = [
+  { key: 'messaging',     label: 'Direct Messaging',  description: 'Patient & staff messaging',  icon: 'pi-comments' },
+  { key: 'appointments',  label: 'Appointments',      description: 'Booking & queue management', icon: 'pi-calendar' },
+  { key: 'qrScan',        label: 'QR Scan Check-in',  description: 'QR code patient check-in',   icon: 'pi-qrcode' },
+  { key: 'mails',         label: 'Mails & Inbox',     description: 'Email links and inbox',      icon: 'pi-envelope' },
+  { key: 'users',         label: 'User Management',   description: 'Manage clinic staff',        icon: 'pi-users' },
+  { key: 'analytics',     label: 'Analytics',         description: 'Dashboard reports',          icon: 'pi-chart-bar' },
+  { key: 'exportReports', label: 'Export Reports',    description: 'Download data as XLSX/PDF',  icon: 'pi-file-export' },
+  { key: 'smsReminders',  label: 'SMS Reminders',     description: 'Automated SMS notifications',icon: 'pi-mobile' },
+]
+
+const localFeatures = reactive({ ...FEATURE_DEFAULTS })
 
 const search = ref('')
 const selectedRole = ref(null)
@@ -776,11 +840,19 @@ const resetUserFormFields = () => {
   userForm.value.id = null
 }
 
+const syncLocalFeatures = (tenant) => {
+  const f = tenant?.features || {}
+  for (const key of Object.keys(FEATURE_DEFAULTS)) {
+    localFeatures[key] = f[key] !== undefined ? f[key] : FEATURE_DEFAULTS[key]
+  }
+}
+
 const fetchPageData = async () => {
   isLoading.value = true
   try {
     const tenantRes = await tenantStore.fetchTenant(tenantId.value)
     tenantData.value = tenantRes?.data || tenantRes || null
+    syncLocalFeatures(tenantData.value)
 
     const usersRes = await authTenantStore.fetchTenantUsers(tenantId.value)
     users.value = usersRes?.data || []
@@ -795,6 +867,20 @@ const fetchPageData = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+const saveFeatures = async () => {
+  isSavingFeatures.value = true
+  const res = await tenantStore.updateFeatures(tenantId.value, { ...localFeatures })
+  isSavingFeatures.value = false
+
+  if (!res?.success) {
+    toast.add({ severity: 'error', summary: 'Error', detail: res?.message || 'Failed to save features.', life: 3000 })
+    return
+  }
+
+  if (tenantData.value) tenantData.value.features = res.data
+  toast.add({ severity: 'success', summary: 'Saved', detail: 'Feature toggles updated.', life: 2500 })
 }
 
 const openCreateUserDialog = () => {
