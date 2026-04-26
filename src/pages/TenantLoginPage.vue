@@ -28,7 +28,9 @@
         <i class="pi pi-check-circle text-2xl"></i>
       </div>
       <p class="font-semibold text-slate-800">Check your email</p>
-      <p class="text-sm text-slate-500">If <strong>{{ forgotEmail }}</strong> is registered, a reset link has been sent. Check your inbox.</p>
+      <p class="text-sm text-slate-500">
+        If <strong>{{ forgotEmail }}</strong> is registered, a reset link has been sent.
+      </p>
     </div>
 
     <template #footer>
@@ -42,170 +44,270 @@
       />
     </template>
   </Dialog>
-  <div
-    class="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-100"
-  >
-    <div class="grid min-h-screen grid-cols-1 lg:grid-cols-2">
-      <!-- LEFT / BRANDING -->
-      <div
-        class="relative overflow-hidden px-4 py-8 sm:px-6 sm:py-10 lg:px-10 xl:px-14 flex items-center"
-      >
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-700 via-blue-600 to-cyan-500"></div>
-        <div class="absolute inset-0 bg-black/10"></div>
 
-        <!-- decorative blobs -->
-        <div class="absolute -top-8 -left-8 h-28 w-28 sm:h-40 sm:w-40 rounded-full bg-white/10 blur-3xl"></div>
-        <div class="absolute bottom-0 right-0 h-36 w-36 sm:h-56 sm:w-56 rounded-full bg-cyan-300/20 blur-3xl"></div>
-        <div class="absolute top-1/3 right-10 h-24 w-24 sm:h-32 sm:w-32 rounded-full bg-blue-200/10 blur-2xl"></div>
+  <!-- Page Shell -->
+  <div class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
 
-        <div class="relative z-10 mx-auto w-full max-w-xl text-white">
-          <div
-            class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] sm:text-sm backdrop-blur-md shadow-sm"
-          >
-            <span class="h-2 w-2 rounded-full bg-emerald-300"></span>
-            Secure Patient Access
-          </div>
+    <!-- ─────────────────────────────────────────────
+         LEFT — Branding panel (desktop only)
+    ───────────────────────────────────────────── -->
+    <div class="relative hidden lg:flex flex-col justify-center overflow-hidden px-10 xl:px-16 py-12">
 
-          <h1 class="mt-4 text-3xl sm:text-4xl xl:text-5xl font-bold leading-tight tracking-tight">
-            {{ tenantDisplayName }} PORTAL
-          </h1>
+      <!-- Base gradient -->
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-800 via-blue-700 to-cyan-600"></div>
 
-          <p class="mt-3 text-base sm:text-lg xl:text-xl font-medium text-blue-50">
-            Your Digital Patient ID System
-          </p>
+      <!-- Dot pattern overlay -->
+      <div class="absolute inset-0 dot-pattern opacity-30"></div>
 
-          <p class="mt-3 max-w-lg text-sm sm:text-base leading-relaxed text-blue-100/90">
-            A secure and clinic-managed digital platform designed to simplify patient registration,
-            identity management, and access to healthcare services.
-          </p>
+      <!-- Ambient glow blobs — subtle, not dominant -->
+      <div class="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl pointer-events-none"></div>
+      <div class="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-cyan-400/15 blur-3xl pointer-events-none"></div>
 
-          <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-            <div class="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-md shadow-lg">
-              <p class="text-sm font-semibold">Future-Ready Healthcare Access</p>
-              <p class="mt-1 text-xs sm:text-sm text-blue-100/80 leading-relaxed">
-                A modern platform designed to grow with healthcare innovation.
-              </p>
-            </div>
+      <!-- Content -->
+      <div class="relative z-10 max-w-lg">
 
-            <div class="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-md shadow-lg">
-              <p class="text-sm font-semibold">Inbox & Notifications</p>
-              <p class="mt-1 text-xs sm:text-sm text-blue-100/80 leading-relaxed">
-                Stay updated with important clinic messages and healthcare reminders.
-              </p>
-            </div>
-          </div>
+        <!-- Status badge -->
+        <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.6)]"></span>
+          Secure Patient Access
+        </div>
+
+        <!-- Clinic name -->
+        <h1 class="mt-5 text-4xl xl:text-5xl font-bold text-white leading-[1.1] tracking-tight">
+          {{ tenantDisplayName }}
+        </h1>
+        <p class="mt-2 text-sm font-medium text-blue-200/70 tracking-widest uppercase">
+          Powered by Custom Clinic Portal PH
+        </p>
+
+        <p class="mt-4 text-base text-blue-100/80 leading-relaxed max-w-md">
+          A secure, clinic-managed digital platform for patient registration,
+          identity management, and real-time clinic communication.
+        </p>
+
+        <!-- SVG Illustration — Patient Digital ID Card -->
+        <div class="mt-8 mb-8">
+          <svg viewBox="0 0 320 168" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-sm drop-shadow-2xl" aria-hidden="true">
+            <!-- Card shadow -->
+            <rect x="12" y="16" width="296" height="148" rx="18" fill="rgba(0,0,0,0.25)"/>
+            <!-- Card body -->
+            <rect x="8" y="8" width="296" height="148" rx="18" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+            <!-- Card header band -->
+            <rect x="8" y="8" width="296" height="52" rx="18" fill="rgba(255,255,255,0.10)"/>
+            <rect x="8" y="40" width="296" height="20" fill="rgba(255,255,255,0.10)"/>
+            <!-- Avatar -->
+            <circle cx="46" cy="34" r="16" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+            <circle cx="46" cy="29" r="7" fill="rgba(255,255,255,0.45)"/>
+            <path d="M30 50 Q30 42 46 42 Q62 42 62 50" fill="rgba(255,255,255,0.45)"/>
+            <!-- Name -->
+            <rect x="74" y="25" width="90" height="9" rx="4.5" fill="rgba(255,255,255,0.50)"/>
+            <rect x="74" y="38" width="60" height="7" rx="3.5" fill="rgba(255,255,255,0.25)"/>
+            <!-- Verified chip -->
+            <rect x="226" y="20" width="66" height="26" rx="13" fill="rgba(52,211,153,0.20)" stroke="rgba(52,211,153,0.40)" stroke-width="1"/>
+            <circle cx="241" cy="33" r="5" fill="rgba(52,211,153,0.80)"/>
+            <path d="M238.5 33 L240.5 35 L244 31" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="250" y="29" width="32" height="8" rx="4" fill="rgba(52,211,153,0.55)"/>
+            <!-- Divider -->
+            <line x1="24" y1="72" x2="296" y2="72" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <!-- Info labels -->
+            <rect x="24" y="80" width="50" height="6" rx="3" fill="rgba(255,255,255,0.20)"/>
+            <rect x="24" y="90" width="78" height="9" rx="4.5" fill="rgba(255,255,255,0.42)"/>
+            <rect x="118" y="80" width="50" height="6" rx="3" fill="rgba(255,255,255,0.20)"/>
+            <rect x="118" y="90" width="64" height="9" rx="4.5" fill="rgba(255,255,255,0.42)"/>
+            <rect x="208" y="80" width="50" height="6" rx="3" fill="rgba(255,255,255,0.20)"/>
+            <rect x="208" y="90" width="80" height="9" rx="4.5" fill="rgba(255,255,255,0.42)"/>
+            <!-- Divider -->
+            <line x1="24" y1="110" x2="296" y2="110" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <!-- QR block -->
+            <rect x="24" y="120" width="36" height="36" rx="8" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.20)" stroke-width="1"/>
+            <rect x="29" y="125" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.50)"/>
+            <rect x="38" y="125" width="5" height="5" rx="1" fill="rgba(255,255,255,0.30)"/>
+            <rect x="44" y="125" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.50)"/>
+            <rect x="29" y="134" width="5" height="5" rx="1" fill="rgba(255,255,255,0.30)"/>
+            <rect x="36" y="134" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.50)"/>
+            <rect x="44" y="134" width="5" height="5" rx="1" fill="rgba(255,255,255,0.30)"/>
+            <rect x="29" y="141" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.50)"/>
+            <rect x="38" y="143" width="5" height="5" rx="1" fill="rgba(255,255,255,0.30)"/>
+            <rect x="44" y="141" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.50)"/>
+            <!-- REF ID area -->
+            <rect x="72" y="120" width="40" height="6" rx="3" fill="rgba(255,255,255,0.20)"/>
+            <rect x="72" y="130" width="110" height="12" rx="6" fill="rgba(255,255,255,0.45)"/>
+            <rect x="72" y="146" width="70" height="6" rx="3" fill="rgba(255,255,255,0.15)"/>
+            <!-- Shield icon -->
+            <rect x="240" y="116" width="52" height="40" rx="12" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <path d="M266 125 C266 125 258 128.5 258 135 L258 139.5 L266 143 L274 139.5 L274 135 C274 128.5 266 125 266 125Z" fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.40)" stroke-width="1"/>
+            <path d="M262 135 L264.5 138 L270 132" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Trust chips -->
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+            <i class="pi pi-shield text-emerald-300 text-[10px]"></i>
+            PDPA Compliant
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+            <i class="pi pi-lock text-emerald-300 text-[10px]"></i>
+            Encrypted Access
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+            <i class="pi pi-building text-emerald-300 text-[10px]"></i>
+            Clinic-Managed Accounts
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────
+         RIGHT — Sign-in panel
+    ───────────────────────────────────────────── -->
+    <div class="flex flex-col items-center justify-center min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
+
+      <!-- Mobile branding strip — hidden on desktop -->
+      <div class="lg:hidden flex items-center gap-3 mb-8 self-start w-full max-w-md">
+        <div class="h-10 w-10 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-700 to-cyan-500 flex items-center justify-center shrink-0 shadow-md">
+          <img
+            v-if="tenantLogoUrl"
+            :src="tenantLogoUrl"
+            alt="Clinic Logo"
+            class="h-full w-full object-cover"
+          />
+          <CareBoardSVG v-else class="h-6 w-6 text-white" />
+        </div>
+        <div class="min-w-0">
+          <p class="font-bold text-slate-800 text-base leading-tight truncate">{{ tenantDisplayName }}</p>
+          <p class="text-xs text-slate-400">Custom Clinic Portal PH</p>
         </div>
       </div>
 
-      <!-- RIGHT / LOGIN -->
-      <div class="flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
-        <div
-          class="w-full max-w-md rounded-[2rem] border border-white/60 bg-white/90 p-5 sm:p-6 md:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.12)] backdrop-blur-xl"
-        >
-          <div class="mb-6 flex items-start justify-between gap-3">
+      <!-- Form card -->
+      <Transition appear name="card-rise">
+        <div class="w-full max-w-md rounded-[1.75rem] border border-slate-200 bg-white p-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.08)]">
+
+          <!-- Card header -->
+          <div class="mb-7 flex items-start justify-between gap-4">
             <div>
-              <p class="mb-1 text-sm text-slate-500">Welcome back</p>
-              <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
-                Login to your account
+              <p class="text-sm text-slate-400 font-medium">Welcome back</p>
+              <h2 class="mt-1 text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
+                Sign in to continue
               </h2>
             </div>
 
-            <div
-              class="shrink-0 rounded-2xl bg-slate-50 p-2 shadow-sm border border-slate-200 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center overflow-hidden"
-            >
+            <!-- Clinic logo -->
+            <div class="shrink-0 h-14 w-14 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden shadow-sm">
               <img
                 v-if="tenantLogoUrl"
                 :src="tenantLogoUrl"
-                alt="Tenant Logo"
-                class="h-full w-full object-cover rounded-xl"
+                alt="Clinic Logo"
+                class="h-full w-full object-cover"
               />
-              <CareBoardSVG v-else class="h-9 w-9 sm:h-10 sm:w-10" />
+              <CareBoardSVG v-else class="h-8 w-8" />
             </div>
           </div>
 
-          <div class="mb-5 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3">
-            <p class="text-sm font-medium text-blue-800">
-              <span class="font-bold">{{ tenantDisplayName }}</span>
-            </p>
-            <p class="mt-1 text-xs text-blue-700/80">
-              Please sign in using your authorized credentials.
-            </p>
+          <!-- Clinic context badge -->
+          <div class="mb-6 flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+            <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shrink-0">
+              <i class="pi pi-building text-white text-xs"></i>
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-slate-800 truncate">{{ tenantDisplayName }}</p>
+              <p class="text-xs text-slate-400 mt-0.5">Your clinic manages your account access.</p>
+            </div>
           </div>
 
-          <form class="space-y-4 sm:space-y-5" @submit.prevent="handleLogin">
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-700">
-                Email
-              </label>
+          <!-- Form -->
+          <form class="space-y-5" @submit.prevent="handleLogin">
+
+            <!-- Email -->
+            <div class="space-y-1.5">
+              <label class="block text-sm font-medium text-slate-700">Email address</label>
               <InputText
                 v-model="loginForm.email"
                 type="email"
                 class="w-full"
-                placeholder="Enter your email"
+                :class="{ 'input-error': loginError }"
+                placeholder="you@example.com"
+                autocomplete="email"
+                @input="loginError = ''"
               />
             </div>
 
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-700">
-                Password
-              </label>
-
+            <!-- Password -->
+            <div class="space-y-1.5">
+              <label class="block text-sm font-medium text-slate-700">Password</label>
               <div class="relative">
                 <InputText
                   v-model="loginForm.password"
                   :type="showPassword ? 'text' : 'password'"
-                  class="w-full pr-14"
+                  class="w-full pr-12"
+                  :class="{ 'input-error': loginError }"
                   placeholder="Enter your password"
+                  autocomplete="current-password"
+                  @input="loginError = ''"
                 />
-
                 <button
                   type="button"
-                  class="absolute inset-y-0 right-3 flex items-center text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-700"
+                  class="absolute inset-y-0 right-0 flex items-center justify-center w-11 text-slate-400 hover:text-slate-600 transition-colors"
+                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
                   @click="showPassword = !showPassword"
                 >
-                  {{ showPassword ? 'Hide' : 'Show' }}
+                  <i :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" class="text-base"></i>
                 </button>
               </div>
+
+              <!-- Inline error -->
+              <Transition name="err-slide">
+                <p v-if="loginError" class="flex items-center gap-1.5 text-xs text-red-600 font-medium mt-1">
+                  <i class="pi pi-exclamation-circle text-[11px]"></i>
+                  {{ loginError }}
+                </p>
+              </Transition>
             </div>
 
-            <div class="flex items-center justify-end text-sm">
+            <!-- Forgot password -->
+            <div class="flex justify-end">
               <button
                 type="button"
-                class="font-medium text-blue-600 transition hover:text-blue-700"
+                class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
                 @click="openForgotPassword"
               >
                 Forgot password?
               </button>
             </div>
 
-            <InfoBtn
-              label="Login"
-              class="w-full !rounded-xl !py-3"
+            <!-- Submit -->
+            <Button
+              label="Sign in"
+              icon="pi pi-arrow-right"
+              icon-pos="right"
+              :loading="isLoggingIn"
+              :disabled="!loginForm.email.trim() || !loginForm.password.trim()"
               type="submit"
+              class="w-full !rounded-2xl !py-3 !text-sm !font-semibold"
             />
+
           </form>
 
-          <div class="mt-6 border-t border-slate-200 pt-4 space-y-3">
-            <p class="text-center text-xs sm:text-sm text-slate-500">
-              Protected access for authorized users only.
+          <!-- Footer -->
+          <div class="mt-7 border-t border-slate-100 pt-5 text-center space-y-2">
+            <p class="text-xs text-slate-400">
+              Protected access — authorized users only.
             </p>
-            <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs text-slate-400">
-              <router-link to="/" class="hover:text-blue-600 transition-colors">Home</router-link>
-              <span class="text-slate-300">&bull;</span>
-              <router-link to="/features" class="hover:text-blue-600 transition-colors">Features</router-link>
-              <span class="text-slate-300">&bull;</span>
-              <router-link to="/book-demo" class="hover:text-blue-600 transition-colors font-medium">Book a Demo</router-link>
-              <span class="text-slate-300">&bull;</span>
+            <div class="flex items-center justify-center gap-4 text-xs text-slate-400">
               <router-link to="/privacy" class="hover:text-blue-600 transition-colors">Privacy Policy</router-link>
-              <span class="text-slate-300">&bull;</span>
+              <span class="text-slate-200">&bull;</span>
               <router-link to="/terms" class="hover:text-blue-600 transition-colors">Terms</router-link>
-              <span class="text-slate-300">&bull;</span>
+              <span class="text-slate-200">&bull;</span>
               <router-link to="/contact" class="hover:text-blue-600 transition-colors">Contact</router-link>
             </div>
           </div>
+
         </div>
-      </div>
+      </Transition>
     </div>
+
   </div>
 </template>
 
@@ -214,9 +316,8 @@ import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
 import InputText from 'primevue/inputtext'
-import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-import InfoBtn from '../components/InfoBtn.vue'
+import Dialog from 'primevue/dialog'
 import CareBoardSVG from '../components/CareBoardSVG.vue'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useTenantStore } from '../stores/tenantStore'
@@ -230,15 +331,16 @@ const { login } = authTenantStore
 const { loginForm } = storeToRefs(authTenantStore)
 const { tenant, tenantResolved } = storeToRefs(tenantStore)
 
-const showPassword = ref(false)
+const showPassword   = ref(false)
+const isLoggingIn    = ref(false)
+const loginError     = ref('')
 const forgotDialogVisible = ref(false)
-const forgotEmail = ref('')
-const forgotLoading = ref(false)
-const forgotSent = ref(false)
+const forgotEmail    = ref('')
+const forgotLoading  = ref(false)
+const forgotSent     = ref(false)
 
 const tenantDisplayName = computed(() => {
-  if (!tenant.value) return 'HEALTH FACILITY PORTAL'
-
+  if (!tenant.value) return 'Health Facility Portal'
   return (
     tenant.value.name ||
     tenant.value.domain ||
@@ -247,26 +349,19 @@ const tenantDisplayName = computed(() => {
   )
 })
 
-const tenantLogoUrl = computed(() => {
-  return (
-    tenant.value?.tenantLogo?.url ||
-    ''
-  )
-})
+const tenantLogoUrl = computed(() => tenant.value?.tenantLogo?.url || '')
 
 const openForgotPassword = () => {
   forgotEmail.value = ''
-  forgotSent.value = false
+  forgotSent.value  = false
   forgotDialogVisible.value = true
 }
 
 const handleForgotPassword = async () => {
   if (!forgotEmail.value.trim()) return
-
   forgotLoading.value = true
   const result = await authTenantStore.forgotPassword(forgotEmail.value.trim())
   forgotLoading.value = false
-
   if (result.success) {
     forgotSent.value = true
   } else {
@@ -275,24 +370,16 @@ const handleForgotPassword = async () => {
 }
 
 const handleLogin = async () => {
+  loginError.value  = ''
+  isLoggingIn.value = true
+
   const res = await login(tenantResolved.value, tenant.value?.id)
+  isLoggingIn.value = false
 
   if (!res?.success) {
-    toast.add({
-      severity: 'error',
-      summary: 'Login Failed',
-      detail: res?.message || 'Unable to login.',
-      life: 3000
-    })
+    loginError.value = res?.message || 'Invalid email or password.'
     return
   }
-
-  toast.add({
-    severity: 'success',
-    summary: 'Login Success',
-    detail: res?.message || 'Login successful.',
-    life: 3000
-  })
 
   if (res.role === 'patient') {
     router.replace('/patient')
@@ -305,16 +392,61 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
+/* Dot pattern for left panel */
+.dot-pattern {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Input error state */
+:deep(.input-error .p-inputtext),
+:deep(.input-error.p-inputtext) {
+  border-color: rgb(239 68 68) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+}
+
+/* Input base styles */
 :deep(.p-inputtext) {
-  border-radius: 0.9rem;
-  padding: 0.9rem 1rem;
+  border-radius: 0.875rem;
+  padding: 0.8rem 1rem;
   border: 1px solid rgb(226 232 240);
   background: white;
-  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
 }
 
 :deep(.p-inputtext:enabled:focus) {
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
   border-color: rgb(59 130 246);
+}
+
+:deep(.p-inputtext::placeholder) {
+  color: rgb(148 163 184);
+}
+
+/* Button override */
+:deep(.p-button) {
+  border-radius: 1rem;
+}
+
+/* Card entrance animation */
+.card-rise-enter-active {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.card-rise-enter-from {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+/* Inline error animation */
+.err-slide-enter-active,
+.err-slide-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.err-slide-enter-from,
+.err-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 </style>
