@@ -7,7 +7,7 @@
         <router-link to="/signin" class="flex items-center gap-2 group">
           <CareBoardSVG class="h-7 w-7 text-blue-600" />
           <span class="font-bold text-slate-800 dark:text-white text-lg group-hover:text-blue-600 transition-colors">
-            Custom Clinic Portal PH
+            My Clinic Access
           </span>
         </router-link>
 

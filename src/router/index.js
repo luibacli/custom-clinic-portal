@@ -10,6 +10,7 @@ const FeaturesPage     = () => import('../pages/FeaturesPage.vue');
 const HowItWorksPage   = () => import('../pages/HowItWorksPage.vue');
 const FaqPage          = () => import('../pages/FaqPage.vue');
 const BookDemoPage     = () => import('../pages/BookDemoPage.vue');
+const PricingPage      = () => import('../pages/PricingPage.vue');
 
 // Legal / informational pages — no auth required
 const PrivacyPolicyPage = () => import('../pages/PrivacyPolicyPage.vue');
@@ -65,6 +66,7 @@ const routes = [
   { path: '/how-it-works', name: 'HowItWorks',  component: HowItWorksPage },
   { path: '/faq',          name: 'Faq',         component: FaqPage        },
   { path: '/book-demo',    name: 'BookDemo',    component: BookDemoPage   },
+  { path: '/pricing',      name: 'Pricing',     component: PricingPage    },
 
   // Tenant login
   {

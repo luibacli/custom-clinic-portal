@@ -51,10 +51,15 @@
           <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Service Type</label>
           <Select
             v-model="bookForm.serviceType"
-            :options="serviceTypes"
+            :options="serviceOptions"
+            :loading="servicesLoading"
             placeholder="Select a service"
             class="w-full"
-          />
+          >
+            <template #empty>
+              <span class="text-sm text-slate-400">No services available</span>
+            </template>
+          </Select>
         </div>
         <div class="space-y-1">
           <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Preferred Date</label>
@@ -80,7 +85,7 @@
         <Button
           label="Submit Request"
           :loading="bookLoading"
-          :disabled="!bookForm.serviceType || !bookForm.appointmentDate"
+          :disabled="!bookForm.serviceType || !bookForm.appointmentDate || serviceOptions.length === 0"
           @click="handleBookAppointment"
         />
       </template>
@@ -664,6 +669,7 @@ import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useTenantStore } from '../stores/tenantStore'
 import { useAppointmentStore } from '../stores/appointmentStore'
 import { useQueueStore } from '../stores/queueStore'
+import { useServiceStore } from '../stores/serviceStore'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast'
@@ -678,6 +684,7 @@ const authTenantStore = useAuthTenantStore()
 const tenantStore = useTenantStore()
 const appointmentStore = useAppointmentStore()
 const queueStore = useQueueStore()
+const serviceStore = useServiceStore()
 const toast = useToast()
 
 const { fetchTenant } = tenantStore
@@ -711,15 +718,8 @@ const tabs = [
   { key: 'appointments', label: 'My Appointments', icon: 'pi pi-calendar' },
 ]
 
-const serviceTypes = [
-  'General Consultation',
-  'Follow-up Checkup',
-  'Laboratory Request',
-  'Prescription Renewal',
-  'Vaccination',
-  'Medical Certificate',
-  'Others',
-]
+const { services: rawServices, loading: servicesLoading } = storeToRefs(serviceStore)
+const serviceOptions = computed(() => rawServices.value.filter(s => s.isActive).map(s => s.name))
 
 const tenantLogoUrl = computed(() => tenant.value?.tenantLogo?.url || null)
 
@@ -927,6 +927,7 @@ onMounted(async () => {
 
     if (tenantId.value) {
       await fetchTenant(tenantId.value)
+      serviceStore.fetchServices(tenantId.value)
     }
 
     const result = await fetchUserTenant()

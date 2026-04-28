@@ -166,7 +166,7 @@
               <i class="pi pi-info-circle"></i> Note
             </p>
             <p class="mt-2 text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
-              Contact details above are managed by the clinic. Custom Clinic Portal PH does not handle direct patient support requests.
+              Contact details above are managed by the clinic. My Clinic Access does not handle direct patient support requests.
               For system-level technical issues, please contact your clinic administrator.
             </p>
           </div>

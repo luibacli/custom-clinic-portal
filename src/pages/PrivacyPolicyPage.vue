@@ -8,7 +8,7 @@
           <i class="pi pi-shield"></i> Legal
         </span>
         <h1 class="mt-4 text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">Privacy Policy</h1>
-        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Effective date: April 2026 &mdash; Applies to all users of the Custom Clinic Portal PH.</p>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Effective date: April 2026 &mdash; Applies to all users of the My Clinic Access.</p>
       </div>
 
       <!-- Critical Notice -->
@@ -17,7 +17,7 @@
         <div>
           <p class="text-sm font-bold text-emerald-800 dark:text-emerald-300">No Health Records Stored</p>
           <p class="mt-1 text-sm text-emerald-700 dark:text-emerald-400">
-            Custom Clinic Portal PH does <strong>not</strong> store, manage, or process any patient health records (PHR),
+            My Clinic Access does <strong>not</strong> store, manage, or process any patient health records (PHR),
             electronic medical records (EMR), clinical notes, diagnoses, lab results, prescriptions, or
             any form of protected health information (PHI).
           </p>
@@ -35,7 +35,7 @@
             1. What Information We Collect
           </h2>
           <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
-            Custom Clinic Portal PH collects only the minimum data required to operate patient registration and clinic communication workflows:
+            My Clinic Access collects only the minimum data required to operate patient registration and clinic communication workflows:
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div class="rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 text-center">
@@ -89,7 +89,7 @@
             3. Data Ownership &amp; Control
           </h2>
           <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            All patient data stored within the Custom Clinic Portal PH platform is owned and controlled by the clinic that created the tenant account.
+            All patient data stored within the My Clinic Access platform is owned and controlled by the clinic that created the tenant account.
             The clinic acts as the data controller and is responsible for:
           </p>
           <ul class="mt-4 space-y-2">
@@ -117,7 +117,7 @@
             4. Data Security
           </h2>
           <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            Custom Clinic Portal PH applies industry-standard security practices including encrypted authentication, secure API communication (HTTPS),
+            My Clinic Access applies industry-standard security practices including encrypted authentication, secure API communication (HTTPS),
             JWT-based session management, and role-based access controls. Clinics are advised to follow their own internal security
             protocols for user account management and access.
           </p>

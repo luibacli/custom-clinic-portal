@@ -8,7 +8,7 @@
           <i class="pi pi-file-edit"></i> Legal
         </span>
         <h1 class="mt-4 text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">Terms &amp; Conditions</h1>
-        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Effective date: April 2026 &mdash; By using Custom Clinic Portal PH, you agree to these terms.</p>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Effective date: April 2026 &mdash; By using My Clinic Access, you agree to these terms.</p>
       </div>
 
       <!-- Preamble Banner -->
@@ -17,7 +17,7 @@
         <div>
           <p class="text-sm font-bold text-amber-800 dark:text-amber-300">Read Before Using</p>
           <p class="mt-1 text-sm text-amber-700 dark:text-amber-400 leading-relaxed">
-            These terms govern the use of the Custom Clinic Portal PH. They are designed to protect both clinics and their patients,
+            These terms govern the use of the My Clinic Access. They are designed to protect both clinics and their patients,
             and to define the responsibilities of each party. Continued use of the system constitutes acceptance of these terms.
           </p>
         </div>
@@ -49,7 +49,7 @@
               <div>
                 <p class="text-sm font-semibold text-slate-800 dark:text-white">Account Management</p>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
-                  All accounts created within the clinic's Custom Clinic Portal PH instance are under the clinic's ownership and control.
+                  All accounts created within the clinic's My Clinic Access instance are under the clinic's ownership and control.
                   The clinic is responsible for maintaining, securing, and appropriately revoking patient access.
                 </p>
               </div>
@@ -59,7 +59,7 @@
               <div>
                 <p class="text-sm font-semibold text-slate-800 dark:text-white">Legitimate Use</p>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
-                  Clinics must ensure all usage of Custom Clinic Portal PH is lawful, ethical, and compliant with applicable healthcare
+                  Clinics must ensure all usage of My Clinic Access is lawful, ethical, and compliant with applicable healthcare
                   regulations and data protection laws within their jurisdiction.
                 </p>
               </div>
@@ -76,7 +76,7 @@
             2. Patient Consent Clause
           </h2>
           <p class="text-sm text-slate-600 dark:text-slate-400 mb-5 leading-relaxed">
-            Before registering a patient within Custom Clinic Portal PH, the clinic must fulfill each of the following requirements:
+            Before registering a patient within My Clinic Access, the clinic must fulfill each of the following requirements:
           </p>
           <div class="space-y-3">
             <div class="flex items-start gap-4 p-4 rounded-xl border border-blue-100 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
@@ -85,7 +85,7 @@
                 <p class="text-sm font-semibold text-slate-800 dark:text-white">Awareness</p>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
                   The patient must be clearly informed that the clinic is creating a digital account for them
-                  within Custom Clinic Portal PH, including what information will be stored.
+                  within My Clinic Access, including what information will be stored.
                 </p>
               </div>
             </div>
@@ -124,21 +124,21 @@
             <div class="flex items-start gap-3 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
               <i class="pi pi-times-circle text-red-500 mt-0.5 shrink-0"></i>
               <p class="text-slate-700 dark:text-slate-300">
-                Custom Clinic Portal PH is <strong>not</strong> a clinical records management system. It does not store diagnoses,
+                My Clinic Access is <strong>not</strong> a clinical records management system. It does not store diagnoses,
                 prescriptions, lab results, clinical notes, or any protected health information (PHI).
               </p>
             </div>
             <div class="flex items-start gap-3 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
               <i class="pi pi-times-circle text-red-500 mt-0.5 shrink-0"></i>
               <p class="text-slate-700 dark:text-slate-300">
-                Custom Clinic Portal PH is <strong>not</strong> liable for any misuse of the system by clinic administrators,
+                My Clinic Access is <strong>not</strong> liable for any misuse of the system by clinic administrators,
                 staff, or third parties granted access by the clinic.
               </p>
             </div>
             <div class="flex items-start gap-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
               <i class="pi pi-check-circle text-emerald-500 mt-0.5 shrink-0"></i>
               <p class="text-slate-700 dark:text-slate-300">
-                Custom Clinic Portal PH is a workflow tool designed to streamline patient registration and clinic communication.
+                My Clinic Access is a workflow tool designed to streamline patient registration and clinic communication.
                 It is a complement to &mdash; not a replacement for &mdash; clinical and medical systems.
               </p>
             </div>
@@ -154,8 +154,8 @@
             4. Domain &amp; System Ownership
           </h2>
           <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            The domain, system instance, and all accounts created within a clinic's Custom Clinic Portal PH deployment are under the
-            direct control of that clinic. Custom Clinic Portal PH provides the platform and infrastructure; the clinic is the operator
+            The domain, system instance, and all accounts created within a clinic's My Clinic Access deployment are under the
+            direct control of that clinic. My Clinic Access provides the platform and infrastructure; the clinic is the operator
             and bears full operational and legal responsibility for how the system is used within their organization.
           </p>
         </section>
@@ -169,7 +169,7 @@
             5. Changes to These Terms
           </h2>
           <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            Custom Clinic Portal PH reserves the right to update these Terms &amp; Conditions at any time. Clinics will be notified of
+            My Clinic Access reserves the right to update these Terms &amp; Conditions at any time. Clinics will be notified of
             any material changes. Continued use of the system after such notification constitutes acceptance of the revised terms.
             For questions, visit our <router-link to="/contact" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Contact page</router-link>.
           </p>

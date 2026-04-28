@@ -13,7 +13,7 @@
           Everything Your Clinic Needs<br />in One Place
         </h1>
         <p class="mt-5 text-base sm:text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed">
-          Every feature in Custom Clinic Portal PH was built from real clinic feedback — not invented in a boardroom. Practical, fast, and configured for your workflow.
+          Every feature in My Clinic Access was built from real clinic feedback — not invented in a boardroom. Practical, fast, and configured for your workflow.
         </p>
         <router-link
           to="/book-demo"
@@ -59,7 +59,7 @@
             <span class="text-xs font-semibold text-blue-600 uppercase tracking-widest">Customization</span>
             <h2 class="mt-2 text-3xl font-bold text-slate-900">Your Clinic, Your Portal</h2>
             <p class="mt-5 text-slate-600 leading-relaxed">
-              Unlike off-the-shelf software, every Custom Clinic Portal PH deployment is configured around your clinic's specific workflow, terminology, and needs. Nothing is forced on you.
+              Unlike generic off-the-shelf software, every My Clinic Access deployment is configured around your clinic's specific workflow, terminology, and needs. Your portal, your brand, your rules.
             </p>
             <div class="mt-8 space-y-3">
               <div v-for="item in customizations" :key="item" class="flex items-center gap-3 text-sm text-slate-700">

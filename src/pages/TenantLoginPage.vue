@@ -77,7 +77,7 @@
           {{ tenantDisplayName }}
         </h1>
         <p class="mt-2 text-sm font-medium text-blue-200/70 tracking-widest uppercase">
-          Powered by Custom Clinic Portal PH
+          Powered by My Clinic Access
         </p>
 
         <p class="mt-4 text-base text-white/80 leading-relaxed max-w-md">
@@ -192,7 +192,7 @@
         </div>
         <div class="min-w-0">
           <p class="font-bold text-slate-800 text-base leading-tight truncate">{{ tenantDisplayName }}</p>
-          <p class="text-xs text-slate-400">Custom Clinic Portal PH</p>
+          <p class="text-xs text-slate-400">My Clinic Access</p>
         </div>
       </div>
 

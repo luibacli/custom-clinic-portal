@@ -100,12 +100,12 @@ const faqCategories = [
     icon: 'pi pi-info-circle', bg: 'bg-blue-50', color: 'text-blue-600',
     items: [
       {
-        q: 'What exactly is Custom Clinic Portal PH?',
-        a: 'It\'s a custom-built digital portal for clinics. It handles patient registration, queue management, clinic-to-patient communication, and operations visibility — all under your clinic\'s own brand and domain.'
+        q: 'What exactly is My Clinic Access?',
+        a: 'My Clinic Access is a multi-tenant SaaS platform for clinics. It handles patient registration, queue management, clinic-to-patient communication, and operations visibility — all under your clinic\'s own brand and domain. Subscribe to a plan, we configure your portal, and you\'re live in days.'
       },
       {
         q: 'Is this a generic off-the-shelf software?',
-        a: 'No. Every clinic gets a portal built and configured specifically for their workflow. We don\'t sell a subscription to a pre-built product — we build a customized portal for you.'
+        a: 'No. My Clinic Access is a SaaS platform where every clinic gets a fully branded, configured portal as part of their subscription. You choose a plan, we configure everything for your specific workflow — it\'s not generic, but it\'s also not a one-off custom build.'
       },
       {
         q: 'What types of clinics can use this?',
@@ -119,7 +119,7 @@ const faqCategories = [
     items: [
       {
         q: 'Does the portal store patient medical records?',
-        a: 'No. Custom Clinic Portal PH does not store, process, or manage any patient health records (PHR), electronic medical records (EMR), clinical notes, diagnoses, prescriptions, or any protected health information. We only store the basic profile needed for registration: name, birthdate, and contact number.'
+        a: 'No. My Clinic Access does not store, process, or manage any patient health records (PHR), electronic medical records (EMR), clinical notes, diagnoses, prescriptions, or any protected health information. We only store the basic profile needed for registration: name, birthdate, and contact number.'
       },
       {
         q: 'Who owns the patient data in the system?',
@@ -141,15 +141,15 @@ const faqCategories = [
     items: [
       {
         q: 'How much does it cost?',
-        a: 'Pricing depends on the scope of customization — which features your clinic needs, how complex the workflow is, and the level of ongoing support required. We don\'t have a fixed price list because every clinic is different. We\'ll give you a clear and transparent breakdown during the demo.'
+        a: 'My Clinic Access offers three subscription plans: Starter at ₱1,499/month, Growth at ₱2,999/month, and Premium at ₱5,499/month. Annual billing gives you 2 months free. All plans include a 30-day free trial — no credit card required to start.'
       },
       {
-        q: 'What can be customized?',
-        a: 'Almost everything: your clinic\'s brand (logo, name, domain), patient registration form fields, user roles and access levels, queue workflow, inbox messaging templates, and more. We build around your workflow — not the other way around.'
+        q: 'What can be customized in my plan?',
+        a: 'Your clinic\'s brand (logo, name, colors, domain), patient registration fields, user roles, queue workflow, and inbox messaging are all configurable. Growth and Premium plans unlock additional customization and features. See the pricing page for a full plan comparison.'
       },
       {
-        q: 'Are there monthly fees?',
-        a: 'This is discussed during the consultation. Some clinics prefer a one-time build cost with a support retainer, while others prefer ongoing arrangements. We\'ll work out a model that makes sense for your clinic\'s situation.'
+        q: 'Can I change plans later?',
+        a: 'Yes. You can upgrade or downgrade your plan at any time. Upgrades take effect immediately; downgrades apply at the next billing cycle. There are no lock-in contracts — cancel anytime with 30 days notice.'
       },
     ]
   },
@@ -167,11 +167,11 @@ const faqCategories = [
       },
       {
         q: 'What support is available after launch?',
-        a: 'Ongoing support is available and discussed as part of the agreement. You\'ll have a direct line to us for questions, bug reports, and improvement requests. We don\'t disappear after launch.'
+        a: 'All plans include email support. Growth plans get priority support, and Premium plans include a dedicated direct support line. Ongoing updates and improvements are included as part of your active subscription — we don\'t disappear after launch.'
       },
       {
         q: 'What happens if we need changes after launch?',
-        a: 'Minor adjustments and bug fixes are handled as part of support. Feature additions or significant workflow changes may be scoped and billed separately — always transparently discussed before any work begins.'
+        a: 'Bug fixes and minor configuration updates are handled within your subscription. Significant workflow additions may require a plan upgrade. We communicate clearly before any scope changes — no surprise charges.'
       },
     ]
   },

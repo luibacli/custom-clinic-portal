@@ -7,8 +7,8 @@
         <router-link to="/" class="flex items-center gap-2.5 shrink-0 group">
           <CareBoardSVG class="h-7 w-7 text-blue-600 group-hover:scale-105 transition-transform" />
           <div class="leading-tight">
-            <span class="font-bold text-slate-800 text-sm block">Custom Clinic Portal</span>
-            <span class="text-[10px] font-semibold text-blue-600 uppercase tracking-widest block">Philippines</span>
+            <span class="font-bold text-slate-800 text-sm block">My Clinic Access</span>
+            <span class="text-[10px] font-semibold text-blue-600 uppercase tracking-widest block">myclinicaccess.com</span>
           </div>
         </router-link>
 
@@ -108,8 +108,8 @@ const mobileOpen = ref(false)
 
 const navLinks = [
   { to: '/',            label: 'Home',         icon: 'pi pi-home' },
-  { to: '/about',       label: 'About',         icon: 'pi pi-info-circle' },
   { to: '/features',    label: 'Features',      icon: 'pi pi-th-large' },
+  { to: '/pricing',     label: 'Pricing',       icon: 'pi pi-tag' },
   { to: '/how-it-works',label: 'How It Works',  icon: 'pi pi-list' },
   { to: '/faq',         label: 'FAQ',           icon: 'pi pi-question-circle' },
 ]

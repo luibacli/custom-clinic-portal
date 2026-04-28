@@ -9,12 +9,12 @@
           <router-link to="/" class="flex items-center gap-2.5 group">
             <CareBoardSVG class="h-7 w-7 text-blue-400 group-hover:scale-110 transition-transform" />
             <div class="leading-tight">
-              <span class="text-white font-bold text-sm block">Custom Clinic Portal</span>
-              <span class="text-[10px] text-blue-400 uppercase tracking-widest font-semibold block">Philippines</span>
+              <span class="text-white font-bold text-sm block">My Clinic Access</span>
+              <span class="text-[10px] text-blue-400 uppercase tracking-widest font-semibold block">myclinicaccess.com</span>
             </div>
           </router-link>
           <p class="text-sm text-slate-400 leading-relaxed">
-            Automating patient registration, enabling real-time clinic communication, and streamlining operations — custom-built for Filipino clinics.
+            All-in-one access platform for clinics, patients, and healthcare teams — built for Filipino healthcare workflows.
           </p>
           <router-link
             to="/book-demo"
@@ -80,7 +80,7 @@
 
       <!-- Bottom Bar -->
       <div class="border-t border-slate-700/60 mt-10 pt-5 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
-        <p>&copy; {{ currentYear }} Custom Clinic Portal PH. All rights reserved.</p>
+        <p>&copy; {{ currentYear }} My Clinic Access. All rights reserved.</p>
         <p>Developed by Luigie C. Bacli</p>
       </div>
 
@@ -98,6 +98,7 @@ const productLinks = [
   { to: '/about',       label: 'About Us',       icon: 'pi pi-info-circle' },
   { to: '/mission',     label: 'Mission & Vision', icon: 'pi pi-star' },
   { to: '/features',    label: 'Features',       icon: 'pi pi-th-large' },
+  { to: '/pricing',     label: 'Pricing',        icon: 'pi pi-tag' },
   { to: '/how-it-works',label: 'How It Works',   icon: 'pi pi-list' },
   { to: '/faq',         label: 'FAQ',            icon: 'pi pi-question-circle' },
   { to: '/book-demo',   label: 'Book a Demo',    icon: 'pi pi-calendar' },

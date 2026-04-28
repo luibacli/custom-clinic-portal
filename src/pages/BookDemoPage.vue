@@ -13,7 +13,7 @@
           Book a Free Demo
         </h1>
         <p class="mt-4 text-blue-100 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-          30 minutes. No commitment. We walk you through the full portal with your clinic as the example.
+          30 minutes. No commitment. We walk you through the full My Clinic Access portal with your clinic as the example.
         </p>
       </div>
     </section>
@@ -190,7 +190,7 @@
                 </li>
                 <li class="flex items-start gap-2">
                   <i class="pi pi-check mt-0.5 shrink-0 text-xs text-white"></i>
-                  Get a realistic scope and pricing discussion
+                  Get a plan recommendation tailored to your volume
                 </li>
                 <li class="flex items-start gap-2">
                   <i class="pi pi-check mt-0.5 shrink-0 text-xs text-white"></i>
@@ -198,7 +198,7 @@
                 </li>
                 <li class="flex items-start gap-2">
                   <i class="pi pi-check mt-0.5 shrink-0 text-xs text-white"></i>
-                  Walk away knowing if this is the right fit
+                  Walk away knowing if My Clinic Access is the right fit
                 </li>
               </ul>
             </div>
@@ -258,8 +258,8 @@ const demoItems = [
   'Operations overview dashboard',
   'Digital patient ID generation',
   'Role-based access (Admin, Staff, Patient)',
-  'How customization works for your clinic',
-  'Realistic scope and pricing discussion',
+  'Plan recommendation for your clinic size',
+  'Subscription options and onboarding timeline',
 ]
 
 const nextSteps = [

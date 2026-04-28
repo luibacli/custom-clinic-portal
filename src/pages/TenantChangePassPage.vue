@@ -49,7 +49,7 @@
           </div>
 
           <div class="text-xs text-white/80">
-            Custom Clinic Portal PH — Secure Access
+            My Clinic Access — Secure Access
           </div>
         </div>
       </div>

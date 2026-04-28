@@ -32,7 +32,7 @@
                 Every day, clinic staff in the Philippines spend hours doing things that a well-designed system could handle in minutes — writing patient details by hand, calling out queue numbers, scrambling to find old registration forms, sending appointment reminders one by one.
               </p>
               <p>
-                Custom Clinic Portal PH was built to solve these exact problems. Not with a bloated enterprise platform, but with a focused, practical tool designed specifically for how Filipino clinics operate.
+                My Clinic Access was built to solve these exact problems. Not with a bloated enterprise platform, but with a focused, scalable SaaS platform designed specifically for how Filipino clinics operate.
               </p>
               <p>
                 We believe that even small, independent clinics deserve access to modern digital tools — and that those tools should adapt to the clinic, not the other way around.
@@ -95,7 +95,7 @@
             <span class="text-xs font-semibold text-blue-600 uppercase tracking-widest">Our Approach</span>
             <h2 class="mt-2 text-3xl font-bold text-slate-900">Every Clinic Gets Its Own Portal</h2>
             <p class="mt-5 text-slate-600 leading-relaxed">
-              We don't sell a generic subscription. We build a customized portal for each clinic — branded, configured, and deployed for your specific workflow. The scope of customization determines the cost, and we're transparent about that from day one.
+              My Clinic Access is a multi-tenant SaaS platform — every clinic gets a fully branded, configured portal under a simple subscription. Pick your plan, we configure everything to match your workflow, and your portal is live in days.
             </p>
             <router-link
               to="/book-demo"
