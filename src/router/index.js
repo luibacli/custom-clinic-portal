@@ -142,6 +142,12 @@ const routes = [
         component: TenantProfilePage,
         meta: { roles: ['patient', 'admin', 'superadmin', 'dev'] }
       },
+      {
+        path: '/billing',
+        name: 'Billing',
+        component: () => import('../pages/BillingPage.vue'),
+        meta: { roles: ['superadmin'] }
+      },
 
       // Dev pages — accessible to users with role="dev" authenticated via tenant login
       {

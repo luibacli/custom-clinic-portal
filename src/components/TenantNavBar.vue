@@ -185,6 +185,7 @@ const items = computed(() => {
     featureMails.value        && { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
     featureMails.value        && { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },
     featureUsers.value        && { label: 'Users',        icon: 'pi pi-users',     command: () => router.push('/users') },
+    { label: 'Billing',                                                                         icon: 'pi pi-credit-card', command: () => router.push('/billing') },
     { label: 'Profile',                                                                         icon: 'pi pi-user',     command: () => router.push('/profile') },
   ].filter(Boolean)
   const patientItems = [
