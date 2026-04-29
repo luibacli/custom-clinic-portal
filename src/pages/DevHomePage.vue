@@ -468,6 +468,10 @@ const inactiveCount = computed(() =>
   tenants.value.filter(t => t.status === 'inactive').length
 );
 
+const onTrialCount = computed(() =>
+  tenants.value.filter(t => t.subscription?.status === 'trial').length
+);
+
 const filteredTenants = computed(() => {
   return tenants.value.filter((tenant) => {
     const keyword = search.value.trim().toLowerCase();
@@ -689,6 +693,10 @@ onMounted(async () => {
   vertical-align: middle;
 }
 
+:deep(.tenant-table .p-datatable-tbody > tr) {
+  cursor: pointer;
+}
+
 :deep(.tenant-table .p-datatable-tbody > tr:hover) {
   background: rgba(248, 250, 252, 0.8);
 }
@@ -730,6 +738,10 @@ onMounted(async () => {
 .dark :deep(.tenant-table .p-datatable-tbody > tr > td) {
   color: #e2e8f0;
   border-color: rgba(51, 65, 85, 0.65);
+}
+
+.dark :deep(.tenant-table .p-datatable-tbody > tr) {
+  cursor: pointer;
 }
 
 .dark :deep(.tenant-table .p-datatable-tbody > tr:hover) {
