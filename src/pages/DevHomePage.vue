@@ -2,6 +2,8 @@
   <div
     class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 p-3 sm:p-4 lg:p-6 transition-colors duration-300"
   >
+    <Toast />
+
     <!-- Loading -->
     <div
       v-if="isLoading"
@@ -100,13 +102,13 @@
           <div class="rounded-[24px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
             <div class="flex items-center justify-between gap-3">
               <div class="min-w-0">
-                <p class="text-sm text-slate-500 dark:text-slate-400">Filtered Results</p>
-                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mt-1">
-                  {{ filteredTenants.length }}
+                <p class="text-sm text-slate-500 dark:text-slate-400">On Trial</p>
+                <h2 class="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mt-1">
+                  {{ onTrialCount }}
                 </h2>
               </div>
-              <div class="shrink-0 h-12 w-12 rounded-2xl bg-slate-100 flex items-center justify-center dark:bg-slate-800">
-                <i class="pi pi-filter text-slate-700 dark:text-slate-300 text-xl"></i>
+              <div class="shrink-0 h-12 w-12 rounded-2xl bg-blue-100 flex items-center justify-center dark:bg-blue-500/15">
+                <i class="pi pi-clock text-blue-600 dark:text-blue-300 text-xl"></i>
               </div>
             </div>
           </div>
@@ -203,21 +205,49 @@
                 </template>
               </Column>
 
-              <Column field="domain" header="Domain" style="min-width: 220px">
+              <Column header="Plan" style="min-width: 130px">
                 <template #body="{ data }">
-                  <div class="text-slate-700 dark:text-slate-300 font-medium truncate">
-                    {{ data.domain }}
-                  </div>
+                  <span
+                    class="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-bold capitalize"
+                    :class="{
+                      'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300': data.subscription?.plan === 'starter' || !data.subscription?.plan,
+                      'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300': data.subscription?.plan === 'growth',
+                      'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300': data.subscription?.plan === 'premium',
+                    }"
+                  >
+                    <i class="pi text-[10px]"
+                      :class="{
+                        'pi-box': data.subscription?.plan === 'starter' || !data.subscription?.plan,
+                        'pi-bolt': data.subscription?.plan === 'growth',
+                        'pi-star-fill': data.subscription?.plan === 'premium',
+                      }"
+                    ></i>
+                    {{ data.subscription?.plan || 'starter' }}
+                  </span>
                 </template>
               </Column>
 
-              <Column field="status" header="Status" style="min-width: 140px">
+              <Column header="Sub Status" style="min-width: 130px">
                 <template #body="{ data }">
-                  <Tag
-                    :value="formatStatus(data.status)"
-                    :severity="getStatusSeverity(data.status)"
-                    class="capitalize"
-                  />
+                  <span
+                    class="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-semibold capitalize"
+                    :class="{
+                      'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300': data.subscription?.status === 'active',
+                      'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300': data.subscription?.status === 'trial',
+                      'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300': data.subscription?.status === 'past_due',
+                      'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300': data.subscription?.status === 'suspended' || data.subscription?.status === 'cancelled',
+                    }"
+                  >
+                    <span class="h-1.5 w-1.5 rounded-full shrink-0"
+                      :class="{
+                        'bg-emerald-500': data.subscription?.status === 'active',
+                        'bg-blue-500': data.subscription?.status === 'trial',
+                        'bg-amber-500': data.subscription?.status === 'past_due',
+                        'bg-red-500': data.subscription?.status === 'suspended' || data.subscription?.status === 'cancelled',
+                      }"
+                    ></span>
+                    {{ (data.subscription?.status || 'trial').replace('_', ' ') }}
+                  </span>
                 </template>
               </Column>
 
@@ -229,16 +259,26 @@
                 </template>
               </Column>
 
-              <Column header="Actions" style="min-width: 150px">
+              <Column header="Actions" style="min-width: 200px">
                 <template #body="{ data }">
-                  <Button
-                    icon="pi pi-pencil"
-                    label="Edit"
-                    size="small"
-                    outlined
-                    class="rounded-xl whitespace-nowrap"
-                    @click.stop="openEditDialog(data)"
-                  />
+                  <div class="flex items-center gap-2">
+                    <Button
+                      icon="pi pi-arrow-right"
+                      label="Manage"
+                      size="small"
+                      class="rounded-xl whitespace-nowrap"
+                      @click.stop="router.push(`/tenant/${data._id}`)"
+                    />
+                    <Button
+                      icon="pi pi-pencil"
+                      size="small"
+                      outlined
+                      severity="secondary"
+                      class="rounded-xl"
+                      v-tooltip.top="'Edit'"
+                      @click.stop="openEditDialog(data)"
+                    />
+                  </div>
                 </template>
               </Column>
             </DataTable>
