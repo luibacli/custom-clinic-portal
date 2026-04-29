@@ -288,6 +288,30 @@
           </div>
 
           <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Plan</label>
+            <Select
+              v-model="createPlan"
+              :options="planOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select plan"
+              class="w-full"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Subscription Status</label>
+            <Select
+              v-model="createSubStatus"
+              :options="subStatusOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select subscription status"
+              class="w-full"
+            />
+          </div>
+
+          <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Logo URL</label>
             <InputText
               v-model="tenantForm.tenantLogo.url"
@@ -374,10 +398,26 @@ const search = ref('');
 const selectedStatus = ref(null);
 const isSubmitting = ref(false);
 const isEditMode = ref(false);
+const createPlan = ref('starter');
+const createSubStatus = ref('trial');
 
 const statusFilterOptions = [
   { label: 'Active', value: 'active' },
   { label: 'Inactive', value: 'inactive' }
+];
+
+const planOptions = [
+  { label: 'Starter',  value: 'starter'  },
+  { label: 'Growth',   value: 'growth'   },
+  { label: 'Premium',  value: 'premium'  },
+];
+
+const subStatusOptions = [
+  { label: 'Trial',     value: 'trial'     },
+  { label: 'Active',    value: 'active'    },
+  { label: 'Past Due',  value: 'past_due'  },
+  { label: 'Suspended', value: 'suspended' },
+  { label: 'Cancelled', value: 'cancelled' },
 ];
 
 const activeCount = computed(() =>
@@ -428,6 +468,8 @@ const formatDate = (date) => {
 const openCreateDialog = () => {
   isEditMode.value = false;
   resetTenantForm();
+  createPlan.value = 'starter';
+  createSubStatus.value = 'trial';
 
   tenantForm.value.tenantLogo = {
     url: '',
@@ -486,6 +528,9 @@ const handleSubmit = async () => {
         life: 3000
       });
     } else {
+      tenantForm.value.plan = createPlan.value;
+      tenantForm.value.subscriptionStatus = createSubStatus.value;
+
       const res = await createTenant();
 
       toast.add({

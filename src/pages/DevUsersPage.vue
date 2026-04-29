@@ -462,6 +462,7 @@ const form = ref(emptyForm())
 
 // ─── Options ──────────────────────────────────────────────────────────────────
 const roleOptions = [
+  { label: 'Patient',    value: 'patient'    },
   { label: 'Admin',      value: 'admin'      },
   { label: 'Superadmin', value: 'superadmin' },
   { label: 'Dev',        value: 'dev'        },

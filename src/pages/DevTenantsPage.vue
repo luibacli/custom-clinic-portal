@@ -277,6 +277,136 @@
           </div>
         </section>
 
+        <!-- Subscription Management Section -->
+        <section class="rounded-[28px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-white">Subscription Management</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Control the plan, billing status, and trial period for this tenant.
+              </p>
+            </div>
+            <Button
+              label="Save Subscription"
+              icon="pi pi-check"
+              :loading="isSavingSubscription"
+              class="rounded-2xl w-full sm:w-auto shrink-0"
+              @click="saveSubscription"
+            />
+          </div>
+
+          <!-- Status banner -->
+          <div class="mb-5 flex flex-wrap gap-2">
+            <div
+              class="inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-semibold"
+              :class="{
+                'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/30 dark:text-emerald-300': localSubscription.status === 'active',
+                'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800/50 dark:bg-blue-950/30 dark:text-blue-300': localSubscription.status === 'trial',
+                'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-300': localSubscription.status === 'past_due',
+                'border-red-200 bg-red-50 text-red-700 dark:border-red-800/50 dark:bg-red-950/30 dark:text-red-300': localSubscription.status === 'suspended' || localSubscription.status === 'cancelled',
+              }"
+            >
+              <span class="h-2 w-2 rounded-full"
+                :class="{
+                  'bg-emerald-500': localSubscription.status === 'active',
+                  'bg-blue-500': localSubscription.status === 'trial',
+                  'bg-amber-500': localSubscription.status === 'past_due',
+                  'bg-red-500': localSubscription.status === 'suspended' || localSubscription.status === 'cancelled',
+                }"
+              ></span>
+              {{ localSubscription.plan?.toUpperCase() }} — {{ localSubscription.status?.replace('_', ' ') }}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Plan -->
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Plan</label>
+              <Select
+                v-model="localSubscription.plan"
+                :options="planOptions"
+                optionLabel="label"
+                optionValue="value"
+                class="w-full"
+              />
+            </div>
+
+            <!-- Status -->
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Subscription Status</label>
+              <Select
+                v-model="localSubscription.status"
+                :options="subStatusOptions"
+                optionLabel="label"
+                optionValue="value"
+                class="w-full"
+              />
+            </div>
+
+            <!-- Trial Ends At -->
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Trial Ends At</label>
+              <InputText
+                v-model="localSubscription.trialEndsAt"
+                type="date"
+                class="w-full rounded-2xl"
+              />
+              <p class="text-xs text-slate-400">Only applies when status is <code class="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded">trial</code>.</p>
+            </div>
+
+            <!-- Current Period End -->
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Current Period End</label>
+              <InputText
+                v-model="localSubscription.currentPeriodEnd"
+                type="date"
+                class="w-full rounded-2xl"
+              />
+              <p class="text-xs text-slate-400">Active subscription billing end date.</p>
+            </div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="mt-4 flex flex-wrap gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+            <Button
+              label="Activate (Growth)"
+              icon="pi pi-arrow-up"
+              size="small"
+              severity="success"
+              outlined
+              class="rounded-xl"
+              @click="quickActivate('growth')"
+            />
+            <Button
+              label="Activate (Premium)"
+              icon="pi pi-star"
+              size="small"
+              severity="success"
+              outlined
+              class="rounded-xl"
+              @click="quickActivate('premium')"
+            />
+            <Button
+              label="Reset to Trial (30d)"
+              icon="pi pi-refresh"
+              size="small"
+              severity="secondary"
+              outlined
+              class="rounded-xl"
+              @click="quickResetTrial"
+            />
+            <Button
+              label="Suspend"
+              icon="pi pi-ban"
+              size="small"
+              severity="danger"
+              outlined
+              class="rounded-xl"
+              @click="quickSuspend"
+            />
+          </div>
+        </section>
+
         <!-- Clinic Branding Section -->
         <section class="rounded-[28px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
           <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
@@ -463,29 +593,11 @@
                 </template>
               </Column>
 
-              <Column field="username" header="Username" style="min-width: 180px">
-                <template #body="{ data }">
-                  <span class="text-slate-700 dark:text-slate-300 font-medium">
-                    {{ data.username || '—' }}
-                  </span>
-                </template>
-              </Column>
-
               <Column field="role" header="Role" style="min-width: 140px">
                 <template #body="{ data }">
                   <Tag
                     :value="formatRole(data.role)"
                     :severity="getRoleSeverity(data.role)"
-                    class="capitalize"
-                  />
-                </template>
-              </Column>
-
-              <Column field="type" header="Type" style="min-width: 140px">
-                <template #body="{ data }">
-                  <Tag
-                    :value="formatType(data.type)"
-                    severity="secondary"
                     class="capitalize"
                   />
                 </template>
@@ -789,6 +901,7 @@ import { useToast } from 'primevue/usetoast'
 import Loading from '../components/Loading.vue'
 import { useTenantStore } from '../stores/tenantStore'
 import { useAuthTenantStore } from '../stores/authTenantStore'
+import api from '../lib/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -808,7 +921,25 @@ const isSubmittingTenant = ref(false)
 const logoUploading = ref(false)
 const isSavingFeatures = ref(false)
 const isSavingBranding = ref(false)
+const isSavingSubscription = ref(false)
 const colorInputRef    = ref(null)
+
+const planOptions = [
+  { label: 'Starter',  value: 'starter'  },
+  { label: 'Growth',   value: 'growth'   },
+  { label: 'Premium',  value: 'premium'  },
+]
+
+const subStatusOptions = [
+  { label: 'Trial',     value: 'trial'     },
+  { label: 'Active',    value: 'active'    },
+  { label: 'Past Due',  value: 'past_due'  },
+  { label: 'Suspended', value: 'suspended' },
+  { label: 'Cancelled', value: 'cancelled' },
+]
+
+const SUB_DEFAULTS = { plan: 'starter', status: 'trial', trialEndsAt: '', currentPeriodEnd: '' }
+const localSubscription = reactive({ ...SUB_DEFAULTS })
 
 const BRANDING_DEFAULTS = {
   primaryColor:   '#2563eb',
@@ -940,6 +1071,20 @@ const resetUserFormFields = () => {
   userForm.value.id = null
 }
 
+const toDateInput = (val) => {
+  if (!val) return ''
+  const d = new Date(val)
+  return isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10)
+}
+
+const syncLocalSubscription = (tenant) => {
+  const s = tenant?.subscription || {}
+  localSubscription.plan             = s.plan   || 'starter'
+  localSubscription.status           = s.status || 'trial'
+  localSubscription.trialEndsAt      = toDateInput(s.trialEndsAt)
+  localSubscription.currentPeriodEnd = toDateInput(s.currentPeriodEnd)
+}
+
 const syncLocalFeatures = (tenant) => {
   const f = tenant?.features || {}
   for (const key of Object.keys(FEATURE_DEFAULTS)) {
@@ -961,6 +1106,7 @@ const fetchPageData = async () => {
     tenantData.value = tenantRes?.data || tenantRes || null
     syncLocalFeatures(tenantData.value)
     syncLocalBranding(tenantData.value)
+    syncLocalSubscription(tenantData.value)
 
     const usersRes = await authTenantStore.fetchTenantUsers(tenantId.value)
     users.value = usersRes?.data || []
@@ -1003,6 +1149,53 @@ const saveFeatures = async () => {
 
   if (tenantData.value) tenantData.value.features = res.data
   toast.add({ severity: 'success', summary: 'Saved', detail: 'Feature toggles updated.', life: 2500 })
+}
+
+const saveSubscription = async () => {
+  isSavingSubscription.value = true
+  try {
+    const payload = {
+      plan:   localSubscription.plan,
+      status: localSubscription.status,
+    }
+    if (localSubscription.trialEndsAt)      payload.trialEndsAt      = localSubscription.trialEndsAt
+    if (localSubscription.currentPeriodEnd) payload.currentPeriodEnd = localSubscription.currentPeriodEnd
+
+    const { data } = await api.patch(`tenants/${tenantId.value}/subscription`, payload)
+    if (!data?.success) throw new Error(data?.message || 'Failed to save subscription.')
+
+    if (tenantData.value) tenantData.value.subscription = data.data
+    toast.add({ severity: 'success', summary: 'Saved', detail: 'Subscription updated.', life: 2500 })
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'Error', detail: err?.response?.data?.message || err.message, life: 3000 })
+  } finally {
+    isSavingSubscription.value = false
+  }
+}
+
+const quickActivate = (plan) => {
+  localSubscription.plan   = plan
+  localSubscription.status = 'active'
+  const end = new Date()
+  end.setFullYear(end.getFullYear() + 1)
+  localSubscription.currentPeriodEnd = toDateInput(end)
+  localSubscription.trialEndsAt      = ''
+  saveSubscription()
+}
+
+const quickResetTrial = () => {
+  localSubscription.plan   = 'starter'
+  localSubscription.status = 'trial'
+  const trial = new Date()
+  trial.setDate(trial.getDate() + 30)
+  localSubscription.trialEndsAt      = toDateInput(trial)
+  localSubscription.currentPeriodEnd = ''
+  saveSubscription()
+}
+
+const quickSuspend = () => {
+  localSubscription.status = 'suspended'
+  saveSubscription()
 }
 
 const openCreateUserDialog = () => {
