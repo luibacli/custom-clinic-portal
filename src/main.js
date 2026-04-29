@@ -2,6 +2,7 @@ import { createApp, watch } from 'vue';
 import './style.css';
 import App from './App.vue';
 import router from './router';
+import * as Sentry from '@sentry/vue';
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import ToastService from 'primevue/toastservice';
@@ -43,6 +44,16 @@ import { applyBrandingVars } from './composables/useBranding';
 const bootstrap = async () => {
   const app = createApp(App);
   const pinia = createPinia();
+
+  if (import.meta.env.VITE_SENTRY_DSN) {
+    Sentry.init({
+      app,
+      dsn: import.meta.env.VITE_SENTRY_DSN,
+      integrations: [Sentry.browserTracingIntegration({ router })],
+      tracesSampleRate: import.meta.env.PROD ? 0.2 : 1.0,
+      environment: import.meta.env.MODE,
+    });
+  }
 
   app.use(pinia);
   app.use(router);
