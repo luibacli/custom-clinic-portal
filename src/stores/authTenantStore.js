@@ -370,6 +370,31 @@ export const useAuthTenantStore = defineStore('authTenant', {
             this.passwordForm.newPassword = "";
             this.passwordForm.confirmPassword = "";
         },
+        async registerClinic({ clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword }) {
+            try {
+                const { data } = await api.post('/tenants/register', {
+                    clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword,
+                });
+
+                this.tenantToken = data.token;
+                this.tenantId    = data.tenant.id;
+                this.isSuperAdmin = true;
+                this.isAdmin      = false;
+                this.isPatient    = false;
+                this.isDev        = false;
+
+                localStorage.setItem('tenantToken', data.token);
+                localStorage.setItem('tenantRole',  'superadmin');
+                localStorage.setItem('tenantId',    data.tenant.id);
+
+                return { success: true, data };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: error.response?.data?.message || 'Registration failed',
+                };
+            }
+        },
         logout() {
             this.tenantToken = null;
             this.tenantId = null;

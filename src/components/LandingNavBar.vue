@@ -28,19 +28,19 @@
         </nav>
 
         <!-- Desktop CTAs -->
-        <div class="hidden md:flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2">
           <router-link
             to="/signin"
-            class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors px-2 py-1.5 rounded-lg hover:bg-slate-50"
+            class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-50"
           >
             Sign In
           </router-link>
           <router-link
-            to="/book-demo"
+            to="/get-started"
             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-semibold shadow-md hover:shadow-lg hover:from-blue-700 hover:to-cyan-600 active:scale-95 transition-all duration-150"
           >
-            <i class="pi pi-calendar text-xs"></i>
-            Book a Demo
+            <i class="pi pi-star text-xs"></i>
+            Get Started Free
           </router-link>
         </div>
 
@@ -87,10 +87,10 @@
             Sign In to Your Portal
           </router-link>
           <router-link
-            to="/book-demo"
+            to="/get-started"
             class="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-500 shadow-md"
           >
-            Book a Free Demo
+            Get Started Free
           </router-link>
         </div>
       </div>

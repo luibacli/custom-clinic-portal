@@ -68,6 +68,13 @@ const routes = [
   { path: '/book-demo',    name: 'BookDemo',    component: BookDemoPage   },
   { path: '/pricing',      name: 'Pricing',     component: PricingPage    },
 
+  // Clinic self-service signup
+  {
+    path: '/get-started',
+    name: 'ClinicSignup',
+    component: () => import('../pages/ClinicSignupPage.vue'),
+  },
+
   // Tenant login
   {
     path: '/signin',
