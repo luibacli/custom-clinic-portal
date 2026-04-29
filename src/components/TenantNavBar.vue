@@ -169,13 +169,14 @@ const profileMenuRef = ref()
 
 const items = computed(() => {
   const adminItems = [
-    { label: 'Home',                                                                            icon: 'pi pi-home',     command: () => router.push('/tenant-home') },
+    { label: 'Home',                                                                            icon: 'pi pi-home',        command: () => router.push('/tenant-home') },
     featureAppointments.value && { label: 'Appointments', icon: 'pi pi-calendar',  command: () => router.push('/appointments') },
     featureQrScan.value       && { label: 'Scan QR',      icon: 'pi pi-qrcode',    command: () => router.push('/scan') },
     featureMessaging.value    && { label: 'Messages',     icon: 'pi pi-comments',  command: () => router.push('/messages') },
     featureMails.value        && { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
     featureMails.value        && { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },
-    { label: 'Profile',                                                                         icon: 'pi pi-user',     command: () => router.push('/profile') },
+    { label: 'Analytics',                                                                       icon: 'pi pi-chart-bar',   command: () => router.push('/analytics') },
+    { label: 'Profile',                                                                         icon: 'pi pi-user',        command: () => router.push('/profile') },
   ].filter(Boolean)
   const superAdminItems = [
     { label: 'Home',                                                                            icon: 'pi pi-home',     command: () => router.push('/tenant-home') },
@@ -184,9 +185,10 @@ const items = computed(() => {
     featureMessaging.value    && { label: 'Messages',     icon: 'pi pi-comments',  command: () => router.push('/messages') },
     featureMails.value        && { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
     featureMails.value        && { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },
-    featureUsers.value        && { label: 'Users',        icon: 'pi pi-users',     command: () => router.push('/users') },
+    featureUsers.value        && { label: 'Users',        icon: 'pi pi-users',       command: () => router.push('/users') },
+    { label: 'Analytics',                                                                       icon: 'pi pi-chart-bar',   command: () => router.push('/analytics') },
     { label: 'Billing',                                                                         icon: 'pi pi-credit-card', command: () => router.push('/billing') },
-    { label: 'Profile',                                                                         icon: 'pi pi-user',     command: () => router.push('/profile') },
+    { label: 'Profile',                                                                         icon: 'pi pi-user',        command: () => router.push('/profile') },
   ].filter(Boolean)
   const patientItems = [
     { label: 'My ID',                                                                     icon: 'pi pi-id-card',  command: () => router.push('/patient') },

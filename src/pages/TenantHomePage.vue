@@ -87,6 +87,14 @@
         </div>
       </section>
 
+      <!-- Onboarding checklist — superadmin only, auto-hides when all steps done -->
+      <OnboardingChecklist
+        v-if="isSuperAdmin"
+        :patient-count="activePatients.length"
+        :staff-count="activeAdmin.length"
+        :is-email-verified="currentUserVerified"
+      />
+
       <!-- KPI Cards -->
       <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <!-- Active Patients -->
@@ -389,6 +397,7 @@ import { useEmailStore } from "../stores/emailStore";
 import { useAppointmentStore } from "../stores/appointmentStore";
 import { useBranding } from "../composables/useBranding";
 import Loading from "../components/Loading.vue";
+import OnboardingChecklist from "../components/OnboardingChecklist.vue";
 import { storeToRefs } from "pinia";
 import Tag from "primevue/tag";
 
@@ -405,6 +414,8 @@ const { fetchAllAppointments } = appointmentStore;
 
 const { emails } = storeToRefs(emailStore);
 
+const isSuperAdmin = localStorage.getItem('tenantRole') === 'superadmin';
+
 const tenantId = ref(null);
 const tenantName = ref("");
 const tenants = ref([]);
@@ -416,6 +427,7 @@ const activityLogs = ref([]);
 const todayApptCount = ref(0);
 const todayInQueueCount = ref(0);
 const todayCompletedCount = ref(0);
+const currentUserVerified = ref(false);
 
 const formatLogTime = (ts) => {
   if (!ts) return '—';
@@ -464,6 +476,12 @@ onMounted(async () => {
     activeAdmin.value = tenants.value.filter(
       (i) => i.role === "admin" || i.role === "superadmin"
     );
+
+    // Derive email verification from the current superadmin's record
+    if (isSuperAdmin) {
+      const me = tenants.value.find(u => u._id === localStorage.getItem('tenantId') || u.role === 'superadmin');
+      currentUserVerified.value = me?.isEmailVerified ?? false;
+    }
 
     const logs = await fetchActivityLogs(tenantId.value, 15);
     activityLogs.value = logs?.data || [];

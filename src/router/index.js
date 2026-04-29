@@ -148,6 +148,12 @@ const routes = [
         component: () => import('../pages/BillingPage.vue'),
         meta: { roles: ['superadmin'] }
       },
+      {
+        path: '/analytics',
+        name: 'Analytics',
+        component: () => import('../pages/AnalyticsPage.vue'),
+        meta: { roles: ['admin', 'superadmin'] }
+      },
 
       // Dev pages — accessible to users with role="dev" authenticated via tenant login
       {
