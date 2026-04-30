@@ -5,7 +5,7 @@
 
         <!-- Logo -->
         <router-link to="/" class="flex items-center gap-2.5 shrink-0 group">
-          <CareBoardSVG class="h-7 w-7 text-blue-600 group-hover:scale-105 transition-transform" />
+           <Avatar image="/myclinicaccess_logo.svg" size="large"/>
           <div class="leading-tight">
             <span class="font-bold text-slate-800 text-sm block">My Clinic Access</span>
             <span class="text-[10px] font-semibold text-blue-600 uppercase tracking-widest block">myclinicaccess.com</span>
@@ -101,7 +101,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import CareBoardSVG from './CareBoardSVG.vue'
+
 
 const route = useRoute()
 const mobileOpen = ref(false)

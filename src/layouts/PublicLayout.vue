@@ -5,7 +5,7 @@
     <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 sticky top-0 z-10">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
         <router-link to="/signin" class="flex items-center gap-2 group">
-          <CareBoardSVG class="h-7 w-7 text-blue-600" />
+           <Avatar image="/myclinicaccess_logo.svg" size="large"/>>
           <span class="font-bold text-slate-800 dark:text-white text-lg group-hover:text-blue-600 transition-colors">
             My Clinic Access
           </span>
@@ -31,6 +31,5 @@
 </template>
 
 <script setup>
-import CareBoardSVG from '../components/CareBoardSVG.vue'
 import AppFooter from '../components/AppFooter.vue'
 </script>

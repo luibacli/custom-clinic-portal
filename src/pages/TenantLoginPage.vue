@@ -188,7 +188,7 @@
             alt="Clinic Logo"
             class="h-full w-full object-cover"
           />
-          <CareBoardSVG v-else class="h-6 w-6 text-white" />
+          <Avatar  v-else image="/myclinicaccess_logo.svg" size="large"/>>
         </div>
         <div class="min-w-0">
           <p class="font-bold text-slate-800 text-base leading-tight truncate">{{ tenantDisplayName }}</p>
@@ -217,7 +217,7 @@
                 alt="Clinic Logo"
                 class="h-full w-full object-cover"
               />
-              <CareBoardSVG v-else class="h-8 w-8" />
+                <Avatar v-else image="/myclinicaccess_logo.svg" size="large"/>
             </div>
           </div>
 
@@ -333,7 +333,6 @@ import { useToast } from 'primevue/usetoast'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
-import CareBoardSVG from '../components/CareBoardSVG.vue'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useTenantStore } from '../stores/tenantStore'
 import { useBranding } from '../composables/useBranding'
