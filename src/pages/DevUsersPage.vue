@@ -151,12 +151,20 @@
           <!-- Tenant -->
           <Column header="Tenant" style="min-width: 180px">
             <template #body="{ data }">
-              <div class="min-w-0">
-                <p class="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">
+              <div
+                class="min-w-0 group"
+                :class="data.tenantId?._id ? 'cursor-pointer' : ''"
+                @click.stop="data.tenantId?._id && router.push(`/tenant/${data.tenantId._id}`)"
+              >
+                <p class="text-sm font-medium truncate transition-colors"
+                  :class="data.tenantId?._id
+                    ? 'text-blue-600 dark:text-blue-400 group-hover:underline'
+                    : 'text-slate-400 dark:text-slate-500 italic'"
+                >
                   {{ data.tenantId?.name || '—' }}
                 </p>
                 <p class="text-xs text-slate-400 dark:text-slate-500 truncate">
-                  {{ data.tenantId?.domain || '' }}
+                  {{ data.tenantId?.domain || (data.role === 'dev' ? 'No tenant (dev)' : '') }}
                 </p>
               </div>
             </template>
@@ -413,13 +421,15 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
+import { useRouter } from 'vue-router'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useTenantStore } from '../stores/tenantStore'
 import Tag from 'primevue/tag'
 import Password from 'primevue/password'
 
-const toast    = useToast()
-const authStore  = useAuthTenantStore()
+const toast       = useToast()
+const router      = useRouter()
+const authStore   = useAuthTenantStore()
 const tenantStore = useTenantStore()
 
 const { tenants } = storeToRefs(tenantStore)
@@ -487,21 +497,18 @@ const kpiCards = computed(() => [
     bg: 'bg-blue-100 dark:bg-blue-500/15', iconColor: 'text-blue-600 dark:text-blue-300'
   },
   {
-    label: 'Admins',
-    value: users.value.filter(u => u.role === 'admin' || u.role === 'superadmin').length,
-    icon: 'pi pi-shield', color: 'text-purple-700 dark:text-purple-300',
+    label: 'Total Tenants', value: tenants.value.length,
+    icon: 'pi pi-building', color: 'text-purple-700 dark:text-purple-300',
     bg: 'bg-purple-100 dark:bg-purple-500/15', iconColor: 'text-purple-600 dark:text-purple-300'
   },
   {
-    label: 'Devs',
-    value: users.value.filter(u => u.role === 'dev').length,
-    icon: 'pi pi-code', color: 'text-amber-700 dark:text-amber-300',
+    label: 'Page Results', value: users.value.length,
+    icon: 'pi pi-list', color: 'text-amber-700 dark:text-amber-300',
     bg: 'bg-amber-100 dark:bg-amber-500/15', iconColor: 'text-amber-600 dark:text-amber-300'
   },
   {
-    label: 'Patients',
-    value: users.value.filter(u => u.role === 'patient').length,
-    icon: 'pi pi-heart', color: 'text-emerald-700 dark:text-emerald-300',
+    label: 'Pages', value: pages.value,
+    icon: 'pi pi-book', color: 'text-emerald-700 dark:text-emerald-300',
     bg: 'bg-emerald-100 dark:bg-emerald-500/15', iconColor: 'text-emerald-600 dark:text-emerald-300'
   },
 ])

@@ -52,6 +52,34 @@
                       :severity="getStatusSeverity(tenantData?.status)"
                       class="capitalize"
                     />
+                    <span
+                      class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold capitalize"
+                      :class="{
+                        'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300': tenantData?.subscription?.plan === 'starter' || !tenantData?.subscription?.plan,
+                        'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300': tenantData?.subscription?.plan === 'growth',
+                        'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300': tenantData?.subscription?.plan === 'premium',
+                      }"
+                    >
+                      <i class="pi text-[9px]"
+                        :class="{
+                          'pi-box': tenantData?.subscription?.plan === 'starter' || !tenantData?.subscription?.plan,
+                          'pi-bolt': tenantData?.subscription?.plan === 'growth',
+                          'pi-star-fill': tenantData?.subscription?.plan === 'premium',
+                        }"
+                      ></i>
+                      {{ tenantData?.subscription?.plan || 'starter' }}
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize"
+                      :class="{
+                        'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300': tenantData?.subscription?.status === 'active',
+                        'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300': tenantData?.subscription?.status === 'trial' || !tenantData?.subscription?.status,
+                        'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300': tenantData?.subscription?.status === 'past_due',
+                        'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300': tenantData?.subscription?.status === 'suspended' || tenantData?.subscription?.status === 'cancelled',
+                      }"
+                    >
+                      {{ (tenantData?.subscription?.status || 'trial').replace('_', ' ') }}
+                    </span>
                   </div>
 
                   <h1 class="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white leading-tight truncate">
@@ -98,14 +126,38 @@
         <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           <div class="rounded-[24px] bg-white border border-slate-200 shadow-sm p-4 sm:p-5 dark:bg-slate-900 dark:border-slate-800">
             <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="text-sm text-slate-500 dark:text-slate-400">Status</p>
-                <h2 class="text-xl font-bold text-slate-800 dark:text-white mt-1">
-                  {{ formatStatus(tenantData?.status) }}
-                </h2>
+              <div class="min-w-0">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Plan</p>
+                <h2 class="text-xl font-bold mt-1 capitalize"
+                  :class="{
+                    'text-slate-700 dark:text-slate-200': tenantData?.subscription?.plan === 'starter' || !tenantData?.subscription?.plan,
+                    'text-blue-600 dark:text-blue-400': tenantData?.subscription?.plan === 'growth',
+                    'text-amber-600 dark:text-amber-400': tenantData?.subscription?.plan === 'premium',
+                  }"
+                >{{ tenantData?.subscription?.plan || 'starter' }}</h2>
+                <p class="text-xs capitalize mt-0.5"
+                  :class="{
+                    'text-emerald-600 dark:text-emerald-400': tenantData?.subscription?.status === 'active',
+                    'text-blue-500 dark:text-blue-400': tenantData?.subscription?.status === 'trial' || !tenantData?.subscription?.status,
+                    'text-amber-500': tenantData?.subscription?.status === 'past_due',
+                    'text-red-500': tenantData?.subscription?.status === 'suspended' || tenantData?.subscription?.status === 'cancelled',
+                  }"
+                >{{ (tenantData?.subscription?.status || 'trial').replace('_', ' ') }}</p>
               </div>
-              <div class="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center dark:bg-primary/15">
-                <i class="pi pi-verified text-primary text-xl"></i>
+              <div class="h-12 w-12 rounded-2xl flex items-center justify-center shrink-0"
+                :class="{
+                  'bg-slate-100 dark:bg-slate-800': tenantData?.subscription?.plan === 'starter' || !tenantData?.subscription?.plan,
+                  'bg-blue-100 dark:bg-blue-500/15': tenantData?.subscription?.plan === 'growth',
+                  'bg-amber-100 dark:bg-amber-500/15': tenantData?.subscription?.plan === 'premium',
+                }"
+              >
+                <i class="text-xl"
+                  :class="{
+                    'pi pi-box text-slate-500 dark:text-slate-400': tenantData?.subscription?.plan === 'starter' || !tenantData?.subscription?.plan,
+                    'pi pi-bolt text-blue-600 dark:text-blue-300': tenantData?.subscription?.plan === 'growth',
+                    'pi pi-star-fill text-amber-600 dark:text-amber-300': tenantData?.subscription?.plan === 'premium',
+                  }"
+                ></i>
               </div>
             </div>
           </div>
@@ -115,7 +167,7 @@
               <div>
                 <p class="text-sm text-slate-500 dark:text-slate-400">Total Users</p>
                 <h2 class="text-xl font-bold text-slate-800 dark:text-white mt-1">
-                  {{ filteredUsers.length }}
+                  {{ users.length }}
                 </h2>
               </div>
               <div class="h-12 w-12 rounded-2xl bg-sky-100 flex items-center justify-center dark:bg-sky-500/15">
@@ -197,6 +249,28 @@
                   {{ formatDate(tenantData?.createdAt) }}
                 </p>
               </div>
+
+              <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 dark:bg-slate-950 dark:border-slate-800">
+                <p class="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 font-semibold">Subscription Plan</p>
+                <p class="mt-2 text-sm sm:text-base font-semibold capitalize"
+                  :class="{
+                    'text-slate-700 dark:text-slate-200': tenantData?.subscription?.plan === 'starter' || !tenantData?.subscription?.plan,
+                    'text-blue-600 dark:text-blue-400': tenantData?.subscription?.plan === 'growth',
+                    'text-amber-600 dark:text-amber-400': tenantData?.subscription?.plan === 'premium',
+                  }"
+                >{{ tenantData?.subscription?.plan || 'starter' }}</p>
+              </div>
+
+              <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 dark:bg-slate-950 dark:border-slate-800">
+                <p class="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 font-semibold">Trial / Period End</p>
+                <p class="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  {{ tenantData?.subscription?.trialEndsAt
+                    ? formatDate(tenantData.subscription.trialEndsAt)
+                    : (tenantData?.subscription?.currentPeriodEnd
+                      ? formatDate(tenantData.subscription.currentPeriodEnd)
+                      : '—') }}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -229,6 +303,16 @@
                 class="rounded-2xl w-full justify-center"
                 @click="handleRefreshUsers"
               />
+              <div class="pt-2 border-t border-slate-200 dark:border-slate-700">
+                <Button
+                  label="Delete Tenant"
+                  icon="pi pi-trash"
+                  severity="danger"
+                  outlined
+                  class="rounded-2xl w-full justify-center"
+                  @click="deleteTenantDialogVisible = true"
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -640,6 +724,33 @@
       </div>
     </template>
 
+    <!-- Delete Tenant Confirmation Dialog -->
+    <Dialog
+      v-model:visible="deleteTenantDialogVisible"
+      modal
+      :draggable="false"
+      header="Delete Tenant"
+      :style="{ width: 'min(440px, 95vw)' }"
+    >
+      <div class="py-2 space-y-3">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 dark:bg-red-500/15 dark:text-red-400">
+            <i class="pi pi-exclamation-triangle"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-slate-800 dark:text-white">Permanently delete this tenant?</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              You are about to delete <strong class="text-slate-700 dark:text-slate-200">{{ tenantData?.name }}</strong> and all associated data. This cannot be undone.
+            </p>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <Button label="Cancel" severity="secondary" outlined @click="deleteTenantDialogVisible = false" />
+        <Button label="Delete Tenant" severity="danger" :loading="isDeletingTenant" @click="confirmDeleteTenant" />
+      </template>
+    </Dialog>
+
     <!-- User Dialog -->
     <Dialog
       v-model:visible="userDialogVisible"
@@ -922,6 +1033,8 @@ const logoUploading = ref(false)
 const isSavingFeatures = ref(false)
 const isSavingBranding = ref(false)
 const isSavingSubscription = ref(false)
+const deleteTenantDialogVisible = ref(false)
+const isDeletingTenant = ref(false)
 const colorInputRef    = ref(null)
 
 const planOptions = [
@@ -1041,10 +1154,6 @@ const formatRole = (role) => {
   return role.charAt(0).toUpperCase() + role.slice(1)
 }
 
-const formatType = (type) => {
-  if (!type) return '—'
-  return type.charAt(0).toUpperCase() + type.slice(1)
-}
 
 const getRoleSeverity = (role) => {
   if (role === 'admin') return 'success'
@@ -1427,6 +1536,21 @@ const handleRefreshUsers = async () => {
     detail: 'Tenant users refreshed.',
     life: 2000
   })
+}
+
+const confirmDeleteTenant = async () => {
+  isDeletingTenant.value = true
+  const result = await tenantStore.deleteTenant(tenantId.value)
+  isDeletingTenant.value = false
+
+  if (!result.success) {
+    toast.add({ severity: 'error', summary: 'Error', detail: result.message || 'Failed to delete tenant.', life: 3000 })
+    return
+  }
+
+  deleteTenantDialogVisible.value = false
+  toast.add({ severity: 'success', summary: 'Deleted', detail: 'Tenant deleted successfully.', life: 2500 })
+  router.push('/dev')
 }
 
 onMounted(async () => {
