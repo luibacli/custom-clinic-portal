@@ -203,7 +203,7 @@ const routes = [
     path: '/change-pass',
     name: 'TenantChangePass',
     component: TenantChangePassPage,
-    meta: { roles: ['patient', 'admin', 'superadmin'] }
+    meta: { requiresTenantAuth: true, roles: ['patient', 'admin', 'superadmin'] }
   },
   {
     path: '/reset-password',

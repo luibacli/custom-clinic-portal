@@ -61,14 +61,22 @@ export const useAuthTenantStore = defineStore('authTenant', {
         isAdmin: localStorage.getItem("tenantRole") === "admin",
         isSuperAdmin: localStorage.getItem("tenantRole") === "superadmin",
         isDev: localStorage.getItem("tenantRole") === "dev",
-        roleOptions: [
-            { label: "Admin", value: "admin" },
-            { label: "Superadmin", value: "superadmin" },
-            { label: "Patient", value: "patient"}
-        ],
         tenantId: localStorage.getItem("tenantId") || null
 
     }),
+    getters: {
+        roleOptions(state) {
+            if (state.isDev || state.isSuperAdmin) {
+                return [
+                    { label: 'Admin',      value: 'admin'      },
+                    { label: 'Superadmin', value: 'superadmin' },
+                    { label: 'Patient',    value: 'patient'    },
+                ];
+            }
+            // admin can only create/update patients within their tenant
+            return [{ label: 'Patient', value: 'patient' }];
+        },
+    },
     actions: {
         async addUser() {
             try {
