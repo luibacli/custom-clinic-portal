@@ -21,7 +21,7 @@
 
     <div class="h-8 w-8 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center shrink-0">
       <img v-if="props.tenantLogoUrl" :src="props.tenantLogoUrl" alt="Logo" class="h-full w-full object-cover" />
-       <Avatar v-else image="/src/assets/myclinic_access_logo.png" shape="circle"/>
+       <Avatar v-else image="/myclinicaccess_logo.svg"/>
         
     </div>
 
