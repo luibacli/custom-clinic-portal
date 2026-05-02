@@ -398,7 +398,7 @@
     v-model:visible="devDialogVisible"
     modal
     :draggable="false"
-    header="Create Dev User"
+    :header="editingDevUser ? 'Edit Dev User' : 'Create Dev User'"
     :style="{ width: 'min(860px, 95vw)' }"
   >
     <div class="space-y-5 py-1">
@@ -465,8 +465,8 @@
       <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
         <Button label="Cancel" severity="secondary" outlined class="rounded-2xl" @click="devDialogVisible = false" />
         <Button
-          label="Create Dev User"
-          icon="pi pi-plus"
+          :label="editingDevUser ? 'Update Dev User' : 'Create Dev User'"
+          :icon="editingDevUser ? 'pi pi-check' : 'pi pi-plus'"
           :loading="isSaving"
           class="rounded-2xl"
           @click="handleDevSave"
@@ -670,22 +670,26 @@ const openCreateDev = () => {
   devDialogVisible.value = true
 }
 
-const openEditDev = (user) => {
-  editingDevUser.value = user
-  devForm.value = {
-    username: user.username || '',
-    email: user.email || '',
-    password: '',
-    firstName: user.firstName || '',
-    lastName: user.lastName || '',
-    birthday: user.birthday || '',
-    phone: user.phone || '',
-  }
-  formError.value = ''
-  devDialogVisible.value = true
-}
 
 const openEdit = (user) => {
+
+// open devdialog if user is dev and open user dialog if user is not dev
+  if (user.role === 'dev') {
+    editingDevUser.value = user
+    devForm.value = {
+      username: user.username || '',
+      email:    user.email    || '',
+      password: '',
+      firstName: user.firstName || '',
+      lastName:  user.lastName  || '',
+      birthday:  user.birthday  || '',
+      phone:     user.phone     || '',
+    }
+    formError.value = ''
+    devDialogVisible.value = true
+    return
+  }
+
   editingUser.value = user
   form.value = {
     tenantId:   user.tenantId?._id || user.tenantId || '',
@@ -729,7 +733,7 @@ const validateForm = () => {
 const validateDevForm = () => {
   if (!devForm.value.username)  return 'Username is required.'
   if (!devForm.value.email)     return 'Email is required.'
-  if (!devForm.value.password)  return 'Password is required.'
+  if (!editingDevUser.value && !devForm.value.password)  return 'Password is required.'
   if (!devForm.value.firstName) return 'First name is required.'
   if (!devForm.value.lastName)  return 'Last name is required.'
   return null
@@ -792,7 +796,7 @@ const handleDevSave = async () => {
   isSaving.value = true
 
   try {
-    // Populate store devForm then call addDevUser
+    // Populate store devForm then call addDev or updateDev
     authStore.devForm.username   = devForm.value.username
     authStore.devForm.email      = devForm.value.email
     authStore.devForm.password   = devForm.value.password
@@ -801,10 +805,10 @@ const handleDevSave = async () => {
     authStore.devForm.birthday   = devForm.value.birthday
     authStore.devForm.phone      = devForm.value.phone
 
-    const res = await authStore.addDev()
-    if (!res?.success) throw new Error(res?.message || 'Creation failed')
+    const res = editingDevUser.value ? await authStore.updateDev(editingDevUser.value._id) : await authStore.addDev()
+    if (!res?.success) throw new Error(res?.message || (editingDevUser.value ? 'Update failed' : 'Creation failed'))
 
-    toast.add({ severity: 'success', summary: 'Created', detail: res.message || 'Developer user created successfully', life: 3000 })
+    toast.add({ severity: 'success', summary: editingDevUser.value ? 'Updated' : 'Created', detail: res.message || `Developer user ${editingDevUser.value ? 'updated' : 'created'} successfully`, life: 3000 })
     closeDevDialog()
     await loadUsers(currentPage.value)
   } catch (err) {

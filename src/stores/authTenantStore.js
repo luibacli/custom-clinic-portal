@@ -168,6 +168,20 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 return { success: false, message: error.response?.data?.message || error.message || 'Failed to update user' };
             }
         },
+        async updateDev(id) {
+            try {
+                const { data } = await api.put(`/auth-tenant/${id}/user/update-dev`, this.devForm);
+                if (!data?.success) {
+                    throw new Error("Failed to Update Developer")
+                }
+                const index = this.tenants.findIndex(u => u._id == id);
+                if (index !== -1) { this.tenants[index] = data.user; }
+                return { success: data.success, data: data.user, message: data.message };
+            } catch (error) {
+                console.error("Failed to update developer", error);
+                return { success: false, message: error.response?.data?.message || error.message || 'Failed to update developer' };
+            }
+        },
         async uploadPhoto(id, file) {
             const formData = new FormData();
             formData.append("image", file);
