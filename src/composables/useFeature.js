@@ -25,7 +25,7 @@ export function useFeature() {
  // Check if auth tenant data is available
   const isEnabled = (key) =>
     computed(() => {
-      const val = tenantStore.tenant?.features?.[key] ?? authTenantStore.tenant?.data?.features?.[key]
+      const val = tenantStore.tenant?.features?.[key] ?? authTenantStore.tenant?.features?.[key]
       return val !== undefined ? val : (DEFAULTS[key] ?? false)
     })
 
