@@ -122,6 +122,7 @@ export const useTenantStore = defineStore('tenants', {
     async fetchTenant(id) {
       try {
         const res = await api.get(`/tenants/${id}`)
+        this.tenant = res.data;
         return res.data;
       } catch (error) {
         console.error('Failed to fetch tenant', error.message);

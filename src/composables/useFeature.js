@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useTenantStore } from '../stores/tenantStore'
+import { useAuthTenantStore } from '../stores/authTenantStore'
 
 const DEFAULTS = {
   messaging:     true,
@@ -14,14 +15,17 @@ const DEFAULTS = {
 
 export function useFeature() {
   const tenantStore = useTenantStore()
+  const authTenantStore = useAuthTenantStore()
 
   /**
    * Returns a computed boolean for the given feature key.
    * Falls back to DEFAULTS when tenant data isn't loaded yet.
    */
+
+ // Check if auth tenant data is available
   const isEnabled = (key) =>
     computed(() => {
-      const val = tenantStore.tenant?.features?.[key]
+      const val = tenantStore.tenant?.features?.[key] ?? authTenantStore.tenant?.data?.features?.[key]
       return val !== undefined ? val : (DEFAULTS[key] ?? false)
     })
 

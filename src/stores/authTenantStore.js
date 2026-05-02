@@ -221,6 +221,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 if (!validate?.success) {
                 localStorage.removeItem("tenantToken");
                 this.tenantToken = null;
+        
                 return {
                     success: false,
                     message: validate?.message || "User validation failed"
@@ -268,6 +269,9 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 this.isSuperAdmin = response.data.role === "superadmin";
                 this.isDev = response.data.role === "dev";
 
+                if(tenantId !== null) {
+                    await this.fetchTenant(tenantId);
+                };
                 localStorage.setItem("tenantRole", response.data.role);
                 if (response.data.email) {
                   localStorage.setItem("userEmail", response.data.email);
@@ -288,6 +292,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
         async fetchTenant(id) {
             try {
                 const res = await api.get(`/tenants/${id}`)
+                
                 this.tenant = res.data;
             } catch (error) {
                 console.error('Failed to fetch tenant', error.message);
