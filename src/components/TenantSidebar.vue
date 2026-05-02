@@ -108,9 +108,9 @@
         <NavItem v-if="featureMessaging" icon="pi-comments" label="Messages" to="/messages" :collapsed="collapsed" :badge="notifStore.messageUnread" />
         <NavDivider :collapsed="collapsed" label="Communications" />
         <NavItem v-if="featureMails" icon="pi-envelope" label="Emails" to="/inbox" :collapsed="collapsed" :badge="notifStore.emailUnread" />
-        <NavItem v-if="featureMails" icon="pi-send" label="Mails" to="/mails" :collapsed="collapsed" />
+        <NavItem v-if="featureVerification" icon="pi-check-square" label="Verification Center" to="/mails" :collapsed="collapsed" />
         <NavDivider :collapsed="collapsed" label="Insights" />
-        <NavItem icon="pi-chart-bar" label="Analytics" to="/analytics" :collapsed="collapsed" />
+        <NavItem v-if="featureAnalytics" icon="pi-chart-bar" label="Analytics" to="/analytics" :collapsed="collapsed" />
         <NavDivider :collapsed="collapsed" label="Account" />
         <NavItem icon="pi-user" label="Profile" to="/profile" :collapsed="collapsed" exact />
       </template>
@@ -124,10 +124,10 @@
         <NavItem v-if="featureMessaging" icon="pi-comments" label="Messages" to="/messages" :collapsed="collapsed" :badge="notifStore.messageUnread" />
         <NavDivider :collapsed="collapsed" label="Communications" />
         <NavItem v-if="featureMails" icon="pi-envelope" label="Emails" to="/inbox" :collapsed="collapsed" :badge="notifStore.emailUnread" />
-        <NavItem v-if="featureMails" icon="pi-send" label="Mails" to="/mails" :collapsed="collapsed" />
+        <NavItem v-if="featureVerification" icon="pi-check-square" label="Verification Center" to="/mails" :collapsed="collapsed" />
         <NavDivider :collapsed="collapsed" label="Management" />
         <NavItem v-if="featureUsers" icon="pi-users" label="Users" to="/users" :collapsed="collapsed" />
-        <NavItem icon="pi-chart-bar" label="Analytics" to="/analytics" :collapsed="collapsed" />
+        <NavItem v-if="featureAnalytics" icon="pi-chart-bar" label="Analytics" to="/analytics" :collapsed="collapsed" />
         <NavItem icon="pi-credit-card" label="Billing" to="/billing" :collapsed="collapsed" />
         <NavDivider :collapsed="collapsed" label="Account" />
         <NavItem icon="pi-user" label="Profile" to="/profile" :collapsed="collapsed" exact />
@@ -343,7 +343,9 @@ const featureMessaging    = isEnabled('messaging')
 const featureAppointments = isEnabled('appointments')
 const featureQrScan       = isEnabled('qrScan')
 const featureMails        = isEnabled('mails')
+const featureVerification   = isEnabled('verifications')
 const featureUsers        = isEnabled('users')
+const featureAnalytics    = isEnabled('analytics')
 
 const mobileOpen      = ref(false)
 const showNotifPanel  = ref(false)

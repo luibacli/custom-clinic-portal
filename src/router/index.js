@@ -98,7 +98,7 @@ const routes = [
         path: '/mails',
         name: 'TenantMails',
         component: TenantMailsPage,
-        meta: { roles: ['admin', 'superadmin'], feature: 'mails'  },
+        meta: { roles: ['admin', 'superadmin'], feature: 'verifications'  },
       },
       {
         path: '/users',

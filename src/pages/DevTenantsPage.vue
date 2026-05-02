@@ -1069,7 +1069,7 @@ const isEditUserMode = ref(false)
 
 const FEATURE_DEFAULTS = {
   messaging: true, appointments: true, qrScan: true,
-  mails: true, users: true, analytics: false,
+  mails: true, verifications: false, analytics: false,
   exportReports: false, smsReminders: false,
 }
 
@@ -1078,6 +1078,7 @@ const featureList = [
   { key: 'appointments',  label: 'Appointments',      description: 'Booking & queue management', icon: 'pi-calendar' },
   { key: 'qrScan',        label: 'QR Scan Check-in',  description: 'QR code patient check-in',   icon: 'pi-qrcode' },
   { key: 'mails',         label: 'Mails & Inbox',     description: 'Email links and inbox',      icon: 'pi-envelope' },
+  {key: 'verifications', label: 'Verification Center',description: 'Email verification and management', icon: 'pi-shield' },
   { key: 'users',         label: 'User Management',   description: 'Manage clinic staff',        icon: 'pi-users' },
   { key: 'analytics',     label: 'Analytics',         description: 'Dashboard reports',          icon: 'pi-chart-bar' },
   { key: 'exportReports', label: 'Export Reports',    description: 'Download data as XLSX/PDF',  icon: 'pi-file-export' },

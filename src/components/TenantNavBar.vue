@@ -174,7 +174,7 @@ const items = computed(() => {
     featureQrScan.value       && { label: 'Scan QR',      icon: 'pi pi-qrcode',    command: () => router.push('/scan') },
     featureMessaging.value    && { label: 'Messages',     icon: 'pi pi-comments',  command: () => router.push('/messages') },
     featureMails.value        && { label: 'Emails',       icon: 'pi pi-envelope',  command: () => router.push('/inbox') },
-    featureMails.value        && { label: 'Mails',        icon: 'pi pi-send',      command: () => router.push('/mails') },
+    featureMails.value        && { label: 'Verifications', icon: 'pi pi-check-square',      command: () => router.push('/mails') },
     { label: 'Analytics',                                                                       icon: 'pi pi-chart-bar',   command: () => router.push('/analytics') },
     { label: 'Profile',                                                                         icon: 'pi pi-user',        command: () => router.push('/profile') },
   ].filter(Boolean)

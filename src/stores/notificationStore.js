@@ -84,15 +84,7 @@ export const useNotificationStore = defineStore('notifications', () => {
             items.push({ id: 'email-unread', type: 'email', title: `${unread} unread email${unread > 1 ? 's' : ''}`, body: 'Tap to view your emails', route: '/inbox', at: null })
           }
         }
-      } else if (['admin', 'superadmin'].includes(role)) {
-        const res = await api.get('/email/inbox')
-        const emails = Array.isArray(res.data) ? res.data : (res.data?.data || [])
-        const unread = emails.filter(e => !e.isRead).length
-        emailUnread.value = unread
-        if (unread > 0) {
-          items.push({ id: 'email-unread', type: 'email', title: `${unread} unread email${unread > 1 ? 's' : ''}`, body: 'Tap to view your emails', route: '/inbox', at: null })
-        }
-      }
+      } 
     } catch (_) { /* silent */ }
 
     // ── 3. Appointment status updates (patient only) ────────────────────────
