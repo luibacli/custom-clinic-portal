@@ -1069,7 +1069,7 @@ const isEditUserMode = ref(false)
 
 const FEATURE_DEFAULTS = {
   messaging: true, appointments: true, qrScan: true,
-  mails: true, users: true, analytics: false,
+  mails: true, verifications: false, analytics: false,
   exportReports: false, smsReminders: false,
 }
 
