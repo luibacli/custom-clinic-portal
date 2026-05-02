@@ -218,8 +218,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import { useAuthTenantStore } from '../stores/authTenantStore'
-import Password from 'primevue/password'
-import Button from 'primevue/button'
 
 const router = useRouter()
 const toast = useToast()

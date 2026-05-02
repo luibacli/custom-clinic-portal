@@ -80,8 +80,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthTenantStore } from '../stores/authTenantStore'
-import Password from 'primevue/password'
-import Button from 'primevue/button'
+
 
 const router = useRouter()
 const route = useRoute()

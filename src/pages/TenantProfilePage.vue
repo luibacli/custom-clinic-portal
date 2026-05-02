@@ -320,7 +320,7 @@ import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useToast } from 'primevue/usetoast'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
-import Password from 'primevue/password'
+
 import DatePicker from 'primevue/datepicker'
 import { storeToRefs } from 'pinia'
 import Loading from '../components/Loading.vue'

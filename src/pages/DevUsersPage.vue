@@ -514,7 +514,7 @@ import { useRouter } from 'vue-router'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useTenantStore } from '../stores/tenantStore'
 import Tag from 'primevue/tag'
-import Password from 'primevue/password'
+
 
 const toast       = useToast()
 const router      = useRouter()

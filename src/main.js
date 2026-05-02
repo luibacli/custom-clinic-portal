@@ -35,6 +35,7 @@ import Image from 'primevue/image';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import Tooltip from 'primevue/tooltip';
+import Password from 'primevue/password';
 import { Card, Button, Select, InputText, DatePicker, Drawer, PanelMenuStyle, PanelMenu } from 'primevue';
 import { createPinia } from 'pinia';
 import { useTenantStore } from './stores/tenantStore';
@@ -108,6 +109,7 @@ const bootstrap = async () => {
   app.component('Drawer', Drawer);
   app.component('IconField', IconField);
   app.component('InputIcon', InputIcon);
+  app.component('Password', Password);
 
   app.directive('tooltip', Tooltip);
 
