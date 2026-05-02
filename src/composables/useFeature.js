@@ -7,6 +7,7 @@ const DEFAULTS = {
   appointments:  true,
   qrScan:        true,
   mails:         true,
+  verifications: false,
   users:         true,
   analytics:     false,
   exportReports: false,
