@@ -393,44 +393,66 @@
     </template>
   </Dialog>
 
-  <!-- Dev User Dialog -->
+  <!-- Dev User Dialog Make Sure UI is the same with create user dialog -->
    <Dialog
     v-model:visible="devDialogVisible"
     modal
     :draggable="false"
     header="Create Dev User"
-    :style="{ width: 'min(500px, 95vw)' }"
+    :style="{ width: 'min(860px, 95vw)' }"
   >
-    <div class="space-y-4">
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Username</label>
-        <InputText v-model="devForm.username" placeholder="Username" class="w-full" />
+    <div class="space-y-5 py-1">
+
+      <!-- Account Credentials -->
+      <div class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 p-4">
+        <p class="text-xs uppercase tracking-[0.15em] text-slate-400 mb-4">Account Credentials</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Username</label>
+            <InputText v-model="devForm.username" placeholder="Username" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
+            <InputText v-model="devForm.email" placeholder="Email" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Password</label>
+            <Password
+              v-model="devForm.password"
+              :feedback="false"
+              toggleMask
+              placeholder="Password"
+              class="w-full"
+              inputClass="w-full"
+            />
+          </div>
+        </div>
       </div>
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
-        <InputText v-model="devForm.email" placeholder="Email" class="w-full" />
+
+      <!-- Personal Information -->
+      <div class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 p-4">
+        <p class="text-xs uppercase tracking-[0.15em] text-slate-400 mb-4">Personal Information</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">First Name</label>
+            <InputText v-model="devForm.firstName" placeholder="First Name" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Last Name</label>
+            <InputText v-model="devForm.lastName" placeholder="Last Name" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>
+            <InputText v-model="devForm.birthday" placeholder="YYYY-MM-DD" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Phone Number</label>
+            <InputText v-model="devForm.phone" placeholder="09XXXXXXXXX" class="w-full" />
+          </div>
+        </div>
       </div>
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Password</label>
-        <Password v-model="devForm.password" placeholder="Password" class="w-full" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">First Name</label>
-        <InputText v-model="devForm.firstName" placeholder="First Name" class="w-full" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Last Name</label>
-        <InputText v-model="devForm.lastName" placeholder="Last Name" class="w-full" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>
-        <InputText v-model="devForm.birthday" placeholder="YYYY-MM-DD" class="w-full" />
-      </div>
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Phone Number</label>
-        <InputText v-model="devForm.phone" placeholder="09XXXXXXXXX" class="w-full" />
-      </div>
-                <!-- Error -->
+
+      <!-- Error -->
       <div
         v-if="formError"
         class="rounded-xl border border-red-200 bg-red-50 dark:bg-red-500/10 dark:border-red-500/20 px-4 py-3 text-sm text-red-700 dark:text-red-300"
@@ -439,7 +461,6 @@
       </div>
     </div>
 
-  
     <template #footer>
       <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
         <Button label="Cancel" severity="secondary" outlined class="rounded-2xl" @click="devDialogVisible = false" />
