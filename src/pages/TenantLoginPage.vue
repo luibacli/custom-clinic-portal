@@ -396,7 +396,6 @@ const handleLogin = async () => {
     loginError.value = res?.message || 'Invalid email or password.'
     return
   }
-
   if (res.role === 'patient') {
     router.replace('/patient')
   } else if (res.role === 'dev') {

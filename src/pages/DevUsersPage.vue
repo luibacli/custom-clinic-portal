@@ -38,10 +38,17 @@
               class="rounded-2xl w-full sm:w-auto"
               @click="openCreate"
             />
+            <Button
+              label="Create Dev"
+              icon="pi pi-plus"
+              class="rounded-2xl w-full sm:w-auto"
+              @click="openCreateDev"
+            />
           </div>
         </div>
       </div>
-    </section>
+    </section> 
+
 
     <!-- KPI Cards -->
     <section class="grid grid-cols-2 xl:grid-cols-4 gap-4">
@@ -386,6 +393,88 @@
     </template>
   </Dialog>
 
+  <!-- Dev User Dialog Make Sure UI is the same with create user dialog -->
+   <Dialog
+    v-model:visible="devDialogVisible"
+    modal
+    :draggable="false"
+    :header="editingDevUser ? 'Edit Dev User' : 'Create Dev User'"
+    :style="{ width: 'min(860px, 95vw)' }"
+  >
+    <div class="space-y-5 py-1">
+
+      <!-- Account Credentials -->
+      <div class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 p-4">
+        <p class="text-xs uppercase tracking-[0.15em] text-slate-400 mb-4">Account Credentials</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Username</label>
+            <InputText v-model="devForm.username" placeholder="Username" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
+            <InputText v-model="devForm.email" placeholder="Email" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Password</label>
+            <Password
+              v-model="devForm.password"
+              :feedback="false"
+              toggleMask
+              placeholder="Password"
+              class="w-full"
+              inputClass="w-full"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Information -->
+      <div class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 p-4">
+        <p class="text-xs uppercase tracking-[0.15em] text-slate-400 mb-4">Personal Information</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">First Name</label>
+            <InputText v-model="devForm.firstName" placeholder="First Name" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Last Name</label>
+            <InputText v-model="devForm.lastName" placeholder="Last Name" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>
+            <InputText v-model="devForm.birthday" placeholder="YYYY-MM-DD" class="w-full" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Phone Number</label>
+            <InputText v-model="devForm.phone" placeholder="09XXXXXXXXX" class="w-full" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div
+        v-if="formError"
+        class="rounded-xl border border-red-200 bg-red-50 dark:bg-red-500/10 dark:border-red-500/20 px-4 py-3 text-sm text-red-700 dark:text-red-300"
+      >
+        <i class="pi pi-exclamation-triangle mr-2"></i>{{ formError }}
+      </div>
+    </div>
+
+    <template #footer>
+      <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+        <Button label="Cancel" severity="secondary" outlined class="rounded-2xl" @click="devDialogVisible = false" />
+        <Button
+          :label="editingDevUser ? 'Update Dev User' : 'Create Dev User'"
+          :icon="editingDevUser ? 'pi pi-check' : 'pi pi-plus'"
+          :loading="isSaving"
+          class="rounded-2xl"
+          @click="handleDevSave"
+        />
+      </div>
+    </template>
+  </Dialog>
+
   <!-- Delete Confirmation Dialog -->
   <Dialog
     v-model:visible="deleteDialogVisible"
@@ -425,7 +514,7 @@ import { useRouter } from 'vue-router'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useTenantStore } from '../stores/tenantStore'
 import Tag from 'primevue/tag'
-import Password from 'primevue/password'
+
 
 const toast       = useToast()
 const router      = useRouter()
@@ -450,10 +539,13 @@ const filterTenant = ref(null)
 let   searchTimer  = null
 
 const dialogVisible       = ref(false)
+const devDialogVisible    = ref(false)
 const deleteDialogVisible = ref(false)
 const editingUser         = ref(null)
+const editingDevUser      = ref(null)
 const userToDelete        = ref(null)
 const formError           = ref('')
+
 
 const emptyForm = () => ({
   tenantId:   '',
@@ -468,14 +560,25 @@ const emptyForm = () => ({
   role:       '',
 })
 
+const emptyDevForm = () => ({
+  username: '',
+  email: '',
+  password: '',
+  firstName: '',
+  lastName: '',
+  birthday: '',
+  phone: '',
+})
+
 const form = ref(emptyForm())
+
+const devForm = ref(emptyDevForm())
 
 // ─── Options ──────────────────────────────────────────────────────────────────
 const roleOptions = [
   { label: 'Patient',    value: 'patient'    },
   { label: 'Admin',      value: 'admin'      },
   { label: 'Superadmin', value: 'superadmin' },
-  { label: 'Dev',        value: 'dev'        },
 ]
 
 const roleFilterOptions = [
@@ -561,7 +664,32 @@ const openCreate = () => {
   dialogVisible.value = true
 }
 
+const openCreateDev = () => {
+  devForm.value = emptyDevForm()
+  formError.value = ''
+  devDialogVisible.value = true
+}
+
+
 const openEdit = (user) => {
+
+// open devdialog if user is dev and open user dialog if user is not dev
+  if (user.role === 'dev') {
+    editingDevUser.value = user
+    devForm.value = {
+      username: user.username || '',
+      email:    user.email    || '',
+      password: '',
+      firstName: user.firstName || '',
+      lastName:  user.lastName  || '',
+      birthday:  user.birthday  || '',
+      phone:     user.phone     || '',
+    }
+    formError.value = ''
+    devDialogVisible.value = true
+    return
+  }
+
   editingUser.value = user
   form.value = {
     tenantId:   user.tenantId?._id || user.tenantId || '',
@@ -586,6 +714,13 @@ const closeDialog = () => {
   formError.value = ''
 }
 
+const closeDevDialog = () => {
+  devDialogVisible.value = false
+  editingDevUser.value = null
+  devForm.value = emptyDevForm()
+  formError.value = ''
+}
+
 const validateForm = () => {
   if (!form.value.tenantId)  return 'Tenant is required.'
   if (!form.value.email)     return 'Email is required.'
@@ -595,10 +730,18 @@ const validateForm = () => {
   return null
 }
 
+const validateDevForm = () => {
+  if (!devForm.value.username)  return 'Username is required.'
+  if (!devForm.value.email)     return 'Email is required.'
+  if (!editingDevUser.value && !devForm.value.password)  return 'Password is required.'
+  if (!devForm.value.firstName) return 'First name is required.'
+  if (!devForm.value.lastName)  return 'Last name is required.'
+  return null
+} 
+
 const handleSave = async () => {
   formError.value = validateForm() || ''
   if (formError.value) return
-
   isSaving.value = true
 
   try {
@@ -639,6 +782,34 @@ const handleSave = async () => {
     }
 
     closeDialog()
+    await loadUsers(currentPage.value)
+  } catch (err) {
+    formError.value = err.message || 'Something went wrong.'
+  } finally {
+    isSaving.value = false
+  }
+}
+
+const handleDevSave = async () => {
+  formError.value = validateDevForm() || ''
+  if (formError.value) return
+  isSaving.value = true
+
+  try {
+    // Populate store devForm then call addDev or updateDev
+    authStore.devForm.username   = devForm.value.username
+    authStore.devForm.email      = devForm.value.email
+    authStore.devForm.password   = devForm.value.password
+    authStore.devForm.firstName  = devForm.value.firstName
+    authStore.devForm.lastName   = devForm.value.lastName
+    authStore.devForm.birthday   = devForm.value.birthday
+    authStore.devForm.phone      = devForm.value.phone
+
+    const res = editingDevUser.value ? await authStore.updateDev(editingDevUser.value._id) : await authStore.addDev()
+    if (!res?.success) throw new Error(res?.message || (editingDevUser.value ? 'Update failed' : 'Creation failed'))
+
+    toast.add({ severity: 'success', summary: editingDevUser.value ? 'Updated' : 'Created', detail: res.message || `Developer user ${editingDevUser.value ? 'updated' : 'created'} successfully`, life: 3000 })
+    closeDevDialog()
     await loadUsers(currentPage.value)
   } catch (err) {
     formError.value = err.message || 'Something went wrong.'

@@ -29,6 +29,16 @@ export const useAuthTenantStore = defineStore('authTenant', {
             password: "",
             role: "",
         },
+        devForm: {
+            username: "",
+            email: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            birthday: "",
+            password: "",
+            role: "dev",
+        },
         loginForm: {
             email: "",
             password: "",
@@ -100,6 +110,28 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 };
             }
         },
+        async addDev() {
+            try {
+                if (!this.devForm.email || !this.devForm.firstName || !this.devForm.lastName) {
+                    throw new Error("All Fields Are Required")
+                }
+
+                const { data } = await api.post("auth-tenant/create-dev", this.devForm);
+                return {
+                    success: data.success,
+                    data: data.user,
+                    message: data.message
+                };
+
+            } catch (error) {
+                console.error({ message: error.message });
+
+                return {
+                    success: false,
+                    message: error.response?.data?.message || error.message
+                };
+            }
+        },
         async addUserPatient() {
             try {
                 if (!this.registerForm.email || !this.registerForm.firstName || !this.registerForm.lastName) {
@@ -134,6 +166,20 @@ export const useAuthTenantStore = defineStore('authTenant', {
             } catch (error) {
                 console.error("Failed to update user", error);
                 return { success: false, message: error.response?.data?.message || error.message || 'Failed to update user' };
+            }
+        },
+        async updateDev(id) {
+            try {
+                const { data } = await api.put(`/auth-tenant/${id}/user/update-dev`, this.devForm);
+                if (!data?.success) {
+                    throw new Error("Failed to Update Developer")
+                }
+                const index = this.tenants.findIndex(u => u._id == id);
+                if (index !== -1) { this.tenants[index] = data.user; }
+                return { success: data.success, data: data.user, message: data.message };
+            } catch (error) {
+                console.error("Failed to update developer", error);
+                return { success: false, message: error.response?.data?.message || error.message || 'Failed to update developer' };
             }
         },
         async uploadPhoto(id, file) {
@@ -175,6 +221,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 if (!validate?.success) {
                 localStorage.removeItem("tenantToken");
                 this.tenantToken = null;
+        
                 return {
                     success: false,
                     message: validate?.message || "User validation failed"
@@ -222,6 +269,9 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 this.isSuperAdmin = response.data.role === "superadmin";
                 this.isDev = response.data.role === "dev";
 
+                if(tenantId !== null) {
+                    await this.fetchTenant(tenantId);
+                };
                 localStorage.setItem("tenantRole", response.data.role);
                 if (response.data.email) {
                   localStorage.setItem("userEmail", response.data.email);
@@ -242,7 +292,9 @@ export const useAuthTenantStore = defineStore('authTenant', {
         async fetchTenant(id) {
             try {
                 const res = await api.get(`/tenants/${id}`)
-                this.tenant = res.data;
+                
+                this.tenant = res.data.data;
+        
             } catch (error) {
                 console.error('Failed to fetch tenant', error.message);
             }

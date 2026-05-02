@@ -98,13 +98,13 @@ const routes = [
         path: '/mails',
         name: 'TenantMails',
         component: TenantMailsPage,
-        meta: { roles: ['admin', 'superadmin'] }
+        meta: { roles: ['admin', 'superadmin'], feature: 'mails'  },
       },
       {
         path: '/users',
         name: 'TenantUsers',
         component: TenantUsersPage,
-        meta: { roles: ['superadmin'] }
+        meta: { roles: ['superadmin'], feature: 'users'},
       },
       {
         path: '/patient',
@@ -116,25 +116,25 @@ const routes = [
         path: '/inbox',
         name: 'Inbox',
         component: TenantMailPage,
-        meta: { roles: ['patient', 'admin', 'superadmin'] }
+        meta: { roles: ['patient', 'admin', 'superadmin'], feature: 'mails' },
       },
       {
         path: '/appointments',
         name: 'Appointments',
         component: TenantAppointmentsPage,
-        meta: { roles: ['admin', 'superadmin'] }
+        meta: { roles: ['admin', 'superadmin'], feature: 'appointments' },
       },
       {
         path: '/messages',
         name: 'Messages',
         component: TenantMessagesPage,
-        meta: { roles: ['patient', 'admin', 'superadmin'] }
+        meta: { roles: ['patient', 'admin', 'superadmin'], feature: 'messaging' }
       },
       {
         path: '/scan',
         name: 'QRScan',
         component: TenantQRScanPage,
-        meta: { roles: ['admin', 'superadmin'] }
+        meta: { roles: ['admin', 'superadmin'], feature: 'qrScan' }
       },
       {
         path: '/profile',
@@ -152,7 +152,7 @@ const routes = [
         path: '/analytics',
         name: 'Analytics',
         component: () => import('../pages/AnalyticsPage.vue'),
-        meta: { roles: ['admin', 'superadmin'] }
+        meta: { roles: ['admin', 'superadmin'], feature: 'analytics'}
       },
 
       // Dev pages — accessible to users with role="dev" authenticated via tenant login
@@ -232,7 +232,7 @@ const router = createRouter({
   }
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authTenantStore = useAuthTenantStore();
   const tenantToken = localStorage.getItem('tenantToken');
   const tenantRole  = localStorage.getItem('tenantRole');
@@ -256,7 +256,15 @@ router.beforeEach((to, from, next) => {
       return next('/signin');
     }
   }
+//  always fetch tenant on refresh or url change 
 
+    if (tenantToken && !authTenantStore.tenant) {
+  const tenantId = localStorage.getItem('tenantId')
+
+  if (tenantId) {
+    await authTenantStore.fetchTenant(tenantId)
+  }
+}
   // Role-based access control
   const allowedRoles = to.meta.roles || [];
   if (allowedRoles.length && !allowedRoles.includes(tenantRole)) {
@@ -269,7 +277,22 @@ router.beforeEach((to, from, next) => {
     );
   }
 
-  next();
-});
+  // feature access control
+  const featureKey = to.meta.feature
+
+  if (featureKey) {
+    const features =
+      authTenantStore.tenant?.features ||
+      {}
+
+    const enabled = features[featureKey] === true
+
+    if (!enabled) {
+      return next('/tenant-home')
+    }
+  }
+
+    next();
+  });
 
 export default router;
