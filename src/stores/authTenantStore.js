@@ -29,6 +29,16 @@ export const useAuthTenantStore = defineStore('authTenant', {
             password: "",
             role: "",
         },
+        devForm: {
+            username: "",
+            email: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            birthday: "",
+            password: "",
+            role: "dev",
+        },
         loginForm: {
             email: "",
             password: "",
@@ -85,6 +95,28 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 }
 
                 const { data } = await api.post("auth-tenant/create", this.userForm);
+                return {
+                    success: data.success,
+                    data: data.user,
+                    message: data.message
+                };
+
+            } catch (error) {
+                console.error({ message: error.message });
+
+                return {
+                    success: false,
+                    message: error.response?.data?.message || error.message
+                };
+            }
+        },
+        async addDev() {
+            try {
+                if (!this.devForm.email || !this.devForm.firstName || !this.devForm.lastName) {
+                    throw new Error("All Fields Are Required")
+                }
+
+                const { data } = await api.post("auth-tenant/create-dev", this.devForm);
                 return {
                     success: data.success,
                     data: data.user,
