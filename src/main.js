@@ -113,32 +113,66 @@ const bootstrap = async () => {
 
   app.directive('tooltip', Tooltip);
 
-  const tenantStore = useTenantStore(pinia);
-  const authTenantStore = useAuthTenantStore(pinia);
+const tenantStore = useTenantStore(pinia);
+const authTenantStore = useAuthTenantStore(pinia);
 
-  try {
-    // This is a tenant-only portal — always initialize tenant context
-    await tenantStore.initTenant();
-    authTenantStore.checkToken();
+try {
+  const host = window.location.hostname;
+  const baseDomain = 'myclinicaccess.com';
 
-    watch(
-      () => tenantStore.tenant?.name,
-      (tenantName) => {
-        document.title = tenantName
-          ? `${tenantName} | My Clinic Access`
-          : 'My Clinic Access';
-      },
-      { immediate: true }
-    );
+  const reservedSubdomains = [
+    'www',
+    'dev',
+    'app',
+    'admin',
+    'api'
+  ];
 
-    watch(
-      () => tenantStore.tenant?.branding,
-      (branding) => applyBrandingVars(branding),
-      { immediate: true, deep: true }
-    );
-  } catch (error) {
-    console.error('Bootstrap auth/init failed:', error);
+  const isLocalhost =
+    host === 'localhost' ||
+    host === '127.0.0.1';
+
+  const isBaseDomain =
+    host === baseDomain;
+
+  const isSubdomain =
+    host.endsWith(`.${baseDomain}`);
+
+  let shouldInitTenant = false;
+
+  if (!isLocalhost && !isBaseDomain && isSubdomain) {
+    const subdomain = host.replace(`.${baseDomain}`, '');
+
+    if (!reservedSubdomains.includes(subdomain)) {
+      shouldInitTenant = true;
+    }
   }
+
+  // Only initialize tenant context for real clinic subdomains
+  if (shouldInitTenant) {
+    await tenantStore.initTenant();
+  }
+
+  authTenantStore.checkToken();
+
+  watch(
+    () => tenantStore.tenant?.name,
+    (tenantName) => {
+      document.title = tenantName
+        ? `${tenantName} | My Clinic Access`
+        : 'My Clinic Access';
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => tenantStore.tenant?.branding,
+    (branding) => applyBrandingVars(branding),
+    { immediate: true, deep: true }
+  );
+} catch (error) {
+  console.error('Bootstrap auth/init failed:', error);
+}
 
   await router.isReady();
   app.mount('#app');

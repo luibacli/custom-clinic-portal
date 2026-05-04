@@ -120,13 +120,24 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
+                  Username <span class="text-red-500">*</span>
+                </label>
                 <InputText
-                  v-model="userForm.email"
-                  placeholder="Enter email"
-                  type="email"
+                  v-model="userForm.username"
+                  placeholder="e.g. jdelacruz"
+                  type="text"
                   class="w-full"
+                  :disabled="!!userForm._id"
                 />
+                <div
+                  v-if="generatedEmail"
+                  class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10"
+                >
+                  <i class="pi pi-at text-slate-400 text-xs shrink-0"></i>
+                  <span class="text-xs font-mono text-slate-600 dark:text-slate-300 break-all">{{ generatedEmail }}</span>
+                  <span class="ml-auto text-[10px] text-slate-400 whitespace-nowrap">System email</span>
+                </div>
               </div>
 
               <div class="space-y-2">
@@ -135,6 +146,20 @@
                   v-model="userForm.pin"
                   placeholder="Optional"
                   type="text"
+                  class="w-full"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 mt-4">
+              <div class="space-y-2">
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
+                  Password {{ userForm._id ? '(leave blank to keep current)' : '' }}
+                </label>
+                <InputText
+                  v-model="userForm.password"
+                  :placeholder="userForm._id ? 'Leave blank to keep current password' : 'Set initial password (auto-generated if blank)'"
+                  type="password"
                   class="w-full"
                 />
               </div>
@@ -459,16 +484,27 @@ const search = ref('')
 
 const authTenantStore = useAuthTenantStore()
 
-const { userForm, dialogVisible, dialogRemoveVisible, isLoading, roleOptions, tenants } = storeToRefs(authTenantStore)
+const { userForm, dialogVisible, dialogRemoveVisible, isLoading, roleOptions, tenants, tenant } = storeToRefs(authTenantStore)
 const { addUser, updateUser, fetchTenantUsers, resetUserForm, removeUserTenant, toggleUserStatus } = authTenantStore
 
 const togglingId = ref(null)
 
+const deriveAbbr = (name = '') =>
+  name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
+    .split(/\s+/).map(w => w[0]).filter(Boolean).join('')
+
+const generatedEmail = computed(() => {
+  const u = (userForm.value.username || '').toLowerCase().replace(/[^a-z0-9._-]/g, '')
+  const abbr = deriveAbbr(tenant.value?.name || '')
+  if (!u || !abbr) return ''
+  return `${u}.${abbr}@myclinicaccess.com`
+})
+
 const resolver = ({ values }) => {
   const error = {}
 
-  if (!values.email) {
-    error.email = [{ message: 'Email is required' }]
+  if (!values.username) {
+    error.username = [{ message: 'Username is required' }]
   }
   if (!values.role) {
     error.role = [{ message: 'Role is required' }]
@@ -519,11 +555,15 @@ const save = async () => {
         throw new Error(result.message)
       }
 
+      const detail = result.generatedPassword
+        ? `Account created. Email: ${result.generatedEmail} | Temp password: ${result.generatedPassword}`
+        : `Account created. Email: ${result.generatedEmail}`
+
       toast.add({
         severity: 'success',
-        summary: 'Created',
-        detail: 'Tenant user created successfully',
-        life: 3000
+        summary: 'User Created',
+        detail,
+        life: 8000,
       })
     }
 
@@ -559,7 +599,11 @@ const loadTenantUsers = async (searchTerm = '') => {
   userForm.value.tenantId = tenantId.value
 
   try {
-    const users = await fetchTenantUsers(tenantId.value, searchTerm)
+    const tasks = [fetchTenantUsers(tenantId.value, searchTerm)]
+    if (!tenant.value && tenantId.value) {
+      tasks.push(authTenantStore.fetchTenant(tenantId.value))
+    }
+    const [users] = await Promise.all(tasks)
     tenants.value = users?.data || []
   } catch (error) {
     console.error('Failed to load tenant', error.message)
