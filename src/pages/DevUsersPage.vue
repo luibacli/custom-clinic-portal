@@ -307,24 +307,39 @@
       <div class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 p-4">
         <p class="text-xs uppercase tracking-[0.15em] text-slate-400 mb-4">Account Credentials</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-2">
+          <!-- CREATE: username input with live email preview -->
+          <div v-if="!editingUser" class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
-              Email <span class="text-red-500">*</span>
+              Username <span class="text-red-500">*</span>
             </label>
-            <InputText v-model="form.email" placeholder="user@clinic.com" type="email" class="w-full" :disabled="!!editingUser" />
+            <InputText v-model="form.username" placeholder="e.g. jdelacruz" class="w-full" />
+            <div
+              v-if="createEmailPreview"
+              class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10"
+            >
+              <i class="pi pi-at text-slate-400 text-xs shrink-0"></i>
+              <span class="text-xs font-mono text-slate-600 dark:text-slate-300 break-all">{{ createEmailPreview }}</span>
+              <span class="ml-auto text-[10px] text-slate-400 whitespace-nowrap">System email</span>
+            </div>
           </div>
+          <!-- EDIT: generated email shown read-only -->
+          <div v-else class="space-y-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">System Email</label>
+            <InputText :value="form.email" disabled class="w-full opacity-70" />
+          </div>
+
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
               Password
               <span class="ml-1 text-xs font-normal text-slate-400">
-                {{ editingUser ? '(leave blank to keep current)' : '(default: Yakap2026!)' }}
+                {{ editingUser ? '(leave blank to keep current)' : '(auto-generated if blank)' }}
               </span>
             </label>
             <Password
               v-model="form.password"
               :feedback="false"
               toggleMask
-              :placeholder="editingUser ? 'Leave blank to keep current' : 'Leave blank for default'"
+              :placeholder="editingUser ? 'Leave blank to keep current' : 'Leave blank to auto-generate'"
               class="w-full"
               inputClass="w-full"
             />
@@ -549,6 +564,7 @@ const formError           = ref('')
 
 const emptyForm = () => ({
   tenantId:   '',
+  username:   '',
   email:      '',
   password:   '',
   pin:        '',
@@ -591,6 +607,19 @@ const roleFilterOptions = [
 const tenantOptions = computed(() =>
   (tenants.value || []).map(t => ({ label: t.name, value: t._id }))
 )
+
+// ─── Email preview helpers ────────────────────────────────────────────────────
+const deriveAbbr = (name = '') =>
+  name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
+    .split(/\s+/).map(w => w[0]).filter(Boolean).join('')
+
+const createEmailPreview = computed(() => {
+  const u = (form.value.username || '').toLowerCase().replace(/[^a-z0-9._-]/g, '')
+  const selectedTenant = (tenants.value || []).find(t => t._id === form.value.tenantId)
+  const abbr = deriveAbbr(selectedTenant?.name || '')
+  if (!u || !abbr) return ''
+  return `${u}.${abbr}@myclinicaccess.com`
+})
 
 // ─── KPI Cards ────────────────────────────────────────────────────────────────
 const kpiCards = computed(() => [
@@ -723,7 +752,7 @@ const closeDevDialog = () => {
 
 const validateForm = () => {
   if (!form.value.tenantId)  return 'Tenant is required.'
-  if (!form.value.email)     return 'Email is required.'
+  if (!editingUser.value && !form.value.username) return 'Username is required.'
   if (!form.value.firstName) return 'First name is required.'
   if (!form.value.lastName)  return 'Last name is required.'
   if (!form.value.role)      return 'Role is required.'
@@ -746,9 +775,7 @@ const handleSave = async () => {
 
   try {
     if (editingUser.value) {
-      // Populate store userForm then call updateUser
       authStore.userForm.tenantId   = form.value.tenantId
-      authStore.userForm.email      = form.value.email
       authStore.userForm.pin        = form.value.pin
       authStore.userForm.firstName  = form.value.firstName
       authStore.userForm.middleName = form.value.middleName
@@ -763,9 +790,8 @@ const handleSave = async () => {
 
       toast.add({ severity: 'success', summary: 'Updated', detail: res.message || 'User updated successfully', life: 3000 })
     } else {
-      // Populate store userForm then call addUser
       authStore.userForm.tenantId   = form.value.tenantId
-      authStore.userForm.email      = form.value.email
+      authStore.userForm.username   = form.value.username
       authStore.userForm.pin        = form.value.pin
       authStore.userForm.firstName  = form.value.firstName
       authStore.userForm.middleName = form.value.middleName
@@ -778,7 +804,10 @@ const handleSave = async () => {
       const res = await authStore.addUser()
       if (!res?.success) throw new Error(res?.message || 'Creation failed')
 
-      toast.add({ severity: 'success', summary: 'Created', detail: res.message || 'User created successfully', life: 3000 })
+      const detail = res.generatedPassword
+        ? `Created. Email: ${res.generatedEmail} | Temp password: ${res.generatedPassword}`
+        : `Created. Email: ${res.generatedEmail}`
+      toast.add({ severity: 'success', summary: 'Created', detail, life: 8000 })
     }
 
     closeDialog()
@@ -786,6 +815,7 @@ const handleSave = async () => {
   } catch (err) {
     formError.value = err.message || 'Something went wrong.'
   } finally {
+    authStore.resetUserForm()
     isSaving.value = false
   }
 }

@@ -292,11 +292,10 @@ export const useAuthTenantStore = defineStore('authTenant', {
             }
         },
         async fetchTenant(id) {
+            if (!id) return;
             try {
                 const res = await api.get(`/tenants/${id}`)
-                
                 this.tenant = res.data.data;
-        
             } catch (error) {
                 console.error('Failed to fetch tenant', error.message);
             }

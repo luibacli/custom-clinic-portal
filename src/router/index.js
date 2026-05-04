@@ -256,15 +256,13 @@ router.beforeEach(async (to, from, next) => {
       return next('/signin');
     }
   }
-//  always fetch tenant on refresh or url change 
-
-    if (tenantToken && !authTenantStore.tenant) {
-  const tenantId = localStorage.getItem('tenantId')
-
-  if (tenantId) {
-    await authTenantStore.fetchTenant(tenantId)
+  // Re-hydrate tenant on refresh — skip for dev role (no tenant scope)
+  if (tenantToken && !authTenantStore.tenant && tenantRole !== 'dev') {
+    const tenantId = localStorage.getItem('tenantId');
+    if (tenantId) {
+      await authTenantStore.fetchTenant(tenantId);
+    }
   }
-}
   // Role-based access control
   const allowedRoles = to.meta.roles || [];
   if (allowedRoles.length && !allowedRoles.includes(tenantRole)) {
