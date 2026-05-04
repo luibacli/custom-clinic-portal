@@ -28,7 +28,6 @@ const TenantProfilePage    = () => import('../pages/TenantProfilePage.vue');
 const TenantChangePassPage = () => import('../pages/TenantChangePassPage.vue');
 const TenantResetPassPage  = () => import('../pages/TenantResetPassPage.vue');
 const TenantVerifyEmailPage = () => import('../pages/TenantVerifyEmailPage.vue');
-const MobileNotSupported   = () => import('../pages/MobileNotSupported.vue');
 
 const TenantAppointmentsPage    = () => import('../pages/TenantAppointmentsPage.vue');
 const TenantMessagesPage        = () => import('../pages/TenantMessagesPage.vue');
@@ -201,11 +200,6 @@ const routes = [
     component: ContactPage
   },
 
-  {
-    path: '/mobile',
-    name: 'Mobile',
-    component: MobileNotSupported
-  },
   {
     path: '/change-pass',
     name: 'TenantChangePass',

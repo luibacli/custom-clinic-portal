@@ -118,6 +118,7 @@
       modal
       :draggable="false"
       :showHeader="false"
+      :dismissableMask="true"
       :style="{ width: 'min(420px, 100vw)', borderRadius: '1.5rem', overflow: 'hidden' }"
       :contentStyle="{ padding: 0 }"
     >
@@ -125,7 +126,7 @@
         <!-- Close -->
         <button
           @click="showStaffModal = false"
-          class="absolute top-4 right-4 h-9 w-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors z-10"
+          class="absolute top-4 right-4 h-9 w-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors z-20"
         >
           <i class="pi pi-times text-sm"></i>
         </button>
@@ -859,11 +860,13 @@ const downloadId = async () => {
         margin: 0,
         filename: `patient-id-${patientDisplayId.value}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+        html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
         jsPDF: { unit: 'mm', format: [210, 120], orientation: 'landscape' },
       })
       .from(idCardRef.value)
       .save()
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save ID card', life: 3000 })
   } finally {
     downloadingId.value = false
   }
