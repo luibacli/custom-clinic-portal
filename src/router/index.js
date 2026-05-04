@@ -30,9 +30,10 @@ const TenantResetPassPage  = () => import('../pages/TenantResetPassPage.vue');
 const TenantVerifyEmailPage = () => import('../pages/TenantVerifyEmailPage.vue');
 const MobileNotSupported   = () => import('../pages/MobileNotSupported.vue');
 
-const TenantAppointmentsPage = () => import('../pages/TenantAppointmentsPage.vue');
-const TenantMessagesPage     = () => import('../pages/TenantMessagesPage.vue');
-const TenantQRScanPage       = () => import('../pages/TenantQRScanPage.vue');
+const TenantAppointmentsPage    = () => import('../pages/TenantAppointmentsPage.vue');
+const TenantMessagesPage        = () => import('../pages/TenantMessagesPage.vue');
+const TenantQRScanPage          = () => import('../pages/TenantQRScanPage.vue');
+const TenantPatientManagePage   = () => import('../pages/TenantPatientManagePage.vue');
 
 // Dev pages (accessed by users with role="dev" via tenant auth)
 const DevHomePage    = () => import('../pages/DevHomePage.vue');
@@ -117,6 +118,12 @@ const routes = [
         name: 'Inbox',
         component: TenantMailPage,
         meta: { roles: ['patient', 'admin', 'superadmin'], feature: 'mails' },
+      },
+      {
+        path: '/patients',
+        name: 'Patients',
+        component: TenantPatientManagePage,
+        meta: { roles: ['admin', 'superadmin'] },
       },
       {
         path: '/appointments',
