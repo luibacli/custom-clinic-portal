@@ -64,8 +64,12 @@ onMounted(async () => {
     const result = await fetchUserTenant();
     firstName.value = result.data?.firstName || '';
     lastName.value  = result.data?.lastName  || '';
-    await authTenantStore.fetchTenant(result.data?.tenantId);
 
+    const role     = result.data?.role;
+    const tenantId = result.data?.tenantId;
+    if (role !== 'dev' && tenantId) {
+      await authTenantStore.fetchTenant(tenantId);
+    }
 
     if (isPatient.value) {
       const tenantId = localStorage.getItem('tenantId');

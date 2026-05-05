@@ -28,11 +28,11 @@ const TenantProfilePage    = () => import('../pages/TenantProfilePage.vue');
 const TenantChangePassPage = () => import('../pages/TenantChangePassPage.vue');
 const TenantResetPassPage  = () => import('../pages/TenantResetPassPage.vue');
 const TenantVerifyEmailPage = () => import('../pages/TenantVerifyEmailPage.vue');
-const MobileNotSupported   = () => import('../pages/MobileNotSupported.vue');
 
-const TenantAppointmentsPage = () => import('../pages/TenantAppointmentsPage.vue');
-const TenantMessagesPage     = () => import('../pages/TenantMessagesPage.vue');
-const TenantQRScanPage       = () => import('../pages/TenantQRScanPage.vue');
+const TenantAppointmentsPage    = () => import('../pages/TenantAppointmentsPage.vue');
+const TenantMessagesPage        = () => import('../pages/TenantMessagesPage.vue');
+const TenantQRScanPage          = () => import('../pages/TenantQRScanPage.vue');
+const TenantPatientManagePage   = () => import('../pages/TenantPatientManagePage.vue');
 
 // Dev pages (accessed by users with role="dev" via tenant auth)
 const DevHomePage    = () => import('../pages/DevHomePage.vue');
@@ -119,6 +119,12 @@ const routes = [
         meta: { roles: ['patient', 'admin', 'superadmin'], feature: 'mails' },
       },
       {
+        path: '/patients',
+        name: 'Patients',
+        component: TenantPatientManagePage,
+        meta: { roles: ['admin', 'superadmin'] },
+      },
+      {
         path: '/appointments',
         name: 'Appointments',
         component: TenantAppointmentsPage,
@@ -195,11 +201,6 @@ const routes = [
   },
 
   {
-    path: '/mobile',
-    name: 'Mobile',
-    component: MobileNotSupported
-  },
-  {
     path: '/change-pass',
     name: 'TenantChangePass',
     component: TenantChangePassPage,
@@ -256,15 +257,13 @@ router.beforeEach(async (to, from, next) => {
       return next('/signin');
     }
   }
-//  always fetch tenant on refresh or url change 
-
-    if (tenantToken && !authTenantStore.tenant) {
-  const tenantId = localStorage.getItem('tenantId')
-
-  if (tenantId) {
-    await authTenantStore.fetchTenant(tenantId)
+  // Re-hydrate tenant on refresh — skip for dev role (no tenant scope)
+  if (tenantToken && !authTenantStore.tenant && tenantRole !== 'dev') {
+    const tenantId = localStorage.getItem('tenantId');
+    if (tenantId) {
+      await authTenantStore.fetchTenant(tenantId);
+    }
   }
-}
   // Role-based access control
   const allowedRoles = to.meta.roles || [];
   if (allowedRoles.length && !allowedRoles.includes(tenantRole)) {

@@ -72,11 +72,11 @@
           Secure Patient Access
         </div>
 
-        <!-- Clinic name -->
+        <!-- Clinic / brand name -->
         <h1 class="mt-5 text-4xl xl:text-5xl font-bold text-white leading-[1.1] tracking-tight">
           {{ tenantDisplayName }}
         </h1>
-        <p class="mt-2 text-sm font-medium text-blue-200/70 tracking-widest uppercase">
+        <p v-if="tenantResolved && tenant" class="mt-2 text-sm font-medium text-blue-200/70 tracking-widest uppercase">
           Powered by My Clinic Access
         </p>
 
@@ -188,7 +188,7 @@
             alt="Clinic Logo"
             class="h-full w-full object-cover"
           />
-          <Avatar  v-else image="/myclinicaccess_logo.svg" size="large"/>>
+          <Avatar  v-else image="/myclinicaccess_logo.svg" size="large"/>
         </div>
         <div class="min-w-0">
           <p class="font-bold text-slate-800 text-base leading-tight truncate">{{ tenantDisplayName }}</p>
@@ -221,14 +221,18 @@
             </div>
           </div>
 
-          <!-- Clinic context badge -->
+          <!-- Context badge -->
           <div class="mb-6 flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
             <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shrink-0">
               <i class="pi pi-building text-white text-xs"></i>
             </div>
             <div class="min-w-0">
               <p class="text-sm font-semibold text-slate-800 truncate">{{ tenantDisplayName }}</p>
-              <p class="text-xs text-slate-400 mt-0.5">Your clinic manages your account access.</p>
+              <p class="text-xs text-slate-400 mt-0.5">
+                {{ tenantResolved && tenant
+                    ? 'Your clinic manages your account access.'
+                    : 'Sign in to access your clinic portal.' }}
+              </p>
             </div>
           </div>
 
@@ -356,12 +360,12 @@ const forgotLoading  = ref(false)
 const forgotSent     = ref(false)
 
 const tenantDisplayName = computed(() => {
-  if (!tenant.value) return 'Health Facility Portal'
+  if (!tenant.value) return 'My Clinic Access'
   return (
     tenant.value.name ||
     tenant.value.domain ||
     tenant.value.subdomain ||
-    'Tenant Portal'
+    'My Clinic Access'
   )
 })
 

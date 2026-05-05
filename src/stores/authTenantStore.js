@@ -19,7 +19,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
         },
         userForm: {
             tenantId: null,
-            email: "",
+            username: "",
             pin: "",
             firstName: "",
             middleName: "",
@@ -90,14 +90,16 @@ export const useAuthTenantStore = defineStore('authTenant', {
     actions: {
         async addUser() {
             try {
-                if (!this.userForm.email || !this.userForm.firstName || !this.userForm.lastName) {
-                    throw new Error("All Fields Are Required")
+                if (!this.userForm.username || !this.userForm.firstName || !this.userForm.lastName) {
+                    throw new Error("Username, First Name, and Last Name are required")
                 }
 
                 const { data } = await api.post("auth-tenant/create", this.userForm);
                 return {
                     success: data.success,
-                    data: data.user,
+                    data: data.data,
+                    generatedEmail: data.generatedEmail,
+                    generatedPassword: data.generatedPassword,
                     message: data.message
                 };
 
@@ -269,7 +271,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
                 this.isSuperAdmin = response.data.role === "superadmin";
                 this.isDev = response.data.role === "dev";
 
-                if(tenantId !== null) {
+                if(tenantId) {
                     await this.fetchTenant(tenantId);
                 };
                 localStorage.setItem("tenantRole", response.data.role);
@@ -290,11 +292,10 @@ export const useAuthTenantStore = defineStore('authTenant', {
             }
         },
         async fetchTenant(id) {
+            if (!id) return;
             try {
                 const res = await api.get(`/tenants/${id}`)
-                
                 this.tenant = res.data.data;
-        
             } catch (error) {
                 console.error('Failed to fetch tenant', error.message);
             }
@@ -415,7 +416,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
         },
         resetUserForm() {
             this.userForm.tenantId = null;
-            this.userForm.email = "";
+            this.userForm.username = "";
             this.userForm.pin = "";
             this.userForm.firstName = "";
             this.userForm.middleName = "";

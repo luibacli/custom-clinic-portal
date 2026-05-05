@@ -103,6 +103,7 @@
       <template v-else-if="isAdmin && !isSuperAdmin">
         <NavItem icon="pi-home" label="Home" to="/tenant-home" :collapsed="collapsed" exact />
         <NavDivider :collapsed="collapsed" label="Patient Care" />
+        <NavItem icon="pi-users" label="Patients" to="/patients" :collapsed="collapsed" />
         <NavItem v-if="featureAppointments" icon="pi-calendar" label="Appointments" to="/appointments" :collapsed="collapsed" />
         <NavItem v-if="featureQrScan" icon="pi-qrcode" label="Scan QR" to="/scan" :collapsed="collapsed" />
         <NavItem v-if="featureMessaging" icon="pi-comments" label="Messages" to="/messages" :collapsed="collapsed" :badge="notifStore.messageUnread" />
@@ -119,6 +120,7 @@
       <template v-else-if="isSuperAdmin">
         <NavItem icon="pi-home" label="Home" to="/tenant-home" :collapsed="collapsed" exact />
         <NavDivider :collapsed="collapsed" label="Patient Care" />
+        <NavItem icon="pi-users" label="Patients" to="/patients" :collapsed="collapsed" />
         <NavItem v-if="featureAppointments" icon="pi-calendar" label="Appointments" to="/appointments" :collapsed="collapsed" />
         <NavItem v-if="featureQrScan" icon="pi-qrcode" label="Scan QR" to="/scan" :collapsed="collapsed" />
         <NavItem v-if="featureMessaging" icon="pi-comments" label="Messages" to="/messages" :collapsed="collapsed" :badge="notifStore.messageUnread" />

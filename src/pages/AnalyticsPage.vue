@@ -119,8 +119,8 @@ import Chart from 'primevue/chart'
 import api from '../lib/axios'
 
 const toast = useToast()
-const loading = ref(true)
 const tenantId = localStorage.getItem('tenantId') || ''
+const loading = ref(!!tenantId)
 
 const analytics = ref({
   appointmentsByDay: [],
@@ -246,6 +246,7 @@ const donutOptions = {
 }
 
 const loadAnalytics = async () => {
+  if (!tenantId) return
   loading.value = true
   try {
     const { data } = await api.get(`/analytics/${tenantId}`)

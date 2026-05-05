@@ -627,6 +627,7 @@ const handleRefresh = async () => {
 
 const handleRowClick = (event) => {
   const tenant = event.data;
+  if (!tenant?._id) return;
   router.push(`/tenant/${tenant._id}`);
 };
 

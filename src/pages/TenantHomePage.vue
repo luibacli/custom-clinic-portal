@@ -1,4 +1,6 @@
 <template>
+  <Toast />
+
   <!-- Loading -->
   <div
     v-if="loading"
@@ -94,6 +96,114 @@
         :staff-count="activeAdmin.length"
         :is-email-verified="currentUserVerified"
       />
+
+      <!-- Clinic Branding — superadmin only -->
+      <section
+        v-if="isSuperAdmin"
+        class="rounded-[28px] bg-white border border-slate-200 shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800"
+      >
+        <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800">
+          <h2 class="text-lg sm:text-xl font-semibold text-slate-800 dark:text-white">Clinic Branding</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Customize your clinic's logo and visual identity.</p>
+        </div>
+
+        <div class="p-4 sm:p-5 space-y-5">
+          <!-- Logo Upload -->
+          <div class="flex items-center gap-4 flex-wrap">
+            <div class="w-20 h-20 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0 bg-slate-50 dark:bg-slate-800">
+              <img v-if="currentLogoUrl" :src="currentLogoUrl" alt="Clinic logo" class="w-full h-full object-contain p-1" />
+              <i v-else class="pi pi-image text-2xl text-slate-300 dark:text-slate-600"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-slate-700 dark:text-slate-200 mb-0.5">Clinic Logo</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-2.5">PNG or JPG · shown in the sidebar and login page.</p>
+              <input ref="logoInput" type="file" accept="image/png,image/jpeg,image/webp" class="hidden" @change="onLogoSelected" />
+              <button
+                type="button"
+                @click="logoInput.click()"
+                :disabled="uploadingLogo"
+                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-50"
+              >
+                <i :class="uploadingLogo ? 'pi pi-spin pi-spinner' : 'pi pi-upload'" class="text-xs"></i>
+                {{ uploadingLogo ? 'Uploading…' : 'Upload Logo' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Branding Fields -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Brand Color -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">Brand Color</label>
+              <div class="flex items-center gap-2">
+                <input
+                  type="color"
+                  v-model="brandingForm.primaryColor"
+                  class="h-9 w-12 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer p-0.5 bg-white dark:bg-slate-800"
+                />
+                <span class="text-sm font-mono text-slate-600 dark:text-slate-300">{{ brandingForm.primaryColor }}</span>
+              </div>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">Welcome Message</label>
+              <input
+                type="text"
+                v-model="brandingForm.welcomeMessage"
+                placeholder="Welcome to our clinic portal"
+                class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
+              />
+            </div>
+
+            <!-- Phone -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">Phone</label>
+              <input
+                type="text"
+                v-model="brandingForm.phone"
+                placeholder="+63 912 345 6789"
+                class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
+              />
+            </div>
+
+            <!-- Contact Email -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">Contact Email</label>
+              <input
+                type="email"
+                v-model="brandingForm.email"
+                placeholder="clinic@example.com"
+                class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
+              />
+            </div>
+
+            <!-- Address -->
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">Address</label>
+              <input
+                type="text"
+                v-model="brandingForm.address"
+                placeholder="123 Main St, City, Province"
+                class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
+              />
+            </div>
+          </div>
+
+          <!-- Save Button -->
+          <div class="flex justify-end pt-1">
+            <button
+              type="button"
+              @click="saveBranding"
+              :disabled="savingBranding"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-primary text-white hover:opacity-90 transition disabled:opacity-50"
+            >
+              <i :class="savingBranding ? 'pi pi-spin pi-spinner' : 'pi pi-check'" class="text-xs"></i>
+              {{ savingBranding ? 'Saving…' : 'Save Changes' }}
+            </button>
+          </div>
+        </div>
+      </section>
 
       <!-- KPI Cards -->
       <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -400,7 +510,10 @@ import Loading from "../components/Loading.vue";
 import OnboardingChecklist from "../components/OnboardingChecklist.vue";
 import { storeToRefs } from "pinia";
 import Tag from "primevue/tag";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 
+const toast = useToast();
 const { branding, brandGradientStyle } = useBranding();
 const tenantStore = useTenantStore();
 const authTenantStore = useAuthTenantStore();
@@ -428,6 +541,50 @@ const todayApptCount = ref(0);
 const todayInQueueCount = ref(0);
 const todayCompletedCount = ref(0);
 const currentUserVerified = ref(false);
+
+// Branding section (superadmin only)
+const currentLogoUrl = ref('');
+const uploadingLogo = ref(false);
+const savingBranding = ref(false);
+const logoInput = ref(null);
+const brandingForm = ref({
+  primaryColor: '#2563eb',
+  welcomeMessage: '',
+  phone: '',
+  email: '',
+  address: '',
+});
+
+const onLogoSelected = async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  uploadingLogo.value = true;
+  try {
+    const result = await tenantStore.uploadLogo(tenantId.value, file);
+    if (result?.tenantLogo?.url) {
+      currentLogoUrl.value = result.tenantLogo.url;
+      toast.add({ severity: 'success', summary: 'Uploaded', detail: 'Logo updated successfully', life: 3000 });
+    } else {
+      toast.add({ severity: 'error', summary: 'Error', detail: result?.message || 'Failed to upload logo', life: 4000 });
+    }
+  } catch {
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Logo upload failed', life: 4000 });
+  } finally {
+    uploadingLogo.value = false;
+    if (logoInput.value) logoInput.value.value = '';
+  }
+};
+
+const saveBranding = async () => {
+  savingBranding.value = true;
+  const result = await tenantStore.updateBranding(tenantId.value, brandingForm.value);
+  if (result.success) {
+    toast.add({ severity: 'success', summary: 'Saved', detail: 'Branding updated successfully', life: 3000 });
+  } else {
+    toast.add({ severity: 'error', summary: 'Error', detail: result.message || 'Failed to update branding', life: 4000 });
+  }
+  savingBranding.value = false;
+};
 
 const formatLogTime = (ts) => {
   if (!ts) return '—';
@@ -466,6 +623,15 @@ onMounted(async () => {
 
     if (res?.data) {
       tenantName.value = res.data.name;
+      currentLogoUrl.value = res.data.tenantLogo?.url || '';
+      const b = res.data.branding || {};
+      brandingForm.value = {
+        primaryColor:   b.primaryColor   || '#2563eb',
+        welcomeMessage: b.welcomeMessage || '',
+        phone:          b.phone          || '',
+        email:          b.email          || '',
+        address:        b.address        || '',
+      };
     }
 
     if (users?.success) {
