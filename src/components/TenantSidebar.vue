@@ -21,7 +21,7 @@
 
     <div class="h-8 w-8 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center shrink-0">
       <img v-if="props.tenantLogoUrl" :src="props.tenantLogoUrl" alt="Logo" class="h-full w-full object-cover" />
-       <Avatar v-else image="/myclinicaccess_logo.svg"/>
+       <Avatar v-else image="/myclinicaccess_logo.png"/>
         
     </div>
 
@@ -53,7 +53,7 @@
     <div v-if="!collapsed" class="flex items-center gap-3 px-3 py-3.5 shrink-0 border-b border-slate-100 dark:border-white/10">
       <div class="h-9 w-9 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 dark:border-white/10">
         <img v-if="props.tenantLogoUrl" :src="props.tenantLogoUrl" alt="Logo" class="h-full w-full object-cover" />
-        <Avatar v-else image="/myclinicaccess_logo.svg" shape="circle"/>
+        <Avatar v-else image="/myclinicaccess_logo.png" shape="circle"/>
       </div>
       <div class="min-w-0 flex-1">
         <p class="text-sm font-bold text-slate-800 dark:text-white truncate leading-tight">{{ clinicName }}</p>
@@ -72,7 +72,7 @@
     <div v-else class="flex flex-col items-center px-2 py-3 gap-2 shrink-0 border-b border-slate-100 dark:border-white/10">
       <div class="h-9 w-9 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200 dark:border-white/10">
         <img v-if="props.tenantLogoUrl" :src="props.tenantLogoUrl" alt="Logo" class="h-full w-full object-cover" />
-         <Avatar v-else image="/myclinicaccess_logo.svg"/>
+         <Avatar v-else image="/myclinicaccess_logo.png"/>
          <!-- <i class="pi pi-bars" style="color: green;"></i> -->
       </div>
       <button
