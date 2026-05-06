@@ -5,7 +5,7 @@
 
         <!-- Logo -->
         <router-link to="/" class="flex items-center gap-2.5 shrink-0 group">
-           <Avatar image="/myclinicaccess_logo.svg" size="large"/>
+           <Avatar image="/myclinicaccess_logo.png" size="large"/>
           <div class="leading-tight">
             <span class="font-bold text-slate-800 text-sm block">My Clinic Access</span>
             <span class="text-[10px] font-semibold text-blue-600 uppercase tracking-widest block">myclinicaccess.com</span>

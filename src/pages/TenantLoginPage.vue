@@ -188,7 +188,7 @@
             alt="Clinic Logo"
             class="h-full w-full object-cover"
           />
-          <Avatar  v-else image="/myclinicaccess_logo.svg" size="large"/>
+          <Avatar  v-else image="/myclinicaccess_logo.png" size="large"/>
         </div>
         <div class="min-w-0">
           <p class="font-bold text-slate-800 text-base leading-tight truncate">{{ tenantDisplayName }}</p>
@@ -217,7 +217,7 @@
                 alt="Clinic Logo"
                 class="h-full w-full object-cover"
               />
-                <Avatar v-else image="/myclinicaccess_logo.svg" size="large"/>
+                <Avatar v-else image="/myclinicaccess_logo.png" size="large"/>
             </div>
           </div>
 

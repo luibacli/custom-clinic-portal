@@ -7,7 +7,7 @@
         <!-- Col 1: Brand + Description -->
         <div class="sm:col-span-2 lg:col-span-1 space-y-4">
           <router-link to="/" class="flex items-center gap-2.5 group">
-             <Avatar image="/myclinicaccess_logo.svg" size="large"/>
+             <Avatar image="/myclinicaccess_logo.png" size="large"/>
             <div class="leading-tight">
               <span class="text-white font-bold text-sm block">My Clinic Access</span>
               <span class="text-[10px] text-blue-400 uppercase tracking-widest font-semibold block">myclinicaccess.com</span>
