@@ -462,9 +462,9 @@ const features = [
 ]
 
 const planPreviews = [
-  { id: 'starter', name: 'Starter', price: 1499, sub: '500 patients', badge: null  },
-  { id: 'growth',  name: 'Growth',  price: 2999, sub: '2,000 patients', badge: 'Popular' },
-  { id: 'premium', name: 'Premium', price: 5499, sub: 'Unlimited', badge: null  },
+  { id: 'starter', name: 'Starter', price: 1399, sub: '10,000 patients',  badge: null     },
+  { id: 'growth',  name: 'Growth',  price: 2899, sub: '20,000 patients',  badge: 'Popular' },
+  { id: 'premium', name: 'Premium', price: 5399, sub: 'Unlimited patients', badge: null   },
 ]
 
 const trust = [

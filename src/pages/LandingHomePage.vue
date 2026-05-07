@@ -31,18 +31,18 @@
 
             <div class="mt-8 flex flex-col sm:flex-row gap-3">
               <router-link
-                to="/book-demo"
+                to="/get-started"
                 class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-cyan-600 active:scale-95 transition-all duration-150"
               >
-                <i class="pi pi-calendar"></i>
-                Book a Free Demo
+                <i class="pi pi-arrow-right"></i>
+                Start Free Trial
               </router-link>
               <router-link
-                to="/pricing"
+                to="/book-demo"
                 class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl border border-slate-300 text-slate-700 font-semibold text-sm sm:text-base hover:bg-slate-50 hover:border-slate-400 transition-all duration-150"
               >
-                See Pricing
-                <i class="pi pi-arrow-right text-sm"></i>
+                <i class="pi pi-calendar text-sm"></i>
+                Book a Demo
               </router-link>
             </div>
 

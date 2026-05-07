@@ -52,6 +52,15 @@ const routes = [
     beforeEnter: (to, from, next) => {
       const tenantToken = localStorage.getItem('tenantToken');
       const tenantRole  = localStorage.getItem('tenantRole');
+      const host        = window.location.hostname;
+      const isClinicPortal = host !== 'myclinicaccess.com'
+        && host !== 'www.myclinicaccess.com'
+        && !['localhost', '127.0.0.1'].includes(host);
+
+      // Unauthenticated visitor on a clinic subdomain → go to login, not marketing
+      if (isClinicPortal && (!tenantToken || isTokenExpired(tenantToken))) {
+        return next('/signin');
+      }
 
       if (!tenantToken || isTokenExpired(tenantToken)) return next();
       if (tenantRole === 'patient') return next('/patient');
