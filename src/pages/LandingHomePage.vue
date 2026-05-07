@@ -26,8 +26,7 @@
             </h1>
 
             <p class="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed">
-              My Clinic Access is the all-in-one platform for clinics, patients, and healthcare teams —
-              automate patient registration, manage queues, and communicate in real time under your clinic's own brand.
+              My Clinic Access gives every patient a real digital identity — including those without an email address — and equips your clinic with the tools to register, queue, and communicate efficiently under your own brand.
             </p>
 
             <div class="mt-8 flex flex-col sm:flex-row gap-3">
@@ -165,14 +164,22 @@
           <h2 class="mt-2 text-3xl sm:text-4xl font-bold text-white">One Platform. All the Answers.</h2>
           <p class="mt-3 text-blue-100">Everything your clinic needs to operate efficiently — built, configured, and running under your brand.</p>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <div v-for="solution in solutions" :key="solution.title"
-            class="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm p-6 hover:bg-white/15 transition-all duration-200"
+            class="rounded-2xl border p-6 backdrop-blur-sm transition-all duration-200"
+            :class="solution.highlight
+              ? 'border-cyan-300/50 bg-white/20 hover:bg-white/25 ring-1 ring-cyan-300/30'
+              : 'border-white/15 bg-white/10 hover:bg-white/15'"
           >
-            <div class="h-11 w-11 rounded-2xl bg-white/20 text-white flex items-center justify-center mb-4">
+            <div class="h-11 w-11 rounded-2xl flex items-center justify-center mb-4"
+              :class="solution.highlight ? 'bg-cyan-400/30 text-cyan-100' : 'bg-white/20 text-white'"
+            >
               <i :class="solution.icon" class="text-lg"></i>
             </div>
-            <h3 class="font-semibold text-white mb-1.5">{{ solution.title }}</h3>
+            <div class="flex items-center gap-2 mb-1.5">
+              <h3 class="font-semibold text-white">{{ solution.title }}</h3>
+              <span v-if="solution.badge" class="text-[10px] font-bold bg-cyan-400 text-cyan-900 px-2 py-0.5 rounded-full leading-none">{{ solution.badge }}</span>
+            </div>
             <p class="text-sm text-blue-100 leading-relaxed">{{ solution.desc }}</p>
           </div>
         </div>
@@ -413,6 +420,8 @@ const problems = [
 ]
 
 const solutions = [
+  { icon: 'pi pi-envelope',          title: 'Patient Digital Identity',     desc: 'Instantly generate a clinic-domain email for any patient — giving them a verified digital identity they can use across healthcare services, with or without a personal email.', highlight: true, badge: 'Signature' },
+  { icon: 'pi pi-id-card',           title: 'QR Patient ID Card',           desc: 'Every patient gets a unique QR-linked digital ID card — ready for clinic check-in, verification, and future digital services on every visit.', highlight: true, badge: 'Signature' },
   { icon: 'pi pi-user-plus',         title: 'Digital Patient Registration', desc: 'Register patients in minutes with a clean digital form. No paper, no lost records.' },
   { icon: 'pi pi-sort-numeric-up',   title: 'Queue Management System',      desc: 'Real-time queue visibility for patients and staff. Clear order, no confusion.' },
   { icon: 'pi pi-inbox',             title: 'Clinic Inbox',                 desc: 'Direct, organized messaging between clinic and patients. Appointments confirmed, reminders sent.' },
@@ -426,12 +435,12 @@ const howItWorks = [
 ]
 
 const keyFeatures = [
-  { icon: 'pi pi-user-plus', title: 'Patient Registration',  desc: 'Digital forms replace paper. Fast, accurate, searchable.',            bg: 'bg-blue-50',    color: 'text-blue-600' },
-  { icon: 'pi pi-list',      title: 'Queue Management',      desc: 'Live queue status visible to staff and patients.',                     bg: 'bg-amber-50',   color: 'text-amber-600' },
-  { icon: 'pi pi-inbox',     title: 'Patient Inbox',         desc: 'Secure clinic-to-patient messaging in one place.',                     bg: 'bg-emerald-50', color: 'text-emerald-600' },
-  { icon: 'pi pi-id-card',   title: 'Digital Patient ID',    desc: 'Every patient gets a unique digital identity card.',                   bg: 'bg-purple-50',  color: 'text-purple-600' },
-  { icon: 'pi pi-users',     title: 'Role-Based Access',     desc: 'Admin, staff, and patient views — each seeing only what they need.',  bg: 'bg-cyan-50',    color: 'text-cyan-600' },
-  { icon: 'pi pi-sliders',   title: 'Custom Workflows',      desc: 'Configured around your clinic, not a generic template.',               bg: 'bg-rose-50',    color: 'text-rose-600' },
+  { icon: 'pi pi-envelope',  title: 'Patient Digital Identity', desc: 'Instant clinic-domain email for any patient — with or without a personal email address.',  bg: 'bg-blue-50',    color: 'text-blue-600' },
+  { icon: 'pi pi-id-card',   title: 'QR Patient ID Card',       desc: 'Every patient gets a unique QR-linked digital ID card, reusable on every visit.',          bg: 'bg-cyan-50',    color: 'text-cyan-600' },
+  { icon: 'pi pi-user-plus', title: 'Patient Registration',     desc: 'Digital forms replace paper. Fast, accurate, searchable.',                                  bg: 'bg-violet-50',  color: 'text-violet-600' },
+  { icon: 'pi pi-list',      title: 'Queue Management',         desc: 'Live queue status visible to staff and patients.',                                           bg: 'bg-amber-50',   color: 'text-amber-600' },
+  { icon: 'pi pi-inbox',     title: 'Patient Inbox',            desc: 'Secure clinic-to-patient messaging in one place.',                                           bg: 'bg-emerald-50', color: 'text-emerald-600' },
+  { icon: 'pi pi-sliders',   title: 'Custom Workflows',         desc: 'Configured around your clinic, not a generic template.',                                     bg: 'bg-rose-50',    color: 'text-rose-600' },
 ]
 
 const whyUs = [

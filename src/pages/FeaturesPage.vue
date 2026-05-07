@@ -127,10 +127,22 @@ import LandingLayout from '../layouts/LandingLayout.vue'
 
 const coreFeatures = [
   {
+    icon: 'pi pi-envelope',   title: 'Patient Digital Identity',
+    desc: 'Give any patient a verified digital identity — instantly. We generate a clinic-domain email address so patients can access digital healthcare services even without a personal email.',
+    bullets: ['Clinic-domain email generated in seconds', 'Works for patients with no personal email', 'Usable for digital health service enrollment'],
+    bg: 'bg-blue-50', color: 'text-blue-600'
+  },
+  {
+    icon: 'pi pi-id-card',    title: 'QR Patient ID Card',
+    desc: 'Every registered patient receives a unique QR-linked digital ID card. Scannable at check-in, shareable digitally, and valid on every future visit.',
+    bullets: ['Unique QR code per patient', 'Instant card generation on registration', 'Reusable and retrievable across visits'],
+    bg: 'bg-cyan-50', color: 'text-cyan-600'
+  },
+  {
     icon: 'pi pi-user-plus',  title: 'Digital Patient Registration',
     desc: 'Replace paper forms with a clean digital registration flow. Patient data is stored accurately and is instantly searchable.',
     bullets: ['No more handwritten forms', 'Instant patient lookup', 'Unique patient ID per registration'],
-    bg: 'bg-blue-50', color: 'text-blue-600'
+    bg: 'bg-violet-50', color: 'text-violet-600'
   },
   {
     icon: 'pi pi-sort-numeric-up', title: 'Queue Management System',
@@ -149,12 +161,6 @@ const coreFeatures = [
     desc: 'A centralized view of everything happening in your clinic today — patients registered, queue status, and messages.',
     bullets: ['Daily patient overview', 'Queue status at a glance', 'Activity tracking'],
     bg: 'bg-purple-50', color: 'text-purple-600'
-  },
-  {
-    icon: 'pi pi-id-card',    title: 'Digital Patient ID',
-    desc: 'Every registered patient receives a unique digital ID card. Fast to generate, easy to retrieve on any visit.',
-    bullets: ['QR-ready patient ID', 'Instant card generation', 'Reusable across visits'],
-    bg: 'bg-cyan-50', color: 'text-cyan-600'
   },
   {
     icon: 'pi pi-users',      title: 'Multi-Role Access Control',
