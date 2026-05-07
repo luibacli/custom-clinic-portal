@@ -87,14 +87,14 @@ const steps = computed(() => [
     label: 'Upload clinic logo',
     description: 'Add your clinic logo for a professional, branded experience.',
     done: !!tenant.value?.tenantLogo?.url,
-    route: '/profile',
+    route: '/setup',
   },
   {
     key: 'branding',
     label: 'Set clinic branding',
     description: 'Configure your brand color, address, and contact details.',
     done: !!(tenant.value?.branding?.phone || tenant.value?.branding?.address || tenant.value?.branding?.email),
-    route: '/profile',
+    route: '/setup',
   },
   {
     key: 'staff',

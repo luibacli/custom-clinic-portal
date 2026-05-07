@@ -29,6 +29,7 @@ const TenantChangePassPage = () => import('../pages/TenantChangePassPage.vue');
 const TenantResetPassPage  = () => import('../pages/TenantResetPassPage.vue');
 const TenantVerifyEmailPage = () => import('../pages/TenantVerifyEmailPage.vue');
 
+const SetupWizardPage           = () => import('../pages/SetupWizardPage.vue');
 const TenantAppointmentsPage    = () => import('../pages/TenantAppointmentsPage.vue');
 const TenantMessagesPage        = () => import('../pages/TenantMessagesPage.vue');
 const TenantQRScanPage          = () => import('../pages/TenantQRScanPage.vue');
@@ -149,6 +150,12 @@ const routes = [
         meta: { roles: ['patient', 'admin', 'superadmin', 'dev'] }
       },
       {
+        path: '/setup',
+        name: 'SetupWizard',
+        component: SetupWizardPage,
+        meta: { roles: ['admin', 'superadmin'] }
+      },
+      {
         path: '/billing',
         name: 'Billing',
         component: () => import('../pages/BillingPage.vue'),
@@ -264,6 +271,17 @@ router.beforeEach(async (to, from, next) => {
       await authTenantStore.fetchTenant(tenantId);
     }
   }
+  // Auto-redirect unconfigured clinics to setup wizard
+  if (
+    to.name === 'TenantHome' &&
+    (tenantRole === 'admin' || tenantRole === 'superadmin') &&
+    authTenantStore.tenant &&
+    !authTenantStore.tenant.branding?.primaryColor &&
+    !authTenantStore.tenant.tenantLogo?.url
+  ) {
+    return next('/setup')
+  }
+
   // Role-based access control
   const allowedRoles = to.meta.roles || [];
   if (allowedRoles.length && !allowedRoles.includes(tenantRole)) {
