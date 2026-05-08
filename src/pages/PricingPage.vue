@@ -16,7 +16,7 @@
           </span>
         </h1>
         <p class="mt-5 text-base sm:text-lg text-slate-500 max-w-xl mx-auto leading-relaxed">
-          No custom quotes. No surprises. Pick a plan, we set up your clinic portal, and you're live in days.
+          No custom quotes. No surprises. Pick a plan, run the setup wizard, and go live today.
           All plans include a 30-day free trial.
         </p>
 

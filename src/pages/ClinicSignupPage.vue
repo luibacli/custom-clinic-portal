@@ -130,8 +130,8 @@
                 </label>
                 <InputText
                   v-model="form.clinicName"
-                  placeholder="e.g. Santos Medical Clinic"
-                  class="w-full"
+                  placeholder="e.g. SANTOS MEDICAL CLINIC"
+                  class="w-full uppercase"
                   :class="{ 'input-error': errors.clinicName }"
                   @input="onClinicNameInput"
                 />
@@ -143,14 +143,21 @@
               <!-- Subdomain -->
               <div class="space-y-1.5">
                 <label class="block text-sm font-semibold text-slate-700">
-                  Your Portal Address <span class="text-red-500">*</span>
+                  Portal ID <span class="text-red-500">*</span>
+                  <span class="ml-1 text-xs font-normal text-slate-400">(abbreviation of your clinic name)</span>
                 </label>
 
-                <div class="flex rounded-xl border overflow-hidden transition-all" :class="errors.slug ? 'border-red-400' : 'border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/15'">
+                <div class="flex rounded-xl border overflow-hidden transition-all"
+                  :class="errors.slug || slugStatus === 'taken'
+                    ? 'border-red-400'
+                    : slugStatus === 'available'
+                      ? 'border-emerald-400'
+                      : 'border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/15'"
+                >
                   <input
                     v-model="form.slug"
                     type="text"
-                    placeholder="yourClinic"
+                    placeholder="tmc"
                     class="flex-1 px-4 py-3 text-sm text-slate-800 bg-white outline-none min-w-0 placeholder-slate-400"
                     @input="onSlugInput"
                   />
@@ -165,11 +172,29 @@
                   </p>
                 </Transition>
 
-                <!-- Live preview -->
-                <div v-if="form.slug && !errors.slug" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200">
-                  <i class="pi pi-check-circle text-emerald-500 text-xs shrink-0"></i>
-                  <p class="text-xs text-emerald-700 font-medium truncate">
-                    Your portal: <span class="font-bold">{{ fullDomain }}</span>
+                <!-- Availability status -->
+                <div v-if="form.slug && !errors.slug" class="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors"
+                  :class="{
+                    'bg-slate-50 border border-slate-200': slugStatus === 'idle' || slugStatus === 'checking',
+                    'bg-emerald-50 border border-emerald-200': slugStatus === 'available',
+                    'bg-red-50 border border-red-200': slugStatus === 'taken',
+                  }"
+                >
+                  <i v-if="slugStatus === 'checking'" class="pi pi-spinner pi-spin text-blue-500 text-xs shrink-0"></i>
+                  <i v-else-if="slugStatus === 'available'" class="pi pi-check-circle text-emerald-500 text-xs shrink-0"></i>
+                  <i v-else-if="slugStatus === 'taken'" class="pi pi-times-circle text-red-500 text-xs shrink-0"></i>
+                  <i v-else class="pi pi-globe text-slate-400 text-xs shrink-0"></i>
+                  <p class="text-xs font-medium truncate"
+                    :class="{
+                      'text-slate-500': slugStatus === 'idle' || slugStatus === 'checking',
+                      'text-emerald-700': slugStatus === 'available',
+                      'text-red-700': slugStatus === 'taken',
+                    }"
+                  >
+                    <template v-if="slugStatus === 'checking'">Checking availability…</template>
+                    <template v-else-if="slugStatus === 'available'">Available — your portal: <span class="font-bold">{{ fullDomain }}</span></template>
+                    <template v-else-if="slugStatus === 'taken'">This address is already taken. Try a different one.</template>
+                    <template v-else>Your portal: <span class="font-bold">{{ fullDomain }}</span></template>
                   </p>
                 </div>
               </div>
@@ -399,6 +424,7 @@
 import { reactive, ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { useAuthTenantStore } from '../stores/authTenantStore'
+import api from '../lib/axios'
 
 const toast = useToast()
 const authStore = useAuthTenantStore()
@@ -408,6 +434,10 @@ const showPw      = ref(false)
 const showConfirmPw = ref(false)
 const submitting  = ref(false)
 const serverError = ref('')
+
+// 'idle' | 'checking' | 'available' | 'taken'
+const slugStatus  = ref('idle')
+let   slugTimer   = null
 
 const form = reactive({
   clinicName:     '',
@@ -462,9 +492,9 @@ const features = [
 ]
 
 const planPreviews = [
-  { id: 'starter', name: 'Starter', price: 1499, sub: '500 patients', badge: null  },
-  { id: 'growth',  name: 'Growth',  price: 2999, sub: '2,000 patients', badge: 'Popular' },
-  { id: 'premium', name: 'Premium', price: 5499, sub: 'Unlimited', badge: null  },
+  { id: 'starter', name: 'Starter', price: 1399, sub: '10,000 patients',  badge: null     },
+  { id: 'growth',  name: 'Growth',  price: 2899, sub: '20,000 patients',  badge: 'Popular' },
+  { id: 'premium', name: 'Premium', price: 5399, sub: 'Unlimited patients', badge: null   },
 ]
 
 const trust = [
@@ -486,34 +516,59 @@ const nextSteps = [
 
 // ── Helpers ───────────────────────────────────────────────
 
-const toSlug = (str) =>
-  str
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .slice(0, 30)
+const toAbbreviation = (str) => {
+  const words = str.trim().split(/\s+/).map(w => w.replace(/[^a-zA-Z0-9]/g, '')).filter(Boolean)
+  if (!words.length) return ''
+  const [first, ...rest] = words
+  return (first + rest.map(w => w.charAt(0)).join('')).toLowerCase().slice(0, 15)
+}
+
+const sanitizePortalId = (str) =>
+  str.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 15)
 
 const validateSlug = (slug) => {
-  if (!slug) return 'Portal address is required'
-  if (slug.length < 3) return 'Must be at least 3 characters'
-  if (!/^[a-z0-9-]+$/.test(slug)) return 'Only lowercase letters, numbers, and hyphens'
-  if (slug.startsWith('-') || slug.endsWith('-')) return 'Cannot start or end with a hyphen'
+  if (!slug) return 'Portal ID is required'
+  if (slug.length < 2) return 'Must be at least 2 characters'
+  if (!/^[a-z0-9]+$/.test(slug)) return 'Only lowercase letters and numbers'
   return ''
 }
 
 const onClinicNameInput = () => {
+  form.clinicName = form.clinicName.toUpperCase()
   errors.clinicName = ''
-  // Auto-fill slug only if user hasn't customised it yet
-  if (!form.slug || form.slug === toSlug(form.clinicName.slice(0, -1))) {
-    form.slug = toSlug(form.clinicName)
+  // Auto-fill abbreviation only if user hasn't customised it yet
+  const prevAbbr = toAbbreviation(form.clinicName.slice(0, -1))
+  if (!form.slug || form.slug === prevAbbr) {
+    form.slug = toAbbreviation(form.clinicName)
+    // Trigger availability check for the auto-filled value
+    errors.slug = validateSlug(form.slug)
+    slugStatus.value = 'idle'
+    clearTimeout(slugTimer)
+    if (!errors.slug && form.slug) {
+      slugTimer = setTimeout(() => checkSlugAvailability(form.slug), 500)
+    }
+  }
+}
+
+const checkSlugAvailability = async (slug) => {
+  slugStatus.value = 'checking'
+  try {
+    const { data } = await api.get('/tenants/check-slug', { params: { slug } })
+    slugStatus.value = data.available ? 'available' : 'taken'
+    if (!data.available) errors.slug = 'This portal address is already taken'
+  } catch {
+    slugStatus.value = 'idle'
   }
 }
 
 const onSlugInput = () => {
-  form.slug = toSlug(form.slug)
+  form.slug = sanitizePortalId(form.slug)
   errors.slug = validateSlug(form.slug)
+  slugStatus.value = 'idle'
+  clearTimeout(slugTimer)
+  if (!errors.slug && form.slug) {
+    slugTimer = setTimeout(() => checkSlugAvailability(form.slug), 500)
+  }
 }
 
 // ── Navigation ────────────────────────────────────────────
@@ -526,6 +581,9 @@ const goToStep2 = () => {
   if (!form.clinicName.trim()) { errors.clinicName = 'Clinic name is required'; ok = false }
   const slugErr = validateSlug(form.slug)
   if (slugErr) { errors.slug = slugErr; ok = false }
+
+  if (slugStatus.value === 'checking') { errors.slug = 'Still checking availability…'; ok = false }
+  if (slugStatus.value === 'taken')    { errors.slug = 'This portal address is already taken'; ok = false }
 
   if (ok) step.value = 2
 }

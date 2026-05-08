@@ -88,7 +88,7 @@
               <div class="h-8 w-8 rounded-xl bg-violet-50 dark:bg-violet-500/10 flex items-center justify-center">
                 <i class="pi pi-user text-violet-500 text-sm"></i>
               </div>
-              <span class="text-sm font-semibold text-slate-800 dark:text-white">Staff Accounts</span>
+              <span class="text-sm font-semibold text-slate-800 dark:text-white">Admin Accounts</span>
             </div>
             <span class="text-xs font-semibold"
               :class="staffPctClass">
@@ -102,7 +102,7 @@
             </div>
           </div>
           <p class="mt-2 text-xs text-slate-400 dark:text-slate-500">
-            {{ sub.limits.userLimit ? `${sub.limits.userLimit - sub.usage.staff} slots remaining` : 'Unlimited staff' }}
+            {{ sub.limits.userLimit ? `${sub.limits.userLimit - sub.usage.staff} slots remaining` : 'No limit set' }}
           </p>
         </div>
       </div>
@@ -236,7 +236,7 @@ const sub = ref({
   status: 'trial',
   trialEndsAt: null,
   currentPeriodEnd: null,
-  limits: { patientLimit: 500, userLimit: 2 },
+  limits: { patientLimit: 10000, userLimit: 3 },
   usage:  { patients: 0, staff: 0 },
 })
 
@@ -244,12 +244,12 @@ const plans = [
   {
     key: 'starter',
     name: 'Starter',
-    priceMonthlyFmt: '1,499',
-    priceAnnualFmt:  '14,990',
+    priceMonthlyFmt: '1,399',
+    priceAnnualFmt:  '13,990',
     popular: false,
     features: [
-      { label: '500 patients', included: true },
-      { label: '2 staff accounts', included: true },
+      { label: '10,000 patients', included: true },
+      { label: '3 admin accounts', included: true },
       { label: 'Patient digital ID', included: true },
       { label: 'Appointments', included: false },
       { label: 'Messaging', included: false },
@@ -260,12 +260,12 @@ const plans = [
   {
     key: 'growth',
     name: 'Growth',
-    priceMonthlyFmt: '2,999',
+    priceMonthlyFmt: '2,899',
     priceAnnualFmt:  '28,990',
     popular: true,
     features: [
-      { label: '2,000 patients', included: true },
-      { label: '5 staff accounts', included: true },
+      { label: '20,000 patients', included: true },
+      { label: '10 admin accounts', included: true },
       { label: 'Patient digital ID', included: true },
       { label: 'Appointments', included: true },
       { label: 'Messaging', included: true },
@@ -276,12 +276,12 @@ const plans = [
   {
     key: 'premium',
     name: 'Premium',
-    priceMonthlyFmt: '5,499',
-    priceAnnualFmt:  '54,990',
+    priceMonthlyFmt: '5,399',
+    priceAnnualFmt:  '53,990',
     popular: false,
     features: [
       { label: 'Unlimited patients', included: true },
-      { label: 'Unlimited staff', included: true },
+      { label: '20 admin accounts', included: true },
       { label: 'Patient digital ID', included: true },
       { label: 'Appointments', included: true },
       { label: 'Messaging', included: true },

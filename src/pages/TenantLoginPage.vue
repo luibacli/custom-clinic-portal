@@ -310,7 +310,7 @@
           </form>
 
           <!-- Footer -->
-          <div class="mt-7 border-t border-slate-100 pt-5 text-center space-y-2">
+          <div class="mt-7 border-t border-slate-100 pt-5 text-center space-y-3">
             <p class="text-xs text-slate-400">
               Protected access — authorized users only.
             </p>
@@ -320,6 +320,12 @@
               <router-link to="/terms" class="hover:text-blue-600 transition-colors">Terms</router-link>
               <span class="text-slate-200">&bull;</span>
               <router-link to="/contact" class="hover:text-blue-600 transition-colors">Contact</router-link>
+            </div>
+            <div v-if="!tenantResolved || !tenant" class="pt-1">
+              <p class="text-xs text-slate-400">
+                New clinic?
+                <router-link to="/get-started" class="text-blue-600 font-semibold hover:underline">Register your clinic →</router-link>
+              </p>
             </div>
           </div>
 

@@ -10,10 +10,10 @@
         </span>
         <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 leading-tight">
           From Sign-Up to Live Portal — <br />
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">In Days, Not Months</span>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">In Under a Day</span>
         </h1>
         <p class="mt-5 text-base sm:text-lg text-slate-500 max-w-xl mx-auto leading-relaxed">
-          My Clinic Access handles the setup. You pick a plan, we configure your branded portal, train your team, and go live — all within your subscription.
+          No waiting for someone to configure things for you. Sign up, run the setup wizard, invite your team, and go live — all on your own schedule, in minutes.
         </p>
       </div>
     </section>
@@ -124,77 +124,77 @@ import LandingLayout from '../layouts/LandingLayout.vue'
 
 const steps = [
   {
-    icon: 'pi pi-tag',       title: 'Choose Your Plan',
-    desc: 'Select the subscription that fits your clinic size and needs — Starter, Growth, or Premium. Start with a free 30-day trial or book a demo and we\'ll recommend the right plan for you.',
+    icon: 'pi pi-tag',       title: 'Sign Up & Choose a Plan',
+    desc: 'Pick the subscription that fits your clinic — Starter, Growth, or Premium. Start your free 30-day trial instantly. No credit card, no calls, no waiting.',
     details: [
-      'No credit card required to start your free trial',
-      'Compare plans on our pricing page',
-      'Book a free demo for a personalized recommendation',
+      'No credit card required to start',
+      'Your portal subdomain is provisioned automatically on signup',
       'Upgrade or downgrade anytime — no lock-in',
+      'Annual billing available for 2 months free',
     ],
-    duration: 'Day 1',
+    duration: 'Day 1 — minutes',
     bg: 'bg-blue-50', color: 'text-blue-600'
   },
   {
-    icon: 'pi pi-wrench',    title: 'We Configure Your Portal',
-    desc: 'After you subscribe, our team configures your branded portal around your clinic\'s specific workflow — your logo, domain, registration fields, user roles, and queue setup. All included in your plan.',
+    icon: 'pi pi-sliders',   title: 'Run the Setup Wizard',
+    desc: 'A guided in-app wizard walks you through everything: upload your logo, set your brand colors, configure registration fields, and create user accounts. No one needs to do this for you.',
     details: [
-      'Clinic branding: logo, name, colors, domain',
-      'Patient registration form tailored to your workflow',
-      'User roles and access levels set up for your team',
-      'Queue, inbox, and appointment workflows configured',
+      'Upload clinic logo and set brand colors',
+      'Configure patient registration fields for your workflow',
+      'Create admin and staff accounts with the right roles',
+      'Enable or disable features per your plan',
     ],
-    duration: '3–7 days',
+    duration: 'Day 1 — 15–30 minutes',
     bg: 'bg-purple-50', color: 'text-purple-600'
   },
   {
-    icon: 'pi pi-graduation-cap', title: 'We Train Your Team',
-    desc: 'Before going live, we walk your staff through the system. Every role — admin, reception, staff — gets comfortable with the portal. Growth and Premium plans include hands-on training sessions.',
+    icon: 'pi pi-users',     title: 'Invite Your Team & Test',
+    desc: 'Send invites to your staff directly from the portal. Each role — admin, reception, staff — gets their own tailored view. Run a quick internal test before opening to patients.',
     details: [
-      'Walkthrough for each staff role',
-      'Training covers registration, queue, inbox, and appointments',
-      'Live Q&A session with your team',
-      'Reference documentation provided',
+      'Email invitations sent automatically per role',
+      'In-app guide walks each role through their dashboard',
+      'Test patient registration, queue, and messaging end-to-end',
+      'No training sessions required — built to be self-explanatory',
     ],
-    duration: '1–2 sessions',
+    duration: 'Day 1–2',
     bg: 'bg-amber-50', color: 'text-amber-600'
   },
   {
-    icon: 'pi pi-send',      title: 'Go Live & Scale',
-    desc: 'Your My Clinic Access portal is live. Patients register, queue in real time, and communicate directly through your branded portal. We stay available through your subscription — ongoing support included.',
+    icon: 'pi pi-send',      title: 'Go Live',
+    desc: 'Your branded portal is live. Patients register, get their digital ID, queue in real time, and message your clinic — all without you lifting a finger after setup. Async support is always available.',
     details: [
-      'Soft launch with your first patient batch',
-      'Live monitoring and rapid issue resolution',
-      'Support channel open from day one',
-      'Scale patient volume as your clinic grows',
+      'Patients self-register or are registered by front desk staff',
+      'Digital ID and clinic-domain email generated on first registration',
+      'Queue, inbox, and appointments running automatically',
+      'Email support on all plans — direct line on Premium',
     ],
-    duration: 'Ongoing',
+    duration: 'Day 2 onwards',
     bg: 'bg-emerald-50', color: 'text-emerald-600'
   },
 ]
 
 const differences = [
   {
-    icon: 'pi pi-comments',  title: 'We Listen First',
-    desc: 'Before writing a single line of config, we understand your clinic\'s real workflow. Nothing is assumed.',
+    icon: 'pi pi-bolt',       title: 'No Setup Wait',
+    desc: 'Configure your portal yourself through a guided wizard. No 3–7 day wait for someone to set things up. You\'re live on day one.',
     bg: 'bg-blue-50', color: 'text-blue-600'
   },
   {
-    icon: 'pi pi-bolt',      title: 'Days, Not Months',
-    desc: 'Standard portals are deployed in days. No years-long enterprise implementation nightmares.',
+    icon: 'pi pi-check-circle', title: 'No Training Sessions',
+    desc: 'Built to be intuitive from day one. In-app guides walk each role through their view — no live calls or sessions required.',
     bg: 'bg-amber-50', color: 'text-amber-600'
   },
   {
-    icon: 'pi pi-headphones', title: 'Support After Launch',
-    desc: 'We don\'t disappear after go-live. Your support channel stays open. We\'re available when you need us.',
+    icon: 'pi pi-headphones', title: 'Async Support, Always On',
+    desc: 'Email support and documentation on all plans. No gatekeeping. Premium gets a direct line for high-priority needs.',
     bg: 'bg-emerald-50', color: 'text-emerald-600'
   },
 ]
 
 const timeline = [
-  { label: 'Subscribe',  duration: 'Day 1',    barColor: 'bg-blue-500' },
-  { label: 'Setup',      duration: 'Days 2–7', barColor: 'bg-purple-500' },
-  { label: 'Training',   duration: 'Days 8–9', barColor: 'bg-amber-500' },
-  { label: 'Live',       duration: 'Day 10+',  barColor: 'bg-emerald-500' },
+  { label: 'Sign Up',   duration: 'Day 1 — instant',  barColor: 'bg-blue-500' },
+  { label: 'Setup',     duration: 'Day 1 — 30 min',   barColor: 'bg-purple-500' },
+  { label: 'Test',      duration: 'Day 1–2',           barColor: 'bg-amber-500' },
+  { label: 'Live',      duration: 'Day 2+',            barColor: 'bg-emerald-500' },
 ]
 </script>

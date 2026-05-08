@@ -119,6 +119,7 @@
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Username -->
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
                   Username <span class="text-red-500">*</span>
@@ -129,25 +130,21 @@
                   type="text"
                   class="w-full"
                   :disabled="!!userForm._id"
+                  @input="userForm.username = userForm.username.toLowerCase().replace(/[^a-z0-9._-]/g, '')"
                 />
-                <div
-                  v-if="generatedEmail"
-                  class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10"
-                >
-                  <i class="pi pi-at text-slate-400 text-xs shrink-0"></i>
-                  <span class="text-xs font-mono text-slate-600 dark:text-slate-300 break-all">{{ generatedEmail }}</span>
-                  <span class="ml-auto text-[10px] text-slate-400 whitespace-nowrap">System email</span>
-                </div>
               </div>
 
+              <!-- Portal address (read-only) -->
               <div class="space-y-2">
-                <label class="text-sm font-medium text-slate-700 dark:text-slate-200">PhilHealth ID / PIN</label>
-                <InputText
-                  v-model="userForm.pin"
-                  placeholder="Optional"
-                  type="text"
-                  class="w-full"
-                />
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Portal Address</label>
+                <div class="flex items-center px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 gap-2 min-h-[42px]">
+                  <i class="pi pi-at text-slate-400 text-xs shrink-0"></i>
+                  <span class="text-xs font-mono text-slate-500 dark:text-slate-400 break-all">{{ emailSuffix }}</span>
+                </div>
+                <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                  <i class="pi pi-envelope text-[10px]"></i>
+                  Full email: <span class="font-mono text-slate-500 dark:text-slate-400">{{ generatedEmail || '…' }}</span>
+                </p>
               </div>
             </div>
 
@@ -218,12 +215,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>
-                <InputText
-                  v-model="userForm.birthday"
-                  placeholder="YYYY-MM-DD"
-                  type="text"
-                  class="w-full"
-                />
+                <DatePicker v-model="birthdayModel" showIcon fluid dateFormat="mm/dd/yy" class="w-full" />
               </div>
 
               <div class="space-y-2">
@@ -478,6 +470,7 @@ import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useToast } from 'primevue/usetoast'
 import Loading from '../components/Loading.vue'
 import Tag from 'primevue/tag'
+import DatePicker from 'primevue/datepicker'
 
 const toast = useToast()
 const search = ref('')
@@ -489,15 +482,31 @@ const { addUser, updateUser, fetchTenantUsers, resetUserForm, removeUserTenant, 
 
 const togglingId = ref(null)
 
-const deriveAbbr = (name = '') =>
-  name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
-    .split(/\s+/).map(w => w[0]).filter(Boolean).join('')
+const portalId = computed(() =>
+  (tenant.value?.domain || '').split('.')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+)
+
+const birthdayModel = ref(null)
+const parseBirthday = (str) => str ? new Date(str + 'T00:00:00') : null
+watch(birthdayModel, (val) => {
+  if (!val) { userForm.value.birthday = ''; return }
+  const y = val.getFullYear()
+  const m = String(val.getMonth() + 1).padStart(2, '0')
+  const d = String(val.getDate()).padStart(2, '0')
+  userForm.value.birthday = `${y}-${m}-${d}`
+})
+watch(dialogVisible, (open) => {
+  birthdayModel.value = open ? parseBirthday(userForm.value.birthday) : null
+})
+
+const emailSuffix = computed(() =>
+  portalId.value ? `.${portalId.value}@myclinicaccess.com` : '@myclinicaccess.com'
+)
 
 const generatedEmail = computed(() => {
   const u = (userForm.value.username || '').toLowerCase().replace(/[^a-z0-9._-]/g, '')
-  const abbr = deriveAbbr(tenant.value?.name || '')
-  if (!u || !abbr) return ''
-  return `${u}.${abbr}@myclinicaccess.com`
+  if (!u || !portalId.value) return ''
+  return `${u}${emailSuffix.value}`
 })
 
 const resolver = ({ values }) => {

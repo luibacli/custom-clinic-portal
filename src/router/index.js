@@ -29,6 +29,7 @@ const TenantChangePassPage = () => import('../pages/TenantChangePassPage.vue');
 const TenantResetPassPage  = () => import('../pages/TenantResetPassPage.vue');
 const TenantVerifyEmailPage = () => import('../pages/TenantVerifyEmailPage.vue');
 
+const SetupWizardPage           = () => import('../pages/SetupWizardPage.vue');
 const TenantAppointmentsPage    = () => import('../pages/TenantAppointmentsPage.vue');
 const TenantMessagesPage        = () => import('../pages/TenantMessagesPage.vue');
 const TenantQRScanPage          = () => import('../pages/TenantQRScanPage.vue');
@@ -51,6 +52,15 @@ const routes = [
     beforeEnter: (to, from, next) => {
       const tenantToken = localStorage.getItem('tenantToken');
       const tenantRole  = localStorage.getItem('tenantRole');
+      const host        = window.location.hostname;
+      const isClinicPortal = host !== 'myclinicaccess.com'
+        && host !== 'www.myclinicaccess.com'
+        && !['localhost', '127.0.0.1'].includes(host);
+
+      // Unauthenticated visitor on a clinic subdomain → go to login, not marketing
+      if (isClinicPortal && (!tenantToken || isTokenExpired(tenantToken))) {
+        return next('/signin');
+      }
 
       if (!tenantToken || isTokenExpired(tenantToken)) return next();
       if (tenantRole === 'patient') return next('/patient');
@@ -147,6 +157,12 @@ const routes = [
         name: 'Profile',
         component: TenantProfilePage,
         meta: { roles: ['patient', 'admin', 'superadmin', 'dev'] }
+      },
+      {
+        path: '/setup',
+        name: 'SetupWizard',
+        component: SetupWizardPage,
+        meta: { roles: ['admin', 'superadmin'] }
       },
       {
         path: '/billing',
@@ -264,6 +280,17 @@ router.beforeEach(async (to, from, next) => {
       await authTenantStore.fetchTenant(tenantId);
     }
   }
+  // Auto-redirect unconfigured clinics to setup wizard
+  if (
+    to.name === 'TenantHome' &&
+    (tenantRole === 'admin' || tenantRole === 'superadmin') &&
+    authTenantStore.tenant &&
+    !authTenantStore.tenant.branding?.primaryColor &&
+    !authTenantStore.tenant.tenantLogo?.url
+  ) {
+    return next('/setup')
+  }
+
   // Role-based access control
   const allowedRoles = to.meta.roles || [];
   if (allowedRoles.length && !allowedRoles.includes(tenantRole)) {

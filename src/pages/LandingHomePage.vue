@@ -26,24 +26,23 @@
             </h1>
 
             <p class="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed">
-              My Clinic Access is the all-in-one platform for clinics, patients, and healthcare teams —
-              automate patient registration, manage queues, and communicate in real time under your clinic's own brand.
+              My Clinic Access gives every patient a real digital identity — including those without an email address — and equips your clinic with the tools to register, queue, and communicate efficiently under your own brand.
             </p>
 
             <div class="mt-8 flex flex-col sm:flex-row gap-3">
               <router-link
-                to="/book-demo"
+                to="/get-started"
                 class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-cyan-600 active:scale-95 transition-all duration-150"
               >
-                <i class="pi pi-calendar"></i>
-                Book a Free Demo
+                <i class="pi pi-arrow-right"></i>
+                Start Free Trial
               </router-link>
               <router-link
-                to="/pricing"
+                to="/book-demo"
                 class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl border border-slate-300 text-slate-700 font-semibold text-sm sm:text-base hover:bg-slate-50 hover:border-slate-400 transition-all duration-150"
               >
-                See Pricing
-                <i class="pi pi-arrow-right text-sm"></i>
+                <i class="pi pi-calendar text-sm"></i>
+                Book a Demo
               </router-link>
             </div>
 
@@ -165,16 +164,126 @@
           <h2 class="mt-2 text-3xl sm:text-4xl font-bold text-white">One Platform. All the Answers.</h2>
           <p class="mt-3 text-blue-100">Everything your clinic needs to operate efficiently — built, configured, and running under your brand.</p>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <div v-for="solution in solutions" :key="solution.title"
-            class="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm p-6 hover:bg-white/15 transition-all duration-200"
+            class="rounded-2xl border p-6 backdrop-blur-sm transition-all duration-200"
+            :class="solution.highlight
+              ? 'border-cyan-300/50 bg-white/20 hover:bg-white/25 ring-1 ring-cyan-300/30'
+              : 'border-white/15 bg-white/10 hover:bg-white/15'"
           >
-            <div class="h-11 w-11 rounded-2xl bg-white/20 text-white flex items-center justify-center mb-4">
+            <div class="h-11 w-11 rounded-2xl flex items-center justify-center mb-4"
+              :class="solution.highlight ? 'bg-cyan-400/30 text-cyan-100' : 'bg-white/20 text-white'"
+            >
               <i :class="solution.icon" class="text-lg"></i>
             </div>
-            <h3 class="font-semibold text-white mb-1.5">{{ solution.title }}</h3>
+            <div class="flex items-center gap-2 mb-1.5">
+              <h3 class="font-semibold text-white">{{ solution.title }}</h3>
+              <span v-if="solution.badge" class="text-[10px] font-bold bg-cyan-400 text-cyan-900 px-2 py-0.5 rounded-full leading-none">{{ solution.badge }}</span>
+            </div>
             <p class="text-sm text-blue-100 leading-relaxed">{{ solution.desc }}</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         PATIENT DIGITAL IDENTITY — FEATURE SPOTLIGHT
+    ══════════════════════════════════════════════ -->
+    <section class="py-24 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+          <!-- LEFT: Content -->
+          <div class="max-w-lg">
+            <span class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
+              <i class="pi pi-star-fill text-[10px]"></i>
+              Signature Feature
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
+              A Digital Identity<br />for Every Patient
+            </h2>
+            <p class="mt-4 text-slate-500 leading-relaxed">
+              Many patients — especially elderly and rural — have no email address and no way to access digital healthcare services. We solve that at the moment of registration, at the front desk, in seconds.
+            </p>
+            <ul class="mt-8 space-y-4">
+              <li v-for="point in identityFeaturePoints" :key="point.label" class="flex items-start gap-3">
+                <div class="h-8 w-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5" :class="point.bg">
+                  <i :class="[point.icon, point.color]" class="text-sm"></i>
+                </div>
+                <div>
+                  <p class="font-semibold text-slate-800 text-sm">{{ point.label }}</p>
+                  <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">{{ point.desc }}</p>
+                </div>
+              </li>
+            </ul>
+            <router-link
+              to="/features"
+              class="mt-8 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-150"
+            >
+              See All Features <i class="pi pi-arrow-right text-xs"></i>
+            </router-link>
+          </div>
+
+          <!-- RIGHT: Mockup -->
+          <div class="relative">
+            <div class="absolute -inset-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl -z-10 pointer-events-none"></div>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xl p-6">
+
+              <!-- Header -->
+              <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                <div class="h-9 w-9 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                  <i class="pi pi-user-plus text-sm"></i>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-slate-800">New Patient Registered</p>
+                  <p class="text-xs text-slate-400">Identity generated instantly</p>
+                </div>
+                <span class="ml-auto text-[10px] font-semibold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">Active</span>
+              </div>
+
+              <!-- Patient details -->
+              <div class="space-y-3 mb-5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-400">Patient Name</span>
+                  <span class="font-semibold text-slate-800">Maria P. Santos</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-400">Patient ID</span>
+                  <span class="font-mono font-semibold text-slate-800">#MCA-0042</span>
+                </div>
+                <div class="flex items-start justify-between text-xs gap-4">
+                  <span class="text-slate-400 shrink-0">Clinic Email</span>
+                  <span class="font-mono text-blue-600 font-semibold text-right break-all">maria.santos.0042@primawell.myclinicaccess.com</span>
+                </div>
+              </div>
+
+              <!-- QR ID Card -->
+              <div class="rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 p-4 flex items-center gap-4">
+                <div class="h-14 w-14 bg-white rounded-lg p-1.5 shrink-0">
+                  <div class="h-full w-full grid grid-cols-5 gap-px">
+                    <span v-for="n in 25" :key="n" class="rounded-[1px]"
+                      :class="[1,2,3,4,5,6,10,11,15,16,20,21,22,23,24,25].includes(n) ? 'bg-slate-900' : 'bg-white'"
+                    ></span>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-bold text-white">Digital ID Card</p>
+                  <p class="text-[10px] text-blue-100 mt-0.5">Maria P. Santos</p>
+                  <p class="text-[10px] text-blue-200 font-mono">#MCA-0042</p>
+                  <p class="text-[10px] text-cyan-200 mt-1">Primawell Clinic</p>
+                </div>
+                <i class="pi pi-qrcode text-white/50 text-2xl shrink-0"></i>
+              </div>
+
+              <!-- Status -->
+              <div class="mt-4 flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2.5">
+                <i class="pi pi-check-circle text-emerald-500 text-sm shrink-0"></i>
+                <p class="text-xs text-emerald-700 font-medium">Patient ready for digital healthcare services</p>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -186,8 +295,8 @@
       <div class="max-w-7xl mx-auto px-6">
         <div class="text-center max-w-2xl mx-auto mb-14">
           <span class="text-xs font-semibold text-blue-600 uppercase tracking-widest">Process</span>
-          <h2 class="mt-2 text-3xl sm:text-4xl font-bold text-slate-900">Up and Running in Days</h2>
-          <p class="mt-3 text-slate-500">No complicated setup. We configure everything — you focus on your patients.</p>
+          <h2 class="mt-2 text-3xl sm:text-4xl font-bold text-slate-900">Live in Under a Day</h2>
+          <p class="mt-3 text-slate-500">No waiting for someone to set things up. Sign up, run the wizard, go live — all on your own schedule.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
           <div class="hidden md:block absolute top-10 left-[calc(16.67%+16px)] right-[calc(16.67%+16px)] h-0.5 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200"></div>
@@ -406,32 +515,57 @@ const mockPatients = [
 ]
 
 const problems = [
-  { icon: 'pi pi-file-edit',    title: 'Manual Patient Registration', desc: 'Paper forms are slow, prone to errors, and impossible to search or organize.' },
-  { icon: 'pi pi-clock',        title: 'Long & Disorganized Queues',  desc: 'Patients wait with no updates. Staff lose track. Frustration builds on both sides.' },
-  { icon: 'pi pi-times-circle', title: 'No Direct Communication',     desc: 'Patients miss appointments. Follow-ups fall through. No reliable channel exists.' },
-  { icon: 'pi pi-table',        title: 'Scattered Clinic Records',    desc: 'Patient info is spread across notebooks, spreadsheets, and memory.' },
+  { icon: 'pi pi-ban',          title: 'No Digital Identity for Patients', desc: 'Many patients — especially elderly and rural — have no email address and are shut out of digital health services and enrollment portals.' },
+  { icon: 'pi pi-file-edit',    title: 'Manual Patient Registration',      desc: 'Paper forms are slow, prone to errors, and impossible to search or organize.' },
+  { icon: 'pi pi-clock',        title: 'Long & Disorganized Queues',       desc: 'Patients wait with no updates. Staff lose track. Frustration builds on both sides.' },
+  { icon: 'pi pi-times-circle', title: 'No Direct Communication',          desc: 'Patients miss appointments. Follow-ups fall through. No reliable channel exists.' },
 ]
 
 const solutions = [
+  { icon: 'pi pi-envelope',          title: 'Patient Digital Identity',     desc: 'Instantly generate a clinic-domain email for any patient — giving them a verified digital identity they can use across healthcare services, with or without a personal email.', highlight: true, badge: 'Signature' },
+  { icon: 'pi pi-id-card',           title: 'QR Patient ID Card',           desc: 'Every patient gets a unique QR-linked digital ID card — ready for clinic check-in, verification, and future digital services on every visit.', highlight: true, badge: 'Signature' },
   { icon: 'pi pi-user-plus',         title: 'Digital Patient Registration', desc: 'Register patients in minutes with a clean digital form. No paper, no lost records.' },
   { icon: 'pi pi-sort-numeric-up',   title: 'Queue Management System',      desc: 'Real-time queue visibility for patients and staff. Clear order, no confusion.' },
   { icon: 'pi pi-inbox',             title: 'Clinic Inbox',                 desc: 'Direct, organized messaging between clinic and patients. Appointments confirmed, reminders sent.' },
   { icon: 'pi pi-chart-bar',         title: 'Operations Dashboard',         desc: 'See everything in one place — registrations, queues, messages, and activity.' },
 ]
 
+const identityFeaturePoints = [
+  {
+    icon: 'pi pi-envelope', color: 'text-blue-600', bg: 'bg-blue-50',
+    label: 'Instant clinic-domain email',
+    desc: "A real email address under your clinic's domain — generated at the front desk in seconds, no setup required.",
+  },
+  {
+    icon: 'pi pi-id-card', color: 'text-cyan-600', bg: 'bg-cyan-50',
+    label: 'QR-linked digital ID card',
+    desc: 'A scannable patient ID tied to their record. Printed or shared digitally — usable on every return visit.',
+  },
+  {
+    icon: 'pi pi-users', color: 'text-violet-600', bg: 'bg-violet-50',
+    label: 'No personal email required',
+    desc: 'Elderly, rural, and first-time digital users get the same access as everyone else — right from registration.',
+  },
+  {
+    icon: 'pi pi-shield', color: 'text-emerald-600', bg: 'bg-emerald-50',
+    label: 'PDPA-compliant by design',
+    desc: 'Written consent, patient rights, and data handling are built into the workflow from day one.',
+  },
+]
+
 const howItWorks = [
-  { title: 'Choose Your Plan', desc: 'Pick the subscription that fits your clinic size. Start with a free 30-day trial — no credit card required.' },
-  { title: 'We Configure It',  desc: 'Our team sets up your branded portal, configures your workflow, and trains your staff. Done in days.' },
-  { title: 'Go Live & Scale',  desc: 'Your clinic portal is live. Patients register, queue in real time, and message your clinic — all on your brand.' },
+  { title: 'Sign Up & Choose a Plan', desc: 'Pick Starter, Growth, or Premium. Your portal subdomain is provisioned instantly — no credit card required to start.' },
+  { title: 'Run the Setup Wizard',    desc: 'An in-app wizard walks you through branding, registration fields, and user roles. Done in 15–30 minutes, by yourself.' },
+  { title: 'Invite Your Team & Go Live', desc: 'Add staff via email invite, run a quick test, and open to patients. Digital IDs and emails generate automatically from the first registration.' },
 ]
 
 const keyFeatures = [
-  { icon: 'pi pi-user-plus', title: 'Patient Registration',  desc: 'Digital forms replace paper. Fast, accurate, searchable.',            bg: 'bg-blue-50',    color: 'text-blue-600' },
-  { icon: 'pi pi-list',      title: 'Queue Management',      desc: 'Live queue status visible to staff and patients.',                     bg: 'bg-amber-50',   color: 'text-amber-600' },
-  { icon: 'pi pi-inbox',     title: 'Patient Inbox',         desc: 'Secure clinic-to-patient messaging in one place.',                     bg: 'bg-emerald-50', color: 'text-emerald-600' },
-  { icon: 'pi pi-id-card',   title: 'Digital Patient ID',    desc: 'Every patient gets a unique digital identity card.',                   bg: 'bg-purple-50',  color: 'text-purple-600' },
-  { icon: 'pi pi-users',     title: 'Role-Based Access',     desc: 'Admin, staff, and patient views — each seeing only what they need.',  bg: 'bg-cyan-50',    color: 'text-cyan-600' },
-  { icon: 'pi pi-sliders',   title: 'Custom Workflows',      desc: 'Configured around your clinic, not a generic template.',               bg: 'bg-rose-50',    color: 'text-rose-600' },
+  { icon: 'pi pi-envelope',  title: 'Patient Digital Identity', desc: 'Instant clinic-domain email for any patient — with or without a personal email address.',  bg: 'bg-blue-50',    color: 'text-blue-600' },
+  { icon: 'pi pi-id-card',   title: 'QR Patient ID Card',       desc: 'Every patient gets a unique QR-linked digital ID card, reusable on every visit.',          bg: 'bg-cyan-50',    color: 'text-cyan-600' },
+  { icon: 'pi pi-user-plus', title: 'Patient Registration',     desc: 'Digital forms replace paper. Fast, accurate, searchable.',                                  bg: 'bg-violet-50',  color: 'text-violet-600' },
+  { icon: 'pi pi-list',      title: 'Queue Management',         desc: 'Live queue status visible to staff and patients.',                                           bg: 'bg-amber-50',   color: 'text-amber-600' },
+  { icon: 'pi pi-inbox',     title: 'Patient Inbox',            desc: 'Secure clinic-to-patient messaging in one place.',                                           bg: 'bg-emerald-50', color: 'text-emerald-600' },
+  { icon: 'pi pi-sliders',   title: 'Custom Workflows',         desc: 'Configured around your clinic, not a generic template.',                                     bg: 'bg-rose-50',    color: 'text-rose-600' },
 ]
 
 const whyUs = [
@@ -444,41 +578,41 @@ const whyUs = [
 const pricingPlans = [
   {
     name: 'Starter',
-    price: 1499,
-    annual: 14990,
+    price: 1399,
+    annual: 13990,
     highlighted: false,
     desc: 'Perfect for solo practitioners and small clinics just getting started with digital tools.',
     features: [
       'clinicname.myclinicaccess.com subdomain',
-      'Up to 500 patient records',
+      'Up to 10,000 patient records',
       'Digital patient registration',
       'Patient digital ID (QR)',
       'Basic queue management',
-      '1 Admin + 1 Staff account',
+      '3 admin accounts',
       'Email support',
     ],
   },
   {
     name: 'Growth',
-    price: 2999,
+    price: 2899,
     annual: 28990,
     highlighted: true,
     desc: 'For active clinics that need full workflow automation and direct patient communication.',
     features: [
       'Included subdomain + custom domain option',
-      'Up to 2,000 patient records',
+      'Up to 20,000 patient records',
       'All Starter features',
       'Clinic inbox & patient messaging',
       'Appointment management',
       'QR Scan check-in',
-      'Up to 5 user accounts',
+      'Up to 10 admin accounts',
       'Priority support',
     ],
   },
   {
     name: 'Premium',
-    price: 5499,
-    annual: 54990,
+    price: 5399,
+    annual: 53990,
     highlighted: false,
     desc: 'For high-volume or multi-specialty clinics that need full scale and dedicated support.',
     features: [
@@ -486,7 +620,7 @@ const pricingPlans = [
       'Unlimited patient records',
       'All Growth features',
       'Multi-location ready',
-      'Unlimited user accounts',
+      'Up to 20 admin accounts',
       'Dedicated onboarding & training',
       'Direct support line',
     ],
@@ -496,6 +630,6 @@ const pricingPlans = [
 const faqTeaser = [
   { q: 'Does this store patient medical records?', a: 'No. We only store basic profile data: name, birthdate, and contact number. No EMR, no clinical notes, no diagnoses.' },
   { q: 'Can the portal be customized for our clinic?', a: "Yes — every portal is configured to your clinic's brand, workflow, and needs as part of your subscription. Not generic, not one-size-fits-all." },
-  { q: 'How much does it cost?', a: 'My Clinic Access offers three subscription plans: Starter (₱1,499/mo), Growth (₱2,999/mo), and Premium (₱5,499/mo). Annual billing saves you 2 months. All plans include a 30-day free trial.' },
+  { q: 'How much does it cost?', a: 'My Clinic Access offers three subscription plans: Starter (₱1,399/mo), Growth (₱2,899/mo), and Premium (₱5,399/mo). Annual billing saves you 2 months. All plans include a 30-day free trial.' },
 ]
 </script>

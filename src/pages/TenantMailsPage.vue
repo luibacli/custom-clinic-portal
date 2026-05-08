@@ -150,12 +150,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>
-                <InputText
-                  v-model="registerForm.birthday"
-                  placeholder="YYYY-MM-DD"
-                  type="text"
-                  class="w-full"
-                />
+                <DatePicker v-model="birthdayModel" showIcon fluid dateFormat="mm/dd/yy" class="w-full" />
               </div>
 
               <div class="space-y-2">
@@ -307,7 +302,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
 import { useAuthStore } from '../stores/authStore'
@@ -315,6 +310,7 @@ import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useEmailStore } from '../stores/emailStore'
 import { useBranding } from '../composables/useBranding'
 import Loading from '../components/Loading.vue'
+import DatePicker from 'primevue/datepicker'
 
 const { brandGradientStyle } = useBranding()
 
@@ -326,6 +322,16 @@ const { currentTenantId } = storeToRefs(authStore)
 const authTenantStore = useAuthTenantStore()
 const { addUserPatient, resetRegisterForm, setTenantId } = useAuthTenantStore()
 const { registerForm, dialogVisible } = storeToRefs(authTenantStore)
+
+const birthdayModel = ref(null)
+watch(birthdayModel, (val) => {
+  if (!val) { registerForm.value.birthday = ''; return }
+  const y = val.getFullYear()
+  const m = String(val.getMonth() + 1).padStart(2, '0')
+  const d = String(val.getDate()).padStart(2, '0')
+  registerForm.value.birthday = `${y}-${m}-${d}`
+})
+watch(dialogVisible, (open) => { if (!open) birthdayModel.value = null })
 
 const emailStore = useEmailStore()
 const { emails, loading, emailForm, emailId } = storeToRefs(emailStore)
