@@ -115,8 +115,15 @@
             </div>
 
             <div class="space-y-2">
-              <label class="text-sm font-medium text-slate-700 dark:text-slate-200">PhilHealth ID / PIN</label>
-              <InputText v-model="form.pin" placeholder="Optional" type="text" class="w-full" />
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Portal Address</label>
+              <div class="flex items-center px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 gap-2 min-h-[42px]">
+                <i class="pi pi-at text-slate-400 text-xs shrink-0"></i>
+                <span class="text-xs font-mono text-slate-500 dark:text-slate-400 break-all">{{ emailSuffix }}</span>
+              </div>
+              <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                <i class="pi pi-envelope text-[10px]"></i>
+                Full email: <span class="font-mono text-slate-500 dark:text-slate-400">{{ generatedEmail || '…' }}</span>
+              </p>
             </div>
           </div>
 
@@ -377,17 +384,19 @@ const emptyForm = () => ({
 
 const form = ref(emptyForm())
 
-// Derive clinic abbreviation from tenant name (same logic as backend)
-const deriveAbbr = (name = '') =>
-  name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
-    .split(/\s+/).map(w => w[0]).filter(Boolean).join('')
+const portalId = computed(() =>
+  (tenant.value?.domain || '').split('.')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+)
+
+const emailSuffix = computed(() =>
+  portalId.value ? `.${portalId.value}@myclinicaccess.com` : '@myclinicaccess.com'
+)
 
 // Live email preview (create mode only)
 const generatedEmail = computed(() => {
   const u = (form.value.username || '').toLowerCase().replace(/[^a-z0-9._-]/g, '')
-  const abbr = deriveAbbr(tenant.value?.name || '')
-  if (!u || !abbr) return ''
-  return `${u}.${abbr}@myclinicaccess.com`
+  if (!u || !portalId.value) return ''
+  return `${u}${emailSuffix.value}`
 })
 
 const activeCount     = computed(() => patients.value.filter(p => p.isActive !== false).length)
