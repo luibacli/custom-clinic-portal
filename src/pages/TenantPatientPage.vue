@@ -273,25 +273,135 @@
           </div>
         </Transition>
 
-        <!-- Show to Staff + Download buttons -->
-        <div class="flex items-center justify-end gap-2">
+        <!-- Action buttons -->
+        <div class="space-y-2">
+          <button
+            @click="showStaffModal = true"
+            class="w-full inline-flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-sm font-bold shadow-lg hover:shadow-xl hover:from-sky-600 hover:to-cyan-600 transition-all duration-150"
+          >
+            <i class="pi pi-eye text-sm"></i>
+            Show to Staff
+          </button>
           <button
             @click="downloadId"
             :disabled="downloadingId"
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-white/15 transition-all duration-150 disabled:opacity-60"
+            class="hidden lg:inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 text-slate-600 dark:text-slate-300 text-xs font-semibold shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-white/15 transition-all duration-150 disabled:opacity-60"
           >
             <i :class="downloadingId ? 'pi pi-spin pi-spinner' : 'pi pi-download'" class="text-emerald-500 text-xs"></i>
-            {{ downloadingId ? 'Saving…' : 'Save ID' }}
-          </button>
-          <button
-            @click="showStaffModal = true"
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-white/15 transition-all duration-150"
-          >
-            <i class="pi pi-eye text-sky-500 text-xs"></i>
-            Show to Staff
+            {{ downloadingId ? 'Saving…' : 'Save as PDF' }}
           </button>
         </div>
 
+        <!-- ── Mobile Flip Card (lg and below) ───────────────── -->
+        <div class="lg:hidden">
+          <div class="flip-card-container" @click="isFlipped = !isFlipped">
+            <div class="flip-card-inner" :class="{ 'is-flipped': isFlipped }">
+
+              <!-- FRONT — Identity -->
+              <div class="flip-card-face flip-card-front">
+                <div class="absolute inset-0 bg-gradient-to-br from-sky-500 via-blue-500 to-cyan-400"></div>
+                <div class="absolute -top-10 -left-10 h-36 w-36 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+                <div class="absolute bottom-0 right-0 h-40 w-40 rounded-full bg-cyan-200/20 blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col h-full px-6 py-7 text-white">
+                  <!-- Header -->
+                  <div class="flex items-center justify-between">
+                    <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-[11px] backdrop-blur-md border border-white/20">
+                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,0.8)]"></span>
+                      Verified Patient
+                    </div>
+                    <div class="h-12 w-12 rounded-xl border border-white/20 bg-white/15 flex items-center justify-center overflow-hidden shrink-0">
+                      <img v-if="tenantLogoUrl" :src="tenantLogoUrl" alt="Logo" class="h-full w-full object-cover" />
+                      <i v-else class="pi pi-building text-base"></i>
+                    </div>
+                  </div>
+
+                  <!-- Avatar + Name -->
+                  <div class="flex-1 flex flex-col items-center justify-center gap-3 text-center py-4">
+                    <div class="h-24 w-24 rounded-[1.5rem] border-2 border-white/25 bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl font-black shadow-xl">
+                      {{ initials }}
+                    </div>
+                    <div>
+                      <h2 class="text-2xl font-black leading-tight break-words">{{ fullName || 'Patient' }}</h2>
+                      <p class="mt-1 text-sm text-blue-100/80 break-all">{{ user.email }}</p>
+                    </div>
+                  </div>
+
+                  <!-- REF ID + Badges + Clinic -->
+                  <div class="space-y-3">
+                    <div class="rounded-2xl bg-white/15 border border-white/20 px-4 py-3 text-center backdrop-blur-md">
+                      <p class="text-[10px] uppercase tracking-[0.2em] text-blue-100/70 mb-1">Patient REF ID</p>
+                      <p class="text-2xl font-black tracking-[0.15em]">{{ patientDisplayId }}</p>
+                    </div>
+                    <div class="flex gap-2 justify-center flex-wrap">
+                      <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/12 px-3 py-1 text-xs">
+                        <i class="pi pi-shield text-[10px]"></i> Active
+                      </span>
+                      <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/12 px-3 py-1 text-xs">
+                        <i class="pi pi-building text-[10px]"></i> {{ tenantName }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Tap hint -->
+                  <p class="mt-4 text-center text-[11px] text-blue-100/50">
+                    <i class="pi pi-sync text-[10px] mr-1"></i>Tap to view QR code
+                  </p>
+                </div>
+              </div>
+
+              <!-- BACK — QR Code -->
+              <div class="flip-card-face flip-card-back">
+                <div class="absolute inset-0 bg-white dark:bg-slate-900"></div>
+                <div class="relative z-10 flex flex-col h-full px-6 py-7 items-center justify-between">
+                  <!-- Top label -->
+                  <div class="text-center">
+                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ tenantName }}</p>
+                    <p class="text-sm font-bold text-slate-800 dark:text-white mt-0.5">Scan to Check In</p>
+                  </div>
+
+                  <!-- QR -->
+                  <div class="flex flex-col items-center gap-4">
+                    <div class="rounded-3xl border-2 border-slate-100 dark:border-white/10 bg-white p-3 shadow-2xl">
+                      <img v-if="qrDataUrl" :src="qrDataUrl" alt="QR Code" class="h-56 w-56 rounded-xl" />
+                      <div v-else class="h-56 w-56 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5">
+                        <i class="pi pi-spin pi-spinner text-slate-300 text-3xl"></i>
+                      </div>
+                    </div>
+
+                    <!-- Queue strip if active -->
+                    <div
+                      v-if="queueStore.hasActiveQueue"
+                      class="w-full rounded-2xl px-4 py-3 text-center text-white"
+                      :class="queueStore.isMyTurn ? 'bg-emerald-500' : 'bg-amber-400'"
+                    >
+                      <p class="text-[10px] uppercase tracking-widest opacity-80 mb-0.5">
+                        {{ queueStore.isMyTurn ? 'Now Being Served' : 'Queue Number' }}
+                      </p>
+                      <p class="text-4xl font-black">#{{ queueStore.myQueueNumber }}</p>
+                    </div>
+                  </div>
+
+                  <!-- REF + instructions -->
+                  <div class="text-center space-y-2">
+                    <div class="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-white/10 px-4 py-1.5">
+                      <i class="pi pi-shield text-emerald-500 text-xs"></i>
+                      <span class="text-xs font-bold text-slate-700 dark:text-slate-200 tracking-wider font-mono">REF: {{ patientDisplayId }}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Show this screen to front desk staff</p>
+                    <p class="text-[11px] text-slate-300 dark:text-slate-600">
+                      <i class="pi pi-sync text-[10px] mr-1"></i>Tap to flip back
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Desktop Card (lg and above) ──────────────────── -->
+        <div class="hidden lg:block">
         <div
           ref="idCardRef"
           class="relative overflow-hidden rounded-[2rem] border border-white/50 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
@@ -421,15 +531,27 @@
                 <div class="rounded-[1rem] border border-sky-100 dark:border-sky-400/20 bg-gradient-to-r from-sky-50 to-cyan-50 dark:from-sky-500/10 dark:to-cyan-500/10 px-4 py-3.5 shadow-sm">
                   <div class="flex items-center justify-between gap-2 mb-1">
                     <p class="text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">PIN</p>
-                    <button
-                      @click="copyPin"
-                      class="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-500 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-200 transition-colors"
-                    >
-                      <i class="pi pi-copy text-[10px]"></i> Copy
-                    </button>
+                    <div class="flex items-center gap-2">
+                      <button
+                        @click="pinVisible = !pinVisible"
+                        class="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                      >
+                        <i :class="pinVisible ? 'pi pi-eye-slash' : 'pi pi-eye'" class="text-[10px]"></i>
+                        {{ pinVisible ? 'Hide' : 'Show' }}
+                      </button>
+                      <button
+                        v-if="pinVisible"
+                        @click="copyPin"
+                        class="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-500 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-200 transition-colors"
+                      >
+                        <i class="pi pi-copy text-[10px]"></i> Copy
+                      </button>
+                    </div>
                   </div>
-                  <p class="text-sm sm:text-base font-bold tracking-[0.12em] text-sky-600 dark:text-sky-300 break-all">{{ user.pin || '—' }}</p>
-                  <p class="mt-1.5 text-[10px] text-slate-400 dark:text-slate-500">Present this PIN to front desk staff when checking in or verifying your identity.</p>
+                  <p class="text-sm sm:text-base font-bold tracking-[0.12em] text-sky-600 dark:text-sky-300 break-all transition-all duration-200"
+                    :class="pinVisible ? '' : 'blur-sm select-none'"
+                  >{{ user.pin || '—' }}</p>
+                  <p class="mt-1.5 text-[10px] text-slate-400 dark:text-slate-500">Present this PIN to front desk staff when checking in.</p>
                 </div>
               </div>
 
@@ -485,6 +607,7 @@
             </div>
           </div>
         </div>
+        </div><!-- end hidden lg:block -->
       </div>
 
       <!-- Recent Visits -->
@@ -703,6 +826,8 @@ const showCancelDialog = ref(false)
 const showStaffModal  = ref(false)
 const showTurnAlert   = ref(false)
 const qrDataUrl       = ref('')
+const isFlipped       = ref(false)
+const pinVisible      = ref(false)
 const bookLoading = ref(false)
 const cancelLoading = ref(false)
 const downloadingId   = ref(false)
@@ -785,7 +910,7 @@ watch(qrPayload, async (payload) => {
   if (!payload) { qrDataUrl.value = ''; return }
   try {
     qrDataUrl.value = await QRCode.toDataURL(payload, {
-      width: 220,
+      width: 300,
       margin: 2,
       color: { dark: '#0f172a', light: '#ffffff' },
       errorCorrectionLevel: 'M',
@@ -965,6 +1090,37 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* ── Flip Card ───────────────────────────────────────────── */
+.flip-card-container {
+  perspective: 1200px;
+  height: 530px;
+  position: relative;
+  cursor: pointer;
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.flip-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+.flip-card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 2rem;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* ── Queue + Turn animations ─────────────────────────────── */
 .queue-fade-enter-active,
 .queue-fade-leave-active {
   transition: all 0.3s ease;
