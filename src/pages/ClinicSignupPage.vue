@@ -516,18 +516,15 @@ const nextSteps = [
 
 // ── Helpers ───────────────────────────────────────────────
 
-const toAbbreviation = (str) =>
-  str
-    .trim()
-    .split(/\s+/)
-    .map(word => word.replace(/[^a-zA-Z0-9]/g, '').charAt(0))
-    .filter(Boolean)
-    .join('')
-    .toLowerCase()
-    .slice(0, 10)
+const toAbbreviation = (str) => {
+  const words = str.trim().split(/\s+/).map(w => w.replace(/[^a-zA-Z0-9]/g, '')).filter(Boolean)
+  if (!words.length) return ''
+  const [first, ...rest] = words
+  return (first + rest.map(w => w.charAt(0)).join('')).toLowerCase().slice(0, 15)
+}
 
 const sanitizePortalId = (str) =>
-  str.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 10)
+  str.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 15)
 
 const validateSlug = (slug) => {
   if (!slug) return 'Portal ID is required'
@@ -543,6 +540,13 @@ const onClinicNameInput = () => {
   const prevAbbr = toAbbreviation(form.clinicName.slice(0, -1))
   if (!form.slug || form.slug === prevAbbr) {
     form.slug = toAbbreviation(form.clinicName)
+    // Trigger availability check for the auto-filled value
+    errors.slug = validateSlug(form.slug)
+    slugStatus.value = 'idle'
+    clearTimeout(slugTimer)
+    if (!errors.slug && form.slug) {
+      slugTimer = setTimeout(() => checkSlugAvailability(form.slug), 500)
+    }
   }
 }
 
