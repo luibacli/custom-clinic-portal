@@ -143,7 +143,8 @@
               <!-- Subdomain -->
               <div class="space-y-1.5">
                 <label class="block text-sm font-semibold text-slate-700">
-                  Your Portal Address <span class="text-red-500">*</span>
+                  Portal ID <span class="text-red-500">*</span>
+                  <span class="ml-1 text-xs font-normal text-slate-400">(abbreviation of your clinic name)</span>
                 </label>
 
                 <div class="flex rounded-xl border overflow-hidden transition-all"
@@ -156,7 +157,7 @@
                   <input
                     v-model="form.slug"
                     type="text"
-                    placeholder="yourClinic"
+                    placeholder="tmc"
                     class="flex-1 px-4 py-3 text-sm text-slate-800 bg-white outline-none min-w-0 placeholder-slate-400"
                     @input="onSlugInput"
                   />
@@ -515,28 +516,32 @@ const nextSteps = [
 
 // ── Helpers ───────────────────────────────────────────────
 
-const toSlug = (str) =>
+const toAbbreviation = (str) =>
   str
-    .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .slice(0, 30)
+    .split(/\s+/)
+    .map(word => word.replace(/[^a-zA-Z0-9]/g, '').charAt(0))
+    .filter(Boolean)
+    .join('')
+    .toLowerCase()
+    .slice(0, 10)
+
+const sanitizePortalId = (str) =>
+  str.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 10)
 
 const validateSlug = (slug) => {
-  if (!slug) return 'Portal address is required'
-  if (slug.length < 3) return 'Must be at least 3 characters'
-  if (!/^[a-z0-9-]+$/.test(slug)) return 'Only lowercase letters, numbers, and hyphens'
-  if (slug.startsWith('-') || slug.endsWith('-')) return 'Cannot start or end with a hyphen'
+  if (!slug) return 'Portal ID is required'
+  if (slug.length < 2) return 'Must be at least 2 characters'
+  if (!/^[a-z0-9]+$/.test(slug)) return 'Only lowercase letters and numbers'
   return ''
 }
 
 const onClinicNameInput = () => {
   errors.clinicName = ''
-  // Auto-fill slug only if user hasn't customised it yet
-  if (!form.slug || form.slug === toSlug(form.clinicName.slice(0, -1))) {
-    form.slug = toSlug(form.clinicName)
+  // Auto-fill abbreviation only if user hasn't customised it yet
+  const prevAbbr = toAbbreviation(form.clinicName.slice(0, -1))
+  if (!form.slug || form.slug === prevAbbr) {
+    form.slug = toAbbreviation(form.clinicName)
   }
 }
 
@@ -552,7 +557,7 @@ const checkSlugAvailability = async (slug) => {
 }
 
 const onSlugInput = () => {
-  form.slug = toSlug(form.slug)
+  form.slug = sanitizePortalId(form.slug)
   errors.slug = validateSlug(form.slug)
   slugStatus.value = 'idle'
   clearTimeout(slugTimer)
