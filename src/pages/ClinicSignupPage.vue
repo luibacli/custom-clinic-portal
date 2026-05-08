@@ -130,8 +130,8 @@
                 </label>
                 <InputText
                   v-model="form.clinicName"
-                  placeholder="e.g. Santos Medical Clinic"
-                  class="w-full"
+                  placeholder="e.g. SANTOS MEDICAL CLINIC"
+                  class="w-full uppercase"
                   :class="{ 'input-error': errors.clinicName }"
                   @input="onClinicNameInput"
                 />
@@ -537,6 +537,7 @@ const validateSlug = (slug) => {
 }
 
 const onClinicNameInput = () => {
+  form.clinicName = form.clinicName.toUpperCase()
   errors.clinicName = ''
   // Auto-fill abbreviation only if user hasn't customised it yet
   const prevAbbr = toAbbreviation(form.clinicName.slice(0, -1))
