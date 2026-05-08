@@ -169,7 +169,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>
-              <InputText v-model="form.birthday" placeholder="YYYY-MM-DD" class="w-full" />
+              <DatePicker v-model="birthdayModel" showIcon fluid dateFormat="mm/dd/yy" class="w-full" />
             </div>
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Phone Number</label>
@@ -349,6 +349,7 @@ import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast'
 import Tag from 'primevue/tag'
 import Loading from '../components/Loading.vue'
+import DatePicker from 'primevue/datepicker'
 
 const toast = useToast()
 const authTenantStore = useAuthTenantStore()
@@ -402,6 +403,16 @@ const generatedEmail = computed(() => {
 const activeCount     = computed(() => patients.value.filter(p => p.isActive !== false).length)
 const unverifiedCount = computed(() => patients.value.filter(p => !p.isEmailVerified).length)
 
+const birthdayModel = ref(null)
+const parseBirthday = (str) => str ? new Date(str + 'T00:00:00') : null
+watch(birthdayModel, (val) => {
+  if (!val) { form.value.birthday = ''; return }
+  const y = val.getFullYear()
+  const m = String(val.getMonth() + 1).padStart(2, '0')
+  const d = String(val.getDate()).padStart(2, '0')
+  form.value.birthday = `${y}-${m}-${d}`
+})
+
 // Debounced search
 let searchTimer = null
 watch(search, () => {
@@ -428,6 +439,7 @@ const loadPatients = async (searchTerm = '') => {
 const openCreate = () => {
   editingId.value = null
   form.value = emptyForm()
+  birthdayModel.value = null
   dialogVisible.value = true
 }
 
@@ -440,6 +452,7 @@ const openEdit = (patient) => {
     role:      'patient',
     tenantId:  tenantId.value,
   }
+  birthdayModel.value = parseBirthday(patient.birthday)
   dialogVisible.value = true
 }
 
@@ -447,6 +460,7 @@ const closeDialog = () => {
   dialogVisible.value = false
   editingId.value = null
   form.value = emptyForm()
+  birthdayModel.value = null
 }
 
 const openDelete = (patient) => {

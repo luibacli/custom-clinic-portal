@@ -215,12 +215,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div class="space-y-2">
                 <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>
-                <InputText
-                  v-model="userForm.birthday"
-                  placeholder="YYYY-MM-DD"
-                  type="text"
-                  class="w-full"
-                />
+                <DatePicker v-model="birthdayModel" showIcon fluid dateFormat="mm/dd/yy" class="w-full" />
               </div>
 
               <div class="space-y-2">
@@ -475,6 +470,7 @@ import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useToast } from 'primevue/usetoast'
 import Loading from '../components/Loading.vue'
 import Tag from 'primevue/tag'
+import DatePicker from 'primevue/datepicker'
 
 const toast = useToast()
 const search = ref('')
@@ -489,6 +485,19 @@ const togglingId = ref(null)
 const portalId = computed(() =>
   (tenant.value?.domain || '').split('.')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
 )
+
+const birthdayModel = ref(null)
+const parseBirthday = (str) => str ? new Date(str + 'T00:00:00') : null
+watch(birthdayModel, (val) => {
+  if (!val) { userForm.value.birthday = ''; return }
+  const y = val.getFullYear()
+  const m = String(val.getMonth() + 1).padStart(2, '0')
+  const d = String(val.getDate()).padStart(2, '0')
+  userForm.value.birthday = `${y}-${m}-${d}`
+})
+watch(dialogVisible, (open) => {
+  birthdayModel.value = open ? parseBirthday(userForm.value.birthday) : null
+})
 
 const emailSuffix = computed(() =>
   portalId.value ? `.${portalId.value}@myclinicaccess.com` : '@myclinicaccess.com'

@@ -376,7 +376,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>
-            <InputText v-model="form.birthday" placeholder="YYYY-MM-DD" class="w-full" />
+            <DatePicker v-model="birthdayModel" showIcon fluid dateFormat="mm/dd/yy" class="w-full" />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Phone Number</label>
@@ -458,7 +458,7 @@
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>
-            <InputText v-model="devForm.birthday" placeholder="YYYY-MM-DD" class="w-full" />
+            <DatePicker v-model="devBirthdayModel" showIcon fluid dateFormat="mm/dd/yy" class="w-full" />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Phone Number</label>
@@ -529,6 +529,7 @@ import { useRouter } from 'vue-router'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import { useTenantStore } from '../stores/tenantStore'
 import Tag from 'primevue/tag'
+import DatePicker from 'primevue/datepicker'
 
 
 const toast       = useToast()
@@ -685,16 +686,32 @@ watch(search, () => {
   searchTimer = setTimeout(() => loadUsers(1), 350)
 })
 
+// ─── Birthday pickers ─────────────────────────────────────────────────────────
+const birthdayModel    = ref(null)
+const devBirthdayModel = ref(null)
+const parseBirthday = (str) => str ? new Date(str + 'T00:00:00') : null
+const birthdayToStr = (val) => {
+  if (!val) return ''
+  const y = val.getFullYear()
+  const m = String(val.getMonth() + 1).padStart(2, '0')
+  const d = String(val.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+watch(birthdayModel,    (val) => { form.value.birthday    = birthdayToStr(val) })
+watch(devBirthdayModel, (val) => { devForm.value.birthday = birthdayToStr(val) })
+
 // ─── CRUD ─────────────────────────────────────────────────────────────────────
 const openCreate = () => {
   editingUser.value = null
   form.value = emptyForm()
+  birthdayModel.value = null
   formError.value = ''
   dialogVisible.value = true
 }
 
 const openCreateDev = () => {
   devForm.value = emptyDevForm()
+  devBirthdayModel.value = null
   formError.value = ''
   devDialogVisible.value = true
 }
@@ -714,6 +731,7 @@ const openEdit = (user) => {
       birthday:  user.birthday  || '',
       phone:     user.phone     || '',
     }
+    devBirthdayModel.value = parseBirthday(user.birthday)
     formError.value = ''
     devDialogVisible.value = true
     return
@@ -732,6 +750,7 @@ const openEdit = (user) => {
     phone:      user.phone      || '',
     role:       user.role       || '',
   }
+  birthdayModel.value = parseBirthday(user.birthday)
   formError.value = ''
   dialogVisible.value = true
 }
@@ -740,6 +759,7 @@ const closeDialog = () => {
   dialogVisible.value = false
   editingUser.value = null
   form.value = emptyForm()
+  birthdayModel.value = null
   formError.value = ''
 }
 
@@ -747,6 +767,7 @@ const closeDevDialog = () => {
   devDialogVisible.value = false
   editingDevUser.value = null
   devForm.value = emptyDevForm()
+  devBirthdayModel.value = null
   formError.value = ''
 }
 
