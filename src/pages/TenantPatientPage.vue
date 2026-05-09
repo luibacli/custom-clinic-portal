@@ -288,7 +288,7 @@
             class="hidden lg:inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 text-slate-600 dark:text-slate-300 text-xs font-semibold shadow-sm hover:shadow-md hover:bg-slate-50 dark:hover:bg-white/15 transition-all duration-150 disabled:opacity-60"
           >
             <i :class="downloadingId ? 'pi pi-spin pi-spinner' : 'pi pi-download'" class="text-emerald-500 text-xs"></i>
-            {{ downloadingId ? 'Saving…' : 'Save as PDF' }}
+            {{ downloadingId ? 'Generating…' : 'Print ID (CR80 PDF)' }}
           </button>
         </div>
 
@@ -297,102 +297,153 @@
           <div class="flip-card-container" @click="isFlipped = !isFlipped">
             <div class="flip-card-inner" :class="{ 'is-flipped': isFlipped }">
 
-              <!-- FRONT — Identity -->
+              <!-- FRONT — eGovPH-style Health Card -->
               <div class="flip-card-face flip-card-front">
-                <div class="absolute inset-0 bg-gradient-to-br from-sky-500 via-blue-500 to-cyan-400"></div>
-                <div class="absolute -top-10 -left-10 h-36 w-36 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
-                <div class="absolute bottom-0 right-0 h-40 w-40 rounded-full bg-cyan-200/20 blur-3xl pointer-events-none"></div>
+                <div class="absolute inset-0 bg-white dark:bg-slate-950"></div>
+                <div class="relative z-10 flex flex-col h-full">
 
-                <div class="relative z-10 flex flex-col h-full px-6 py-7 text-white">
-                  <!-- Header -->
-                  <div class="flex items-center justify-between">
-                    <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-[11px] backdrop-blur-md border border-white/20">
-                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,0.8)]"></span>
-                      Verified Patient
-                    </div>
-                    <div class="h-12 w-12 rounded-xl border border-white/20 bg-white/15 flex items-center justify-center overflow-hidden shrink-0">
+                  <!-- Header: Philippine government blue -->
+                  <div class="flex items-center gap-[6px] px-2.5 py-[5px] shrink-0" style="background: #0038A8;">
+                    <div class="h-[22px] w-[22px] rounded border border-white/20 bg-white/15 flex items-center justify-center overflow-hidden shrink-0">
                       <img v-if="tenantLogoUrl" :src="tenantLogoUrl" alt="Logo" class="h-full w-full object-cover" />
-                      <i v-else class="pi pi-building text-base"></i>
+                      <i v-else class="pi pi-building text-white/70 text-[8px]"></i>
                     </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-[6px] uppercase tracking-[0.18em] text-blue-200 leading-none">Patient Digital Health Card</p>
+                      <p class="text-[10px] font-bold text-white leading-tight truncate">{{ tenantName }}</p>
+                    </div>
+                    <i class="pi pi-shield text-blue-200/70 text-[10px] shrink-0"></i>
                   </div>
 
-                  <!-- Avatar + Name -->
-                  <div class="flex-1 flex flex-col items-center justify-center gap-3 text-center py-4">
-                    <div class="h-24 w-24 rounded-[1.5rem] border-2 border-white/25 bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl font-black shadow-xl">
-                      {{ initials }}
-                    </div>
-                    <div>
-                      <h2 class="text-2xl font-black leading-tight break-words">{{ fullName || 'Patient' }}</h2>
-                      <p class="mt-1 text-sm text-blue-100/80 break-all">{{ user.email }}</p>
-                    </div>
-                  </div>
+                  <!-- Body -->
+                  <div class="flex flex-1 min-h-0">
 
-                  <!-- REF ID + Badges + Clinic -->
-                  <div class="space-y-3">
-                    <div class="rounded-2xl bg-white/15 border border-white/20 px-4 py-3 text-center backdrop-blur-md">
-                      <p class="text-[10px] uppercase tracking-[0.2em] text-blue-100/70 mb-1">Patient REF ID</p>
-                      <p class="text-2xl font-black tracking-[0.15em]">{{ patientDisplayId }}</p>
-                    </div>
-                    <div class="flex gap-2 justify-center flex-wrap">
-                      <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/12 px-3 py-1 text-xs">
-                        <i class="pi pi-shield text-[10px]"></i> Active
-                      </span>
-                      <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/12 px-3 py-1 text-xs">
-                        <i class="pi pi-building text-[10px]"></i> {{ tenantName }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- Tap hint -->
-                  <p class="mt-4 text-center text-[11px] text-blue-100/50">
-                    <i class="pi pi-sync text-[10px] mr-1"></i>Tap to view QR code
-                  </p>
-                </div>
-              </div>
-
-              <!-- BACK — QR Code -->
-              <div class="flip-card-face flip-card-back">
-                <div class="absolute inset-0 bg-white dark:bg-slate-900"></div>
-                <div class="relative z-10 flex flex-col h-full px-6 py-7 items-center justify-between">
-                  <!-- Top label -->
-                  <div class="text-center">
-                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ tenantName }}</p>
-                    <p class="text-sm font-bold text-slate-800 dark:text-white mt-0.5">Scan to Check In</p>
-                  </div>
-
-                  <!-- QR -->
-                  <div class="flex flex-col items-center gap-4">
-                    <div class="rounded-3xl border-2 border-slate-100 dark:border-white/10 bg-white p-3 shadow-2xl">
-                      <img v-if="qrDataUrl" :src="qrDataUrl" alt="QR Code" class="h-56 w-56 rounded-xl" />
-                      <div v-else class="h-56 w-56 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5">
-                        <i class="pi pi-spin pi-spinner text-slate-300 text-3xl"></i>
+                    <!-- Left sidebar: photo + ID -->
+                    <div class="w-[27%] shrink-0 flex flex-col items-center px-2 py-[7px] gap-[5px] bg-blue-50 dark:bg-[#0038A8]/10 border-r border-blue-100 dark:border-[#0038A8]/20">
+                      <div class="h-[46px] w-[46px] rounded-lg flex items-center justify-center text-white text-[13px] font-black shadow-sm" style="background: #0038A8;">
+                        {{ initials }}
+                      </div>
+                      <!-- Philippine flag stripe -->
+                      <div class="w-full h-[3px] rounded-full overflow-hidden flex">
+                        <span class="flex-1" style="background: #0038A8;"></span>
+                        <span class="flex-1 bg-white border-y border-slate-200 dark:border-slate-600"></span>
+                        <span class="flex-1" style="background: #CE1126;"></span>
+                      </div>
+                      <div class="text-center">
+                        <p class="text-[5.5px] uppercase tracking-[0.1em] leading-none mb-[2px]" style="color: #0038A8;">Patient ID</p>
+                        <p class="text-[8px] font-black font-mono leading-tight text-slate-800 dark:text-slate-100">{{ patientDisplayId }}</p>
+                      </div>
+                      <div class="mt-auto inline-flex items-center gap-[3px]">
+                        <span class="h-[4px] w-[4px] rounded-full bg-emerald-500"></span>
+                        <p class="text-[5.5px] font-semibold text-emerald-600 dark:text-emerald-400">ACTIVE</p>
                       </div>
                     </div>
 
-                    <!-- Queue strip if active -->
+                    <!-- Right main: patient info -->
+                    <div class="flex-1 min-w-0 flex flex-col px-2.5 py-[7px] gap-[5px]">
+
+                      <!-- Name (PH format: LAST, GIVEN) -->
+                      <div>
+                        <p class="text-[5.5px] uppercase tracking-[0.15em] leading-none mb-[2px]" style="color: #0038A8;">Name</p>
+                        <p class="text-[10.5px] font-extrabold text-slate-900 dark:text-white leading-tight line-clamp-2">{{ fullNamePH }}</p>
+                      </div>
+
+                      <!-- Thin divider -->
+                      <div class="h-px w-full bg-blue-100 dark:bg-[#0038A8]/20 shrink-0"></div>
+
+                      <!-- DOB + Phone -->
+                      <div class="grid grid-cols-2 gap-2">
+                        <div>
+                          <p class="text-[5.5px] uppercase tracking-[0.1em] leading-none mb-[2px]" style="color: #0038A8;">Date of Birth</p>
+                          <p class="text-[8.5px] font-semibold text-slate-800 dark:text-slate-100 leading-tight">{{ formatBirthday }}</p>
+                        </div>
+                        <div>
+                          <p class="text-[5.5px] uppercase tracking-[0.1em] leading-none mb-[2px]" style="color: #0038A8;">Phone</p>
+                          <p class="text-[8.5px] font-semibold text-slate-800 dark:text-slate-100 leading-tight">{{ user.phone || '—' }}</p>
+                        </div>
+                      </div>
+
+                      <!-- Thin divider -->
+                      <div class="h-px w-full bg-blue-100 dark:bg-[#0038A8]/20 shrink-0"></div>
+
+                      <!-- Email + QR (bottom row) -->
+                      <div class="flex items-end justify-between gap-1.5 flex-1">
+                        <div class="min-w-0">
+                          <p class="text-[5.5px] uppercase tracking-[0.1em] leading-none mb-[2px]" style="color: #0038A8;">Email</p>
+                          <p class="text-[8px] font-semibold text-slate-800 dark:text-slate-100 leading-tight truncate">{{ user.email || '—' }}</p>
+                        </div>
+                        <div class="shrink-0 rounded border-2 bg-white p-[3px] shadow-sm" style="border-color: #0038A8;">
+                          <img v-if="qrDataUrl" :src="qrDataUrl" alt="QR" class="h-[50px] w-[50px] block" />
+                          <div v-else class="h-[50px] w-[50px] flex items-center justify-center bg-slate-50">
+                            <i class="pi pi-spin pi-spinner text-slate-300 text-sm"></i>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <!-- Footer -->
+                  <div class="flex items-center justify-between px-2.5 py-[4px] border-t border-blue-100 dark:border-[#0038A8]/20 bg-white dark:bg-slate-950 shrink-0">
+                    <div class="flex items-center gap-[4px]">
+                      <span class="h-[6px] w-[6px] rounded-[1px] shrink-0" style="background: #0038A8;"></span>
+                      <p class="text-[6px] uppercase tracking-[0.1em] text-slate-400">MyClinicAccess Portal</p>
+                    </div>
+                    <p class="text-[6px] text-slate-400 flex items-center gap-[3px]">
+                      <i class="pi pi-sync text-[5px]"></i> Tap for QR
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- BACK — eGovPH Check-In QR -->
+              <div class="flip-card-face flip-card-back">
+                <div class="absolute inset-0 bg-white dark:bg-slate-950"></div>
+                <div class="relative z-10 flex flex-col h-full">
+
+                  <!-- Header -->
+                  <div class="flex items-center gap-[6px] px-2.5 py-[5px] shrink-0" style="background: #0038A8;">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-[6px] uppercase tracking-[0.18em] text-blue-200 leading-none">Clinic Check-In</p>
+                      <p class="text-[10px] font-bold text-white leading-tight truncate">{{ tenantName }}</p>
+                    </div>
+                    <i class="pi pi-qrcode text-blue-200/70 text-[10px] shrink-0"></i>
+                  </div>
+
+                  <!-- Body -->
+                  <div class="flex-1 flex flex-col items-center justify-center gap-[5px] px-3 py-2">
+                    <p class="text-[6px] uppercase tracking-[0.15em] font-semibold" style="color: #0038A8;">Scan QR for Verification</p>
+                    <div class="rounded-lg border-2 bg-white p-[4px] shadow-md" style="border-color: #0038A8;">
+                      <img v-if="qrDataUrl" :src="qrDataUrl" alt="QR Code" class="h-[106px] w-[106px] block rounded-sm" />
+                      <div v-else class="h-[106px] w-[106px] flex items-center justify-center rounded-sm bg-slate-50">
+                        <i class="pi pi-spin pi-spinner text-slate-300 text-lg"></i>
+                      </div>
+                    </div>
                     <div
                       v-if="queueStore.hasActiveQueue"
-                      class="w-full rounded-2xl px-4 py-3 text-center text-white"
+                      class="w-full rounded px-2 py-1 text-center text-white"
                       :class="queueStore.isMyTurn ? 'bg-emerald-500' : 'bg-amber-400'"
                     >
-                      <p class="text-[10px] uppercase tracking-widest opacity-80 mb-0.5">
-                        {{ queueStore.isMyTurn ? 'Now Being Served' : 'Queue Number' }}
+                      <p class="text-[6px] uppercase tracking-widest opacity-80 leading-none mb-[2px]">
+                        {{ queueStore.isMyTurn ? 'Now Serving' : 'Queue No.' }}
                       </p>
-                      <p class="text-4xl font-black">#{{ queueStore.myQueueNumber }}</p>
+                      <p class="text-base font-black leading-tight">#{{ queueStore.myQueueNumber }}</p>
                     </div>
                   </div>
 
-                  <!-- REF + instructions -->
-                  <div class="text-center space-y-2">
-                    <div class="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-white/10 px-4 py-1.5">
-                      <i class="pi pi-shield text-emerald-500 text-xs"></i>
-                      <span class="text-xs font-bold text-slate-700 dark:text-slate-200 tracking-wider font-mono">REF: {{ patientDisplayId }}</span>
+                  <!-- Footer -->
+                  <div class="flex items-center justify-between px-2.5 py-[4px] border-t border-blue-100 dark:border-[#0038A8]/20 bg-white dark:bg-slate-950 shrink-0">
+                    <div class="inline-flex items-center gap-[3px] rounded-full px-2 py-[3px] border" style="border-color: #0038A8; background: rgba(0,56,168,0.06);">
+                      <i class="pi pi-shield text-[7px]" style="color: #0038A8;"></i>
+                      <span class="text-[7px] font-bold font-mono text-slate-700 dark:text-slate-200">{{ patientDisplayId }}</span>
                     </div>
-                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Show this screen to front desk staff</p>
-                    <p class="text-[11px] text-slate-300 dark:text-slate-600">
-                      <i class="pi pi-sync text-[10px] mr-1"></i>Tap to flip back
+                    <p class="text-[6px] text-slate-400 flex items-center gap-[3px]">
+                      <i class="pi pi-sync text-[5px]"></i> Tap to flip
                     </p>
                   </div>
+
                 </div>
               </div>
 
@@ -400,212 +451,136 @@
           </div>
         </div>
 
-        <!-- ── Desktop Card (lg and above) ──────────────────── -->
+        <!-- ── Desktop Card — eGovPH CR80 Print Preview (lg and above) ── -->
         <div class="hidden lg:block">
+        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mb-2 text-center">
+          CR80 Print Preview — 85.6 × 54 mm
+        </p>
+        <div class="max-w-[680px] mx-auto">
         <div
           ref="idCardRef"
-          class="relative overflow-hidden rounded-[2rem] border border-white/50 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+          class="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-950 flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.18)]"
+          style="aspect-ratio: 85.6 / 54; width: 100%;"
         >
-          <div class="absolute inset-0 bg-gradient-to-br from-sky-500 via-blue-500 to-cyan-400"></div>
-          <div class="absolute inset-0 bg-black/10"></div>
+          <!-- Header: Philippine government blue -->
+          <div class="flex items-center gap-3 px-5 py-[10px] shrink-0" style="background: #0038A8;">
+            <div class="h-[36px] w-[36px] rounded-lg border border-white/20 bg-white/15 flex items-center justify-center overflow-hidden shrink-0">
+              <img v-if="tenantLogoUrl" :src="tenantLogoUrl" alt="Clinic Logo" class="h-full w-full object-cover" />
+              <i v-else class="pi pi-building text-white/70 text-sm"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[8px] uppercase tracking-[0.22em] text-blue-200 leading-none">Patient Digital Health Card</p>
+              <p class="text-[14px] font-bold text-white leading-tight truncate mt-[2px]">{{ tenantName }}</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 shrink-0 rounded-full bg-white/15 border border-white/20 px-3 py-1.5 text-[8px] font-semibold text-white">
+              <span class="h-[6px] w-[6px] rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]"></span>
+              Verified & Active
+            </span>
+          </div>
 
-          <div class="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-white/15 blur-3xl"></div>
-          <div class="absolute top-8 right-0 h-40 w-40 rounded-full bg-cyan-100/30 blur-3xl"></div>
-          <div class="absolute bottom-0 left-1/3 h-28 w-28 rounded-full bg-sky-200/20 blur-3xl"></div>
+          <!-- Body -->
+          <div class="flex flex-1 min-h-0">
 
-          <div class="relative z-10 grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr]">
-            <!-- LEFT SIDE -->
-            <div class="p-5 sm:p-6 lg:p-8 text-white">
-              <div class="flex items-start justify-between gap-4">
-                <div
-                  class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-[11px] sm:text-xs backdrop-blur-md border border-white/20 shadow-sm"
-                >
-                  <span class="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(110,231,183,0.8)]"></span>
-                  Verified Patient Record
-                </div>
-
-                <div
-                  class="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-md shadow-lg overflow-hidden"
-                >
-                  <img v-if="tenantLogoUrl" :src="tenantLogoUrl" alt="Clinic Logo" class="h-full w-full object-cover" />
-                  <div v-else class="flex items-center justify-center h-full w-full">
-                    <i class="pi pi-building text-lg sm:text-xl text-white"></i>
-                  </div>
-                </div>
+            <!-- Left sidebar: photo + flag stripe + ID -->
+            <div class="w-[22%] shrink-0 flex flex-col items-center px-3 py-4 gap-3 border-r" style="background: rgba(0,56,168,0.05); border-color: rgba(0,56,168,0.15);">
+              <div class="h-[72px] w-[72px] rounded-xl flex items-center justify-center text-white text-2xl font-black shadow-md" style="background: #0038A8;">
+                {{ initials }}
               </div>
-
-              <div class="mt-5 flex items-start justify-between gap-3">
-                <div>
-                  <h1 class="text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Patient Digital ID</h1>
-                  <p class="mt-2 max-w-sm text-xs sm:text-sm text-blue-50/90 leading-5">
-                    Secure patient identity card for portal access, clinic verification, and facility reference.
-                  </p>
-                </div>
-                <div class="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-md shadow-lg">
-                  <i class="pi pi-id-card text-lg sm:text-xl"></i>
-                </div>
+              <!-- Philippine flag stripe -->
+              <div class="w-full h-[3px] rounded-full overflow-hidden flex">
+                <span class="flex-1" style="background: #0038A8;"></span>
+                <span class="flex-1 bg-white border-y border-slate-200 dark:border-slate-700"></span>
+                <span class="flex-1" style="background: #CE1126;"></span>
               </div>
-
-              <div class="mt-5 rounded-[1.5rem] border border-white/15 bg-white/10 p-4 sm:p-5 backdrop-blur-xl shadow-xl">
-                <div class="flex items-center gap-3">
-                  <div class="flex h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem] shrink-0 items-center justify-center rounded-[1.25rem] border border-white/20 bg-white/15 text-lg sm:text-xl font-bold shadow-md">
-                    {{ initials }}
-                  </div>
-                  <div class="min-w-0">
-                    <p class="text-[10px] sm:text-xs uppercase tracking-[0.22em] text-blue-50/80">Patient Name</p>
-                    <h2 class="mt-1 break-words text-lg sm:text-xl font-semibold leading-snug">{{ fullName || 'No Name Available' }}</h2>
-                    <p class="mt-1 break-all text-xs sm:text-sm text-blue-50/85">{{ user.email || 'No email available' }}</p>
-                  </div>
-                </div>
-
-                <div class="mt-4 flex flex-wrap gap-2">
-                  <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/12 px-2.5 py-1 text-[11px] sm:text-xs">
-                    <i class="pi pi-shield text-[10px]"></i> Active
-                  </span>
-                  <span class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/12 px-2.5 py-1 text-[11px] sm:text-xs">
-                    <i class="pi pi-star text-[10px]"></i> Portal Member
-                  </span>
-                </div>
+              <div class="text-center">
+                <p class="text-[7px] uppercase tracking-[0.1em] leading-none mb-[3px]" style="color: #0038A8;">Patient ID</p>
+                <p class="text-[11px] font-black font-mono leading-tight text-slate-800 dark:text-slate-100">{{ patientDisplayId }}</p>
               </div>
-
-              <div class="mt-5 rounded-[1.25rem] border border-white/15 bg-white/10 p-4 backdrop-blur-md">
-                <div class="flex items-center gap-3">
-                  <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/15 overflow-hidden">
-                    <img v-if="tenantLogoUrl" :src="tenantLogoUrl" alt="Facility Logo" class="h-full w-full object-cover" />
-                    <i v-else class="pi pi-building text-white text-base"></i>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="text-[10px] sm:text-xs uppercase tracking-[0.18em] text-blue-50/80">Registered Facility</p>
-                    <p class="mt-1 text-sm sm:text-base lg:text-lg font-semibold leading-snug truncate">{{ tenantName || 'Health Facility' }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-5 grid grid-cols-2 gap-3 border-t border-white/10 pt-4">
-                <div>
-                  <p class="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-blue-50/70">Card Status</p>
-                  <p class="mt-1 text-xs sm:text-sm font-semibold text-emerald-300">Verified & Active</p>
-                </div>
-                <div class="text-right">
-                  <p class="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-blue-50/70">Card Type</p>
-                  <p class="mt-1 text-xs sm:text-sm font-semibold">Digital ID</p>
-                </div>
+              <div class="mt-auto inline-flex items-center gap-[4px]">
+                <span class="h-[5px] w-[5px] rounded-full bg-emerald-500"></span>
+                <p class="text-[7px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Active</p>
               </div>
             </div>
 
-            <!-- RIGHT SIDE -->
-            <div class="bg-white/95 dark:bg-slate-950/85 backdrop-blur-2xl p-5 sm:p-6 lg:p-8">
-              <div class="mb-5 flex items-start justify-between gap-3">
+            <!-- Right main: patient details -->
+            <div class="flex-1 min-w-0 flex flex-col px-5 py-4 justify-between gap-3">
+
+              <!-- Name -->
+              <div>
+                <p class="text-[7.5px] uppercase tracking-[0.18em] leading-none mb-[3px]" style="color: #0038A8;">Name</p>
+                <h2 class="text-[16px] font-extrabold text-slate-900 dark:text-white leading-tight truncate">{{ fullNamePH }}</h2>
+              </div>
+
+              <div class="h-px w-full shrink-0" style="background: rgba(0,56,168,0.15);"></div>
+
+              <!-- Info grid: DOB + Phone + Sex -->
+              <div class="grid grid-cols-3 gap-3">
                 <div>
-                  <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Patient Information</p>
-                  <h2 class="mt-1 text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">ID Details</h2>
+                  <p class="text-[7px] uppercase tracking-[0.12em] leading-none mb-[3px]" style="color: #0038A8;">Date of Birth</p>
+                  <p class="text-[11px] font-semibold text-slate-800 dark:text-slate-100 leading-tight">{{ formatBirthday }}</p>
                 </div>
-                <div class="shrink-0 rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 px-3 py-2.5 shadow-lg text-center min-w-[4rem]">
-                  <p class="text-[9px] text-white/70 uppercase tracking-widest leading-none">REF ID</p>
-                  <p class="mt-1 text-xs font-black text-white tracking-wider leading-none">{{ patientDisplayId }}</p>
+                <div>
+                  <p class="text-[7px] uppercase tracking-[0.12em] leading-none mb-[3px]" style="color: #0038A8;">Phone</p>
+                  <p class="text-[11px] font-semibold text-slate-800 dark:text-slate-100 leading-tight">{{ user.phone || '—' }}</p>
                 </div>
-              </div>
-
-              <div class="space-y-3">
-                <div class="rounded-[1rem] border border-slate-200/80 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 shadow-sm">
-                  <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Full Name</p>
-                  <p class="text-sm sm:text-base font-semibold text-slate-900 dark:text-white break-words">{{ fullName || '—' }}</p>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div class="rounded-[1rem] border border-slate-200/80 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 shadow-sm">
-                    <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Birthday</p>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white break-words">{{ formatBirthday }}</p>
-                  </div>
-                  <div class="rounded-[1rem] border border-slate-200/80 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 shadow-sm">
-                    <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Phone Number</p>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white break-words">{{ user.phone || '—' }}</p>
-                  </div>
-                </div>
-
-                <div class="rounded-[1rem] border border-slate-200/80 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5 shadow-sm">
-                  <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Email Address</p>
-                  <p class="text-sm font-semibold text-slate-900 dark:text-white break-all">{{ user.email || '—' }}</p>
-                </div>
-
-                <div class="rounded-[1rem] border border-sky-100 dark:border-sky-400/20 bg-gradient-to-r from-sky-50 to-cyan-50 dark:from-sky-500/10 dark:to-cyan-500/10 px-4 py-3.5 shadow-sm">
-                  <div class="flex items-center justify-between gap-2 mb-1">
-                    <p class="text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">PIN</p>
-                    <div class="flex items-center gap-2">
-                      <button
-                        @click="pinVisible = !pinVisible"
-                        class="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                      >
-                        <i :class="pinVisible ? 'pi pi-eye-slash' : 'pi pi-eye'" class="text-[10px]"></i>
-                        {{ pinVisible ? 'Hide' : 'Show' }}
-                      </button>
-                      <button
-                        v-if="pinVisible"
-                        @click="copyPin"
-                        class="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-500 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-200 transition-colors"
-                      >
-                        <i class="pi pi-copy text-[10px]"></i> Copy
-                      </button>
-                    </div>
-                  </div>
-                  <p class="text-sm sm:text-base font-bold tracking-[0.12em] text-sky-600 dark:text-sky-300 break-all transition-all duration-200"
-                    :class="pinVisible ? '' : 'blur-sm select-none'"
-                  >{{ user.pin || '—' }}</p>
-                  <p class="mt-1.5 text-[10px] text-slate-400 dark:text-slate-500">Present this PIN to front desk staff when checking in.</p>
+                <div>
+                  <p class="text-[7px] uppercase tracking-[0.12em] leading-none mb-[3px]" style="color: #0038A8;">Sex</p>
+                  <p class="text-[11px] font-semibold text-slate-800 dark:text-slate-100 leading-tight">—</p>
                 </div>
               </div>
 
-              <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div class="rounded-[1rem] border border-slate-200/80 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5">
-                  <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Status</p>
-                  <div class="flex items-center gap-2">
-                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-                    <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-300">Active</p>
-                  </div>
-                </div>
-                <div class="rounded-[1rem] border border-slate-200/80 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3.5">
-                  <p class="mb-1 text-[10px] sm:text-xs uppercase tracking-[0.14em] text-slate-400">Card Type</p>
-                  <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Digital Patient ID</p>
-                </div>
-              </div>
+              <div class="h-px w-full shrink-0" style="background: rgba(0,56,168,0.15);"></div>
 
-              <!-- QR Code Section -->
-              <div class="mt-5 border-t border-slate-200 dark:border-white/10 pt-5">
-                <div class="flex flex-col sm:flex-row items-center gap-5">
-                  <!-- QR Image -->
-                  <div class="shrink-0 flex flex-col items-center gap-2">
-                    <div class="rounded-2xl border-2 border-slate-100 dark:border-white/10 bg-white p-2 shadow-sm">
-                      <img
-                        v-if="qrDataUrl"
-                        :src="qrDataUrl"
-                        alt="Patient QR Code"
-                        class="h-[110px] w-[110px] rounded-lg"
-                      />
-                      <div v-else class="h-[110px] w-[110px] flex items-center justify-center rounded-lg bg-slate-50 dark:bg-white/5">
-                        <i class="pi pi-spin pi-spinner text-slate-300 text-xl"></i>
+              <!-- Email + PIN + QR row -->
+              <div class="flex items-end justify-between gap-4">
+                <div class="flex-1 min-w-0 space-y-2">
+                  <div>
+                    <p class="text-[7px] uppercase tracking-[0.12em] leading-none mb-[3px]" style="color: #0038A8;">Email Address</p>
+                    <p class="text-[11px] font-semibold text-slate-800 dark:text-slate-100 leading-tight truncate">{{ user.email || '—' }}</p>
+                  </div>
+                  <div class="rounded-lg px-3 py-2" style="background: rgba(0,56,168,0.06); border: 1px solid rgba(0,56,168,0.15);">
+                    <div class="flex items-center justify-between mb-[3px]">
+                      <p class="text-[7px] uppercase tracking-[0.12em]" style="color: #0038A8;">Portal PIN</p>
+                      <div class="flex items-center gap-2">
+                        <button @click="pinVisible = !pinVisible" class="inline-flex items-center gap-[3px] text-[7.5px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                          <i :class="pinVisible ? 'pi pi-eye-slash' : 'pi pi-eye'" class="text-[7.5px]"></i>
+                          {{ pinVisible ? 'Hide' : 'Show' }}
+                        </button>
+                        <button v-if="pinVisible" @click="copyPin" class="inline-flex items-center gap-[3px] text-[7.5px] font-semibold transition-colors" style="color: #0038A8;">
+                          <i class="pi pi-copy text-[7.5px]"></i> Copy
+                        </button>
                       </div>
                     </div>
-                    <p class="text-[9px] text-slate-400 uppercase tracking-widest">Scan to verify</p>
-                  </div>
-
-                  <!-- QR Info -->
-                  <div class="flex-1 min-w-0 text-center sm:text-left">
-                    <p class="text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">Patient QR Code</p>
-                    <p class="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
-                      Show this QR code at the clinic front desk for instant check-in.
-                      <span v-if="todayAppointment" class="text-sky-500 dark:text-sky-400 font-medium">
-                        Linked to today's appointment.
-                      </span>
-                    </p>
-                    <div class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-white/10 px-3 py-1">
-                      <i class="pi pi-shield text-emerald-500 text-[10px]"></i>
-                      <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-300">REF: {{ patientDisplayId }}</span>
-                    </div>
+                    <p class="text-[12px] font-black tracking-[0.1em] text-slate-800 dark:text-slate-100 transition-all duration-200" :class="pinVisible ? '' : 'blur-sm select-none'">{{ user.pin || '—' }}</p>
                   </div>
                 </div>
+
+                <!-- QR code -->
+                <div class="shrink-0 flex flex-col items-center gap-[5px]">
+                  <div class="rounded-lg border-2 bg-white p-[5px] shadow-sm" style="border-color: #0038A8;">
+                    <img v-if="qrDataUrl" :src="qrDataUrl" alt="Patient QR Code" class="h-[92px] w-[92px] block" />
+                    <div v-else class="h-[92px] w-[92px] flex items-center justify-center bg-slate-50">
+                      <i class="pi pi-spin pi-spinner text-slate-300 text-xl"></i>
+                    </div>
+                  </div>
+                  <p class="text-[7px] text-slate-400 uppercase tracking-[0.1em]">Scan to verify</p>
+                </div>
               </div>
+
             </div>
+
           </div>
+
+          <!-- Footer -->
+          <div class="flex items-center justify-between px-5 py-[8px] border-t shrink-0" style="background: rgba(0,56,168,0.04); border-color: rgba(0,56,168,0.12);">
+            <div class="flex items-center gap-[6px]">
+              <span class="h-[9px] w-[9px] rounded-[2px] shrink-0" style="background: #0038A8;"></span>
+              <p class="text-[7.5px] uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">MyClinicAccess Patient Portal</p>
+            </div>
+            <p class="text-[7.5px] text-slate-400">Issued via Digital Registration</p>
+          </div>
+
+        </div>
         </div>
         </div><!-- end hidden lg:block -->
       </div>
@@ -925,6 +900,15 @@ const formatBirthday = computed(() => {
   } catch { return user.value.birthday }
 })
 
+const fullNamePH = computed(() => {
+  const last = (user.value.lastName || '').toUpperCase().trim()
+  const given = [user.value.firstName, user.value.middleName].filter(Boolean).join(' ').trim()
+  if (!last && !given) return '—'
+  if (!last) return given
+  if (!given) return last
+  return `${last}, ${given}`
+})
+
 const copyPin = async () => {
   if (!user.value.pin) return
   try {
@@ -985,8 +969,8 @@ const downloadId = async () => {
         margin: 0,
         filename: `patient-id-${patientDisplayId.value}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
-        jsPDF: { unit: 'mm', format: [210, 120], orientation: 'landscape' },
+        html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: false },
+        jsPDF: { unit: 'mm', format: [85.6, 54], orientation: 'landscape' },
       })
       .from(idCardRef.value)
       .save()
@@ -1090,10 +1074,13 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* ── Flip Card ───────────────────────────────────────────── */
+/* ── Flip Card — CR80 (85.6 × 54 mm) ────────────────────── */
 .flip-card-container {
   perspective: 1200px;
-  height: 530px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  aspect-ratio: 85.6 / 54;
   position: relative;
   cursor: pointer;
 }
@@ -1110,11 +1097,11 @@ onUnmounted(() => {
 .flip-card-face {
   position: absolute;
   inset: 0;
-  border-radius: 2rem;
+  border-radius: 16px;
   overflow: hidden;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 .flip-card-back {
   transform: rotateY(180deg);
