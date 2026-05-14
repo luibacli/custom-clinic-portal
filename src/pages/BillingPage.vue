@@ -2,6 +2,70 @@
   <div class="px-4 py-6 sm:px-6 max-w-4xl mx-auto space-y-8">
     <Toast />
 
+    <!-- Payment Processing Dialog -->
+    <Dialog
+      v-model:visible="modal.visible"
+      :closable="modal.state === 'success'"
+      :modal="true"
+      :draggable="false"
+      :pt="{
+        root: { class: 'rounded-2xl shadow-2xl border-0 overflow-hidden w-full max-w-sm mx-4' },
+        header: { class: 'hidden' },
+        content: { class: 'p-0' },
+      }"
+    >
+      <!-- Processing state -->
+      <div v-if="modal.state === 'processing'" class="flex flex-col items-center text-center px-8 py-10 gap-5 bg-white dark:bg-slate-900">
+        <div class="relative h-16 w-16">
+          <div class="absolute inset-0 rounded-full border-4 border-blue-100 dark:border-blue-500/20"></div>
+          <div class="absolute inset-0 rounded-full border-4 border-t-blue-500 animate-spin"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <i class="pi pi-qrcode text-blue-500 text-xl"></i>
+          </div>
+        </div>
+        <div>
+          <p class="text-base font-bold text-slate-900 dark:text-white">Waiting for Payment</p>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Complete your QRph payment in the checkout tab. This page will update automatically.
+          </p>
+        </div>
+        <div class="w-full rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 px-4 py-3 text-left">
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Upgrading to</p>
+          <p class="text-sm font-bold text-slate-900 dark:text-white capitalize">{{ modal.targetPlan }} — {{ modal.targetBilling }}</p>
+        </div>
+        <a
+          v-if="modal.checkoutUrl"
+          :href="modal.checkoutUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs text-blue-500 hover:text-blue-600 underline underline-offset-2 transition-colors"
+        >
+          <i class="pi pi-external-link mr-1 text-[10px]"></i>Reopen payment tab
+        </a>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500">Checking for confirmation every few seconds…</p>
+      </div>
+
+      <!-- Success state -->
+      <div v-else-if="modal.state === 'success'" class="flex flex-col items-center text-center px-8 py-10 gap-5 bg-white dark:bg-slate-900">
+        <div class="h-16 w-16 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
+          <i class="pi pi-check text-emerald-500 text-2xl"></i>
+        </div>
+        <div>
+          <p class="text-base font-bold text-slate-900 dark:text-white">Payment Confirmed!</p>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Your plan has been upgraded to <span class="font-semibold capitalize text-slate-700 dark:text-slate-200">{{ modal.targetPlan }}</span>.
+          </p>
+        </div>
+        <p class="text-xs text-slate-400 dark:text-slate-500">Closing in {{ countdown }}s…</p>
+        <button
+          @click="closeModal"
+          class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors"
+        >
+          Done
+        </button>
+      </div>
+    </Dialog>
+
     <!-- Header -->
     <div>
       <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Subscription & Billing</h1>
@@ -219,7 +283,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, reactive } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast'
 import api from '../lib/axios'
@@ -230,6 +294,54 @@ const loading = ref(true)
 const billing = ref('monthly')
 const checkoutLoading = ref(null)
 const plansSection = ref(null)
+
+const modal = reactive({
+  visible: false,
+  state: 'processing',
+  targetPlan: '',
+  targetBilling: '',
+  checkoutUrl: '',
+})
+
+const pollTimer    = ref(null)
+const countdownTimer = ref(null)
+const countdown    = ref(3)
+
+const startPolling = (targetPlan) => {
+  pollTimer.value = setInterval(async () => {
+    try {
+      const { data } = await api.get('/billing/status')
+      if (!data.success) return
+      if (data.data.plan === targetPlan && data.data.status === 'active') {
+        clearInterval(pollTimer.value)
+        pollTimer.value = null
+        sub.value = data.data
+        modal.state = 'success'
+        countdown.value = 3
+        countdownTimer.value = setInterval(() => {
+          countdown.value--
+          if (countdown.value <= 0) closeModal()
+        }, 1000)
+      }
+    } catch {
+      // silently retry
+    }
+  }, 4000)
+}
+
+const closeModal = () => {
+  clearInterval(pollTimer.value)
+  clearInterval(countdownTimer.value)
+  pollTimer.value = null
+  countdownTimer.value = null
+  modal.visible = false
+  modal.state = 'processing'
+}
+
+onUnmounted(() => {
+  clearInterval(pollTimer.value)
+  clearInterval(countdownTimer.value)
+})
 
 const sub = ref({
   plan: 'starter',
@@ -374,6 +486,12 @@ const handleCheckout = async (planKey) => {
     const { data } = await api.post('/billing/checkout', { plan: planKey, billing: billing.value })
     if (data.checkoutUrl) {
       window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer')
+      modal.targetPlan    = planKey
+      modal.targetBilling = billing.value === 'annual' ? 'Annual' : 'Monthly'
+      modal.checkoutUrl   = data.checkoutUrl
+      modal.state         = 'processing'
+      modal.visible       = true
+      startPolling(planKey)
     } else {
       toast.add({ severity: 'error', summary: 'Error', detail: 'Could not get checkout URL', life: 4000 })
     }
