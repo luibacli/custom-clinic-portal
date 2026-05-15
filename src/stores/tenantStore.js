@@ -80,6 +80,11 @@ export const useTenantStore = defineStore('tenants', {
           "Content-Type": "multipart/form-data"
         }
       })
+
+      if (res.data?.tenantLogo && this.tenant && String(this.tenant._id || this.tenant.id) === String(id)) {
+        this.tenant = { ...this.tenant, tenantLogo: res.data.tenantLogo }
+      }
+
       return res.data
     },
 
@@ -122,7 +127,7 @@ export const useTenantStore = defineStore('tenants', {
     async fetchTenant(id) {
       try {
         const res = await api.get(`/tenants/${id}`)
-        this.tenant = res.data;
+        this.tenant = res.data.data;
         return res.data;
       } catch (error) {
         console.error('Failed to fetch tenant', error.message);

@@ -108,7 +108,7 @@
         </div>
       </template>
 
-      <Form v-slot="$form" :userForm="userForm" :resolver="resolver">
+      <Form v-slot="$form" :userForm="userForm" :resolver="resolver" autocomplete="off">
         <div class="space-y-5">
           <!-- Basic -->
           <div
@@ -129,6 +129,7 @@
                   placeholder="e.g. jdelacruz"
                   type="text"
                   class="w-full"
+                  autocomplete="off"
                   :disabled="!!userForm._id"
                   @input="userForm.username = userForm.username.toLowerCase().replace(/[^a-z0-9._-]/g, '')"
                 />
@@ -158,6 +159,7 @@
                   :placeholder="userForm._id ? 'Leave blank to keep current password' : 'Set initial password (auto-generated if blank)'"
                   type="password"
                   class="w-full"
+                  autocomplete="new-password"
                 />
               </div>
             </div>
@@ -179,6 +181,7 @@
                   placeholder="First name"
                   type="text"
                   class="w-full"
+                  autocomplete="off"
                 />
               </div>
 
@@ -189,6 +192,7 @@
                   placeholder="Optional"
                   type="text"
                   class="w-full"
+                  autocomplete="off"
                 />
               </div>
 
@@ -199,6 +203,7 @@
                   placeholder="Last name"
                   type="text"
                   class="w-full"
+                  autocomplete="off"
                 />
               </div>
             </div>
@@ -225,6 +230,7 @@
                   placeholder="09XXXXXXXXX"
                   type="text"
                   class="w-full"
+                  autocomplete="off"
                 />
               </div>
 
