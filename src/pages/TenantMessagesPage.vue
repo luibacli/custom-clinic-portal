@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-[calc(100vh-80px)] overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 shadow-sm">
+  <div class="flex h-[calc(100svh-88px)] lg:h-[calc(100svh-32px)] overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 shadow-sm">
     <Toast />
 
     <!-- ── PATIENT VIEW ──────────────────────────────────────────────── -->
