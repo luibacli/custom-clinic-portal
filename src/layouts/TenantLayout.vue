@@ -193,7 +193,7 @@ onMounted(async () => {
     const role     = result.data?.role;
     const tenantId = result.data?.tenantId;
     if (role !== 'dev' && tenantId) {
-      await authTenantStore.fetchTenant(tenantId);
+      await tenantStore.fetchTenant(tenantId);
     }
 
     if (isPatient.value) {
