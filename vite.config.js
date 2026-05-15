@@ -8,4 +8,9 @@ export default defineConfig({
     outDir: 'dist',
   },
   base: '/',
+  server: {
+    headers: {
+      'Permissions-Policy': 'camera=(self), microphone=(self)',
+    },
+  },
 })

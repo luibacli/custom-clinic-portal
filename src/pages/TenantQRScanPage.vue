@@ -27,6 +27,7 @@
             class="w-full h-full object-cover"
             playsinline
             muted
+            autoplay
           ></video>
           <canvas ref="canvasRef" class="hidden"></canvas>
 
@@ -302,6 +303,12 @@ const todayStr = new Date().toISOString().split('T')[0]
 const startCamera = async () => {
   cameraError.value = ''
   scanError.value   = ''
+
+  if (!navigator.mediaDevices?.getUserMedia) {
+    cameraError.value = 'Camera not supported. Ensure the page is loaded over HTTPS.'
+    return
+  }
+
   try {
     mediaStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } },
@@ -311,9 +318,13 @@ const startCamera = async () => {
     scanning.value = true
     tick()
   } catch (err) {
-    cameraError.value = err.name === 'NotAllowedError'
-      ? 'Camera permission denied. Please allow camera access and try again.'
-      : 'Could not access camera. Use manual REF ID entry instead.'
+    const messages = {
+      NotAllowedError:      'Camera permission denied. Please allow camera access and try again.',
+      NotFoundError:        'No camera found on this device.',
+      NotReadableError:     'Camera is already in use by another application.',
+      OverconstrainedError: 'Camera does not support the required resolution.',
+    }
+    cameraError.value = messages[err.name] ?? 'Could not access camera. Use manual REF ID entry instead.'
   }
 }
 
