@@ -142,6 +142,7 @@
         <NavItem icon="pi-home" label="Home" to="/dev" :collapsed="collapsed" exact />
         <NavDivider :collapsed="collapsed" label="Management" />
         <NavItem icon="pi-users" label="Users" to="/manage-users" :collapsed="collapsed" />
+        <NavItem icon="pi-tag" label="Pricing" to="/pricing-config" :collapsed="collapsed" />
         <NavDivider :collapsed="collapsed" label="Account" />
         <NavItem icon="pi-user" label="Profile" to="/profile" :collapsed="collapsed" exact />
       </template>

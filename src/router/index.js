@@ -37,9 +37,10 @@ const TenantPatientManagePage   = () => import('../pages/TenantPatientManagePage
 const TenantSmsPage             = () => import('../pages/TenantSmsPage.vue');
 
 // Dev pages (accessed by users with role="dev" via tenant auth)
-const DevHomePage    = () => import('../pages/DevHomePage.vue');
-const DevTenantsPage = () => import('../pages/DevTenantsPage.vue');
-const DevUsersPage   = () => import('../pages/DevUsersPage.vue');
+const DevHomePage      = () => import('../pages/DevHomePage.vue');
+const DevTenantsPage   = () => import('../pages/DevTenantsPage.vue');
+const DevUsersPage     = () => import('../pages/DevUsersPage.vue');
+const DevPricingPage   = () => import('../pages/DevPricingPage.vue');
 
 // Layout
 const TenantLayout = () => import('../layouts/TenantLayout.vue');
@@ -201,6 +202,12 @@ const routes = [
         path: '/manage-users',
         name: 'DevUsers',
         component: DevUsersPage,
+        meta: { roles: ['dev'] }
+      },
+      {
+        path: '/pricing-config',
+        name: 'DevPricing',
+        component: DevPricingPage,
         meta: { roles: ['dev'] }
       },
     ]
