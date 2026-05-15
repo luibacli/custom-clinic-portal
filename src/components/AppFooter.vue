@@ -81,7 +81,7 @@
       <!-- Bottom Bar -->
       <div class="border-t border-slate-700/60 mt-10 pt-5 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
         <p>&copy; {{ currentYear }} My Clinic Access. All rights reserved.</p>
-        <p>Developed by Luigie C. Bacli</p>
+        <p>Crafted for Filipino healthcare.</p>
       </div>
 
     </div>

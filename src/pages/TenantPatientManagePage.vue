@@ -92,6 +92,7 @@
                 placeholder="e.g. jdelacruz"
                 type="text"
                 class="w-full"
+                autocomplete="off"
                 :disabled="!!editingId"
               />
               <!-- Live email preview when creating -->
@@ -136,6 +137,7 @@
               :placeholder="editingId ? 'Leave blank to keep current password' : 'Set initial password (auto-generated if blank)'"
               type="password"
               class="w-full"
+              autocomplete="new-password"
             />
           </div>
         </div>
@@ -148,17 +150,17 @@
               <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
                 First Name <span class="text-red-500">*</span>
               </label>
-              <InputText v-model="form.firstName" placeholder="First name" class="w-full" />
+              <InputText v-model="form.firstName" placeholder="First name" class="w-full" autocomplete="off" />
             </div>
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Middle Name</label>
-              <InputText v-model="form.middleName" placeholder="Optional" class="w-full" />
+              <InputText v-model="form.middleName" placeholder="Optional" class="w-full" autocomplete="off" />
             </div>
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
                 Last Name <span class="text-red-500">*</span>
               </label>
-              <InputText v-model="form.lastName" placeholder="Last name" class="w-full" />
+              <InputText v-model="form.lastName" placeholder="Last name" class="w-full" autocomplete="off" />
             </div>
           </div>
         </div>
@@ -173,7 +175,7 @@
             </div>
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Phone Number</label>
-              <InputText v-model="form.phone" placeholder="09XXXXXXXXX" class="w-full" />
+              <InputText v-model="form.phone" placeholder="09XXXXXXXXX" class="w-full" autocomplete="off" />
             </div>
           </div>
         </div>

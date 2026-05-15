@@ -14,7 +14,7 @@
   <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700">
     <div
       class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-      <p>Developed by Truly Yours Luigie C. Bacli</p>
+      <p>My Clinic Access — Internal Tools</p>
       <p>© 2026 My Clinic Access. All rights reserved.</p>
       <div class="flex gap-4 mt-2 sm:mt-0">
         <a href="#" class="hover:text-primary">Privacy Policy</a>
