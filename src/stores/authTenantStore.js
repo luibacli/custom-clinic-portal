@@ -91,8 +91,14 @@ export const useAuthTenantStore = defineStore('authTenant', {
     actions: {
         async addUser() {
             try {
-                if (!this.userForm.username || !this.userForm.firstName || !this.userForm.lastName) {
-                    throw new Error("Username, First Name, and Last Name are required")
+                if (this.userForm.role === 'superadmin') {
+                    if (!this.userForm.email || !this.userForm.firstName || !this.userForm.lastName) {
+                        throw new Error("Personal email, first name, and last name are required")
+                    }
+                } else {
+                    if (!this.userForm.username || !this.userForm.firstName || !this.userForm.lastName) {
+                        throw new Error("Username, first name, and last name are required")
+                    }
                 }
 
                 const { data } = await api.post("auth-tenant/create", this.userForm);
