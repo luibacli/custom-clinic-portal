@@ -314,11 +314,11 @@ router.beforeEach(async (to, from, next) => {
   const featureKey = to.meta.feature
 
   if (featureKey) {
-    const features =
-      authTenantStore.tenant?.features ||
-      {}
+    const features = authTenantStore.tenant?.features || {}
+    const isTrial = authTenantStore.tenant?.subscription?.status === 'trial'
+    const trialFeatures = ['mails', 'users', 'messaging']
 
-    const enabled = features[featureKey] === true
+    const enabled = features[featureKey] === true || (isTrial && trialFeatures.includes(featureKey))
 
     if (!enabled) {
       return next('/tenant-home')
