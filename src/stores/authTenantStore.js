@@ -199,10 +199,12 @@ export const useAuthTenantStore = defineStore('authTenant', {
             this.registerForm.tenantId = localStorage.getItem("tenantId") || null;
         },
         checkToken() {
-            if (!this.tenantToken || isTokenExpired(this.tenantToken)) {
+            if (!this.tenantToken) {
+                return false;
+            }
+            if (isTokenExpired(this.tenantToken)) {
                 this.logout();
-                router.replace('/signin')
-                return false
+                return false;
             }
             return true;
         },

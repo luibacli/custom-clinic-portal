@@ -34,6 +34,7 @@ const TenantAppointmentsPage    = () => import('../pages/TenantAppointmentsPage.
 const TenantMessagesPage        = () => import('../pages/TenantMessagesPage.vue');
 const TenantQRScanPage          = () => import('../pages/TenantQRScanPage.vue');
 const TenantPatientManagePage   = () => import('../pages/TenantPatientManagePage.vue');
+const TenantSmsPage             = () => import('../pages/TenantSmsPage.vue');
 
 // Dev pages (accessed by users with role="dev" via tenant auth)
 const DevHomePage    = () => import('../pages/DevHomePage.vue');
@@ -175,6 +176,12 @@ const routes = [
         name: 'Analytics',
         component: () => import('../pages/AnalyticsPage.vue'),
         meta: { roles: ['admin', 'superadmin'], feature: 'analytics'}
+      },
+      {
+        path: '/sms',
+        name: 'SmsBroadcast',
+        component: TenantSmsPage,
+        meta: { roles: ['admin', 'superadmin'], feature: 'smsReminders' },
       },
 
       // Dev pages — accessible to users with role="dev" authenticated via tenant login
