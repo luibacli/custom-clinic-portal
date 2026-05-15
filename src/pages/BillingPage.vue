@@ -287,8 +287,10 @@ import { ref, computed, onMounted, onUnmounted, reactive } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast'
 import api from '../lib/axios'
+import { useTenantStore } from '../stores/tenantStore'
 
-const toast = useToast()
+const toast       = useToast()
+const tenantStore = useTenantStore()
 
 const loading = ref(true)
 const billing = ref('monthly')
@@ -316,6 +318,8 @@ const startPolling = (targetPlan) => {
         clearInterval(pollTimer.value)
         pollTimer.value = null
         sub.value = data.data
+        const tenantId = localStorage.getItem('tenantId')
+        if (tenantId) tenantStore.fetchTenant(tenantId)
         modal.state = 'success'
         countdown.value = 3
         countdownTimer.value = setInterval(() => {
