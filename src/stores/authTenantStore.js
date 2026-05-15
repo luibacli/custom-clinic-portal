@@ -20,6 +20,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
         userForm: {
             tenantId: null,
             username: "",
+            email: "",
             pin: "",
             firstName: "",
             middleName: "",
@@ -419,6 +420,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
         resetUserForm() {
             this.userForm.tenantId = null;
             this.userForm.username = "";
+            this.userForm.email = "";
             this.userForm.pin = "";
             this.userForm.firstName = "";
             this.userForm.middleName = "";

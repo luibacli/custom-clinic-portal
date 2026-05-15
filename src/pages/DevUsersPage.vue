@@ -307,8 +307,16 @@
       <div class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 p-4">
         <p class="text-xs uppercase tracking-[0.15em] text-slate-400 mb-4">Account Credentials</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- CREATE: username input with live email preview -->
-          <div v-if="!editingUser" class="space-y-2">
+          <!-- CREATE superadmin: free personal email input -->
+          <div v-if="!editingUser && form.role === 'superadmin'" class="space-y-2 md:col-span-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
+              Personal Email <span class="text-red-500">*</span>
+            </label>
+            <InputText v-model="form.email" type="email" placeholder="e.g. juan@gmail.com" class="w-full" />
+            <p class="text-xs text-slate-400">Verification link will be sent to this address.</p>
+          </div>
+          <!-- CREATE non-superadmin: username input with live email preview -->
+          <div v-else-if="!editingUser" class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
               Username <span class="text-red-500">*</span>
             </label>
@@ -324,7 +332,7 @@
           </div>
           <!-- EDIT: generated email shown read-only -->
           <div v-else class="space-y-2">
-            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">System Email</label>
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
             <InputText :value="form.email" disabled class="w-full opacity-70" />
           </div>
 
@@ -700,6 +708,14 @@ const birthdayToStr = (val) => {
 watch(birthdayModel,    (val) => { form.value.birthday    = birthdayToStr(val) })
 watch(devBirthdayModel, (val) => { devForm.value.birthday = birthdayToStr(val) })
 
+watch(() => form.value.role, (newRole) => {
+  if (newRole === 'superadmin') {
+    form.value.username = ''
+  } else {
+    form.value.email = ''
+  }
+})
+
 // ─── CRUD ─────────────────────────────────────────────────────────────────────
 const openCreate = () => {
   editingUser.value = null
@@ -773,10 +789,11 @@ const closeDevDialog = () => {
 
 const validateForm = () => {
   if (!form.value.tenantId)  return 'Tenant is required.'
-  if (!editingUser.value && !form.value.username) return 'Username is required.'
+  if (!form.value.role)      return 'Role is required.'
+  if (!editingUser.value && form.value.role === 'superadmin' && !form.value.email) return 'Personal email is required for superadmin.'
+  if (!editingUser.value && form.value.role !== 'superadmin' && !form.value.username) return 'Username is required.'
   if (!form.value.firstName) return 'First name is required.'
   if (!form.value.lastName)  return 'Last name is required.'
-  if (!form.value.role)      return 'Role is required.'
   return null
 }
 
@@ -813,6 +830,7 @@ const handleSave = async () => {
     } else {
       authStore.userForm.tenantId   = form.value.tenantId
       authStore.userForm.username   = form.value.username
+      authStore.userForm.email      = form.value.email
       authStore.userForm.pin        = form.value.pin
       authStore.userForm.firstName  = form.value.firstName
       authStore.userForm.middleName = form.value.middleName
