@@ -47,13 +47,13 @@
     <div
       v-if="subscriptionBanner && (isAdmin || isSuperAdmin)"
       :class="[
-        'flex items-center justify-between gap-3 px-4 py-2.5 text-sm font-medium',
+        'flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 text-sm font-medium',
         subscriptionBanner.bg,
       ]"
     >
-      <div class="flex items-center gap-2">
-        <i :class="['text-base', subscriptionBanner.icon]"></i>
-        <span>{{ subscriptionBanner.message }}</span>
+      <div class="flex items-center gap-2 min-w-0">
+        <i :class="['shrink-0 text-base', subscriptionBanner.icon]"></i>
+        <span class="min-w-0">{{ subscriptionBanner.message }}</span>
       </div>
       <router-link
         to="/billing"
