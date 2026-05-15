@@ -35,7 +35,7 @@
           </span>
 
           <Button
-            label="Add User"
+            label="Add Staff"
             icon="pi pi-plus"
             class="rounded-xl w-full sm:w-auto"
             @click="dialogVisible = true"
