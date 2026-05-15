@@ -19,13 +19,14 @@
         </p>
       </div>
       <router-link
-        v-if="isAdmin || isSuperAdmin"
+        v-if="isSuperAdmin"
         to="/billing"
         class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
       >
         <i class="pi pi-credit-card text-sm"></i>
         Go to Billing
       </router-link>
+      <p v-else-if="isAdmin" class="text-xs text-slate-400">Please contact your clinic owner to restore access.</p>
       <p v-else class="text-xs text-slate-400">Please contact your clinic administrator.</p>
     </div>
   </div>
@@ -74,6 +75,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
+import { useRoute } from "vue-router";
 import { useAuthTenantStore } from "../stores/authTenantStore";
 import { useTenantStore } from "../stores/tenantStore";
 import { useQueueStore } from "../stores/queueStore";
@@ -85,6 +87,7 @@ import QueueFloatingWidget from "../components/QueueFloatingWidget.vue";
 import { useSidebarState } from "../composables/useSidebarState";
 import { storeToRefs } from "pinia";
 
+const route           = useRoute();
 const authTenantStore = useAuthTenantStore();
 const tenantStore     = useTenantStore();
 const queueStore      = useQueueStore();
@@ -113,7 +116,11 @@ const trialDaysLeft  = computed(() => daysUntil(sub.value.trialEndsAt));
 const graceDaysLeft  = computed(() => daysUntil(sub.value.gracePeriodEnd));
 
 // Hard block: suspended, cancelled, or past_due with grace expired
+// Patients are never blocked — they have no control over the clinic's billing.
+// Billing route is exempt so admins can actually pay and restore access.
 const isHardBlocked = computed(() => {
+  if (isPatient.value) return false;
+  if (route.path === '/billing') return false;
   const status = sub.value.status;
   if (status === 'suspended' || status === 'cancelled') return true;
   if (status === 'past_due' && graceDaysLeft.value !== null && graceDaysLeft.value <= 0) return true;
