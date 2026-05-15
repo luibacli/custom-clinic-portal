@@ -28,7 +28,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
             birthday: "",
             phone: "",
             password: "",
-            role: "",
+            role: "admin",
         },
         devForm: {
             username: "",
@@ -79,9 +79,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
         roleOptions(state) {
             if (state.isDev || state.isSuperAdmin) {
                 return [
-                    { label: 'Admin',      value: 'admin'      },
-                    { label: 'Superadmin', value: 'superadmin' },
-                    { label: 'Patient',    value: 'patient'    },
+                    { label: 'Admin', value: 'admin' },
                 ];
             }
             // admin can only create/update patients within their tenant
@@ -434,7 +432,7 @@ export const useAuthTenantStore = defineStore('authTenant', {
             this.userForm.birthday = "";
             this.userForm.phone = "";
             this.userForm.password = "";
-            this.userForm.role = "";
+            this.userForm.role = "admin";
         },
         resetPasswordForm() {
             this.passwordForm.currentPassword = "";
