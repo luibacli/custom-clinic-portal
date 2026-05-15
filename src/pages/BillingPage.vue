@@ -287,8 +287,10 @@ import { ref, computed, onMounted, onUnmounted, reactive } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast'
 import api from '../lib/axios'
+import { useTenantStore } from '../stores/tenantStore'
 
-const toast = useToast()
+const toast       = useToast()
+const tenantStore = useTenantStore()
 
 const loading = ref(true)
 const billing = ref('monthly')
@@ -316,6 +318,8 @@ const startPolling = (targetPlan) => {
         clearInterval(pollTimer.value)
         pollTimer.value = null
         sub.value = data.data
+        const tenantId = localStorage.getItem('tenantId')
+        if (tenantId) tenantStore.fetchTenant(tenantId)
         modal.state = 'success'
         countdown.value = 3
         countdownTimer.value = setInterval(() => {
@@ -352,56 +356,30 @@ const sub = ref({
   usage:  { patients: 0, staff: 0 },
 })
 
-const plans = [
-  {
-    key: 'starter',
-    name: 'Starter',
-    priceMonthlyFmt: '1,399',
-    priceAnnualFmt:  '13,990',
-    popular: false,
-    features: [
-      { label: '10,000 patients', included: true },
-      { label: '3 admin accounts', included: true },
-      { label: 'Patient digital ID', included: true },
-      { label: 'Appointments', included: false },
-      { label: 'Messaging', included: false },
-      { label: 'QR check-in', included: false },
-      { label: 'Analytics', included: false },
-    ],
-  },
-  {
-    key: 'growth',
-    name: 'Growth',
-    priceMonthlyFmt: '2,899',
-    priceAnnualFmt:  '28,990',
-    popular: true,
-    features: [
-      { label: '20,000 patients', included: true },
-      { label: '10 admin accounts', included: true },
-      { label: 'Patient digital ID', included: true },
-      { label: 'Appointments', included: true },
-      { label: 'Messaging', included: true },
-      { label: 'QR check-in', included: true },
-      { label: 'Analytics', included: false },
-    ],
-  },
-  {
-    key: 'premium',
-    name: 'Premium',
-    priceMonthlyFmt: '5,399',
-    priceAnnualFmt:  '53,990',
-    popular: false,
-    features: [
-      { label: 'Unlimited patients', included: true },
-      { label: '20 admin accounts', included: true },
-      { label: 'Patient digital ID', included: true },
-      { label: 'Appointments', included: true },
-      { label: 'Messaging', included: true },
-      { label: 'QR check-in', included: true },
-      { label: 'Analytics + Reports', included: true },
-    ],
-  },
-]
+const plans = ref([])
+
+const buildDisplayPlans = (rawPlans) => {
+  return rawPlans.map(p => {
+    const monthly = p.price.monthly / 100
+    const annual  = p.price.annual  / 100
+    return {
+      key:             p.key,
+      name:            p.name,
+      priceMonthlyFmt: monthly.toLocaleString('en-PH'),
+      priceAnnualFmt:  annual.toLocaleString('en-PH'),
+      popular:         p.key === 'growth',
+      features: [
+        { label: p.patientLimit ? `${p.patientLimit.toLocaleString('en-PH')} patients` : 'Unlimited patients', included: true },
+        { label: `${p.userLimit} admin accounts`, included: true },
+        { label: 'Patient digital ID', included: true },
+        { label: 'Appointments',       included: !!p.features.appointments },
+        { label: 'Messaging',          included: !!p.features.messaging    },
+        { label: 'QR check-in',        included: !!p.features.qrScan       },
+        { label: 'Analytics',          included: !!p.features.analytics    },
+      ],
+    }
+  })
+}
 
 const trialDaysLeft = computed(() => {
   if (!sub.value.trialEndsAt) return -1
@@ -504,8 +482,12 @@ const handleCheckout = async (planKey) => {
 
 onMounted(async () => {
   try {
-    const { data } = await api.get('/billing/status')
-    if (data.success) sub.value = data.data
+    const [statusRes, configRes] = await Promise.all([
+      api.get('/billing/status'),
+      api.get('/plan-config'),
+    ])
+    if (statusRes.data.success) sub.value = statusRes.data.data
+    if (configRes.data.success) plans.value = buildDisplayPlans(configRes.data.data.plans)
   } catch {
     toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load billing info', life: 4000 })
   } finally {

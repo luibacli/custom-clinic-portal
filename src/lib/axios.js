@@ -18,4 +18,28 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+const SUBSCRIPTION_CODES = new Set([
+  'TRIAL_EXPIRED',
+  'SUBSCRIPTION_PAST_DUE',
+  'SUBSCRIPTION_SUSPENDED',
+  'SUBSCRIPTION_CANCELLED',
+]);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const code   = error.response?.data?.code;
+
+    if (status === 402 && SUBSCRIPTION_CODES.has(code)) {
+      // Avoid redirect loops if already on /billing
+      if (!window.location.pathname.includes('/billing')) {
+        window.location.href = `/billing?reason=${code}`;
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export default api;
