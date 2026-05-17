@@ -51,8 +51,9 @@ const displayName = computed(() => {
 });
 
 const devItems = [
-  { label: 'Dashboard',  icon: 'pi pi-home',  command: () => router.push('/dev') },
-  { label: 'Users',      icon: 'pi pi-users', command: () => router.push('/manage-users') },
+  { label: 'Dashboard',   icon: 'pi pi-home',        command: () => router.push('/dev') },
+  { label: 'Users',       icon: 'pi pi-users',        command: () => router.push('/manage-users') },
+  { label: 'Transactions',icon: 'pi pi-credit-card',  command: () => router.push('/transactions') },
 ];
 
 const profileMenuItems = [

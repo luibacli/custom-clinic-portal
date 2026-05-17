@@ -15,6 +15,7 @@ const PricingPage      = () => import('../pages/PricingPage.vue');
 // Legal / informational pages — no auth required
 const PrivacyPolicyPage = () => import('../pages/PrivacyPolicyPage.vue');
 const TermsPage         = () => import('../pages/TermsPage.vue');
+const RefundPolicyPage  = () => import('../pages/RefundPolicyPage.vue');
 const ContactPage       = () => import('../pages/ContactPage.vue');
 
 // Tenant pages — lazy loaded
@@ -37,10 +38,11 @@ const TenantPatientManagePage   = () => import('../pages/TenantPatientManagePage
 const TenantSmsPage             = () => import('../pages/TenantSmsPage.vue');
 
 // Dev pages (accessed by users with role="dev" via tenant auth)
-const DevHomePage      = () => import('../pages/DevHomePage.vue');
-const DevTenantsPage   = () => import('../pages/DevTenantsPage.vue');
-const DevUsersPage     = () => import('../pages/DevUsersPage.vue');
-const DevPricingPage   = () => import('../pages/DevPricingPage.vue');
+const DevHomePage         = () => import('../pages/DevHomePage.vue');
+const DevTenantsPage      = () => import('../pages/DevTenantsPage.vue');
+const DevUsersPage        = () => import('../pages/DevUsersPage.vue');
+const DevPricingPage      = () => import('../pages/DevPricingPage.vue');
+const DevTransactionsPage = () => import('../pages/DevTransactionsPage.vue');
 
 // Layout
 const TenantLayout = () => import('../layouts/TenantLayout.vue');
@@ -210,6 +212,12 @@ const routes = [
         component: DevPricingPage,
         meta: { roles: ['dev'] }
       },
+      {
+        path: '/transactions',
+        name: 'DevTransactions',
+        component: DevTransactionsPage,
+        meta: { roles: ['dev'] }
+      },
     ]
   },
 
@@ -223,6 +231,11 @@ const routes = [
     path: '/terms',
     name: 'Terms',
     component: TermsPage
+  },
+  {
+    path: '/refund-policy',
+    name: 'RefundPolicy',
+    component: RefundPolicyPage
   },
   {
     path: '/contact',

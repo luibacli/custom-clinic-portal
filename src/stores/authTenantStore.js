@@ -439,10 +439,10 @@ export const useAuthTenantStore = defineStore('authTenant', {
             this.passwordForm.newPassword = "";
             this.passwordForm.confirmPassword = "";
         },
-        async registerClinic({ clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword }) {
+        async registerClinic({ clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword, termsAccepted }) {
             try {
                 const { data } = await api.post('/tenants/register', {
-                    clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword,
+                    clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword, termsAccepted,
                 });
 
                 this.tenantToken = data.token;
