@@ -43,6 +43,7 @@ const DevTenantsPage      = () => import('../pages/DevTenantsPage.vue');
 const DevUsersPage        = () => import('../pages/DevUsersPage.vue');
 const DevPricingPage      = () => import('../pages/DevPricingPage.vue');
 const DevTransactionsPage = () => import('../pages/DevTransactionsPage.vue');
+const DevContactsPage     = () => import('../pages/DevContactsPage.vue');
 
 // Layout
 const TenantLayout = () => import('../layouts/TenantLayout.vue');
@@ -216,6 +217,12 @@ const routes = [
         path: '/transactions',
         name: 'DevTransactions',
         component: DevTransactionsPage,
+        meta: { roles: ['dev'] }
+      },
+      {
+        path: '/contacts',
+        name: 'DevContacts',
+        component: DevContactsPage,
         meta: { roles: ['dev'] }
       },
     ]
