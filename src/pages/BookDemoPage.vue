@@ -223,6 +223,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import LandingLayout from '../layouts/LandingLayout.vue'
+import api from '../lib/axios'
 
 const form = reactive({
   clinicName:  '',
@@ -287,9 +288,28 @@ const validate = () => {
 const handleSubmit = async () => {
   if (!validate()) return
   sending.value = true
-  await new Promise(r => setTimeout(r, 1000))
-  sending.value = false
-  submitted.value = true
+
+  const parts = [
+    `Clinic: ${form.clinicName}`,
+    `Phone: ${form.phone}`,
+    form.clinicType  ? `Clinic Type: ${form.clinicType}` : null,
+    form.challenges?.length ? `Challenges: ${form.challenges.join(', ')}` : null,
+    form.message.trim() ? `\nAdditional Info:\n${form.message.trim()}` : null,
+  ].filter(Boolean)
+
+  try {
+    await api.post('/contact', {
+      name:    form.contactName.trim(),
+      email:   form.email.trim(),
+      subject: `[Demo Request] ${form.clinicName.trim()}`,
+      message: parts.join('\n'),
+    })
+    submitted.value = true
+  } catch (err) {
+    errors.phone = err.response?.data?.message || 'Something went wrong. Please try again.'
+  } finally {
+    sending.value = false
+  }
 }
 
 const resetForm = () => {
