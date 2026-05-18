@@ -1,6 +1,8 @@
 <template>
   <Toast />
 
+  <LegalDialog v-model:visible="legalDialogVisible" :policy="legalDialogPolicy" />
+
   <div class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
 
     <!-- ─── LEFT — Value panel ─────────────────────────────── -->
@@ -353,22 +355,47 @@
                 </div>
               </Transition>
 
+              <!-- Terms acceptance -->
+              <div
+                class="flex items-start gap-3 p-4 rounded-xl border transition-colors cursor-pointer select-none"
+                :class="termsAccepted
+                  ? 'bg-emerald-50 border-emerald-300'
+                  : errors.termsAccepted
+                    ? 'bg-red-50 border-red-300'
+                    : 'bg-slate-50 border-slate-200 hover:border-slate-300'"
+                @click="termsAccepted = !termsAccepted; errors.termsAccepted = ''"
+              >
+                <div
+                  class="mt-0.5 h-4 w-4 shrink-0 rounded border-2 flex items-center justify-center transition-colors"
+                  :class="termsAccepted ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 bg-white'"
+                >
+                  <i v-if="termsAccepted" class="pi pi-check text-white text-[9px]"></i>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  I have read and agree to the
+                  <button type="button" class="text-blue-600 hover:underline font-semibold" @click.stop="openLegalDialog('terms')">Terms &amp; Conditions</button>,
+                  <button type="button" class="text-blue-600 hover:underline font-semibold" @click.stop="openLegalDialog('privacy')">Privacy Policy</button>,
+                  and
+                  <button type="button" class="text-blue-600 hover:underline font-semibold" @click.stop="openLegalDialog('refund')">Refund Policy</button>.
+                  I confirm I am authorized to register on behalf of my clinic.
+                </p>
+              </div>
+              <Transition name="err-slide">
+                <p v-if="errors.termsAccepted" class="text-xs text-red-500 flex items-center gap-1 -mt-2">
+                  <i class="pi pi-exclamation-circle text-[10px]"></i>{{ errors.termsAccepted }}
+                </p>
+              </Transition>
+
               <!-- Submit -->
               <Button
                 label="Start Free Trial"
                 icon="pi pi-arrow-right"
                 icon-pos="right"
                 :loading="submitting"
+                :disabled="!termsAccepted"
                 class="w-full !rounded-2xl !py-3 !text-sm !font-bold"
                 @click="handleSubmit"
               />
-
-              <p class="text-center text-xs text-slate-400 leading-relaxed">
-                By signing up, you agree to our
-                <router-link to="/terms" class="text-blue-600 hover:underline">Terms</router-link>
-                and
-                <router-link to="/privacy" class="text-blue-600 hover:underline">Privacy Policy</router-link>.
-              </p>
 
               <button
                 type="button"
@@ -425,15 +452,25 @@ import { reactive, ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import api from '../lib/axios'
+import LegalDialog from '../components/LegalDialog.vue'
 
 const toast = useToast()
 const authStore = useAuthTenantStore()
 
-const step        = ref(1)
-const showPw      = ref(false)
+const step          = ref(1)
+const showPw        = ref(false)
 const showConfirmPw = ref(false)
-const submitting  = ref(false)
-const serverError = ref('')
+const submitting    = ref(false)
+const serverError   = ref('')
+const termsAccepted = ref(false)
+
+const legalDialogVisible = ref(false)
+const legalDialogPolicy  = ref('terms')
+
+const openLegalDialog = (policy) => {
+  legalDialogPolicy.value  = policy
+  legalDialogVisible.value = true
+}
 
 // 'idle' | 'checking' | 'available' | 'taken'
 const slugStatus  = ref('idle')
@@ -454,6 +491,7 @@ const errors = reactive({
   clinicName: '', slug: '',
   ownerFirstName: '', ownerLastName: '',
   ownerEmail: '', ownerPassword: '', confirmPassword: '',
+  termsAccepted: '',
 })
 
 // ── Computed ──────────────────────────────────────────────
@@ -617,6 +655,11 @@ const handleSubmit = async () => {
     errors.confirmPassword = 'Passwords do not match'; ok = false
   }
 
+  if (!termsAccepted.value) {
+    errors.termsAccepted = 'You must accept the Terms & Conditions to continue'
+    ok = false
+  }
+
   if (!ok) return
 
   submitting.value = true
@@ -628,6 +671,7 @@ const handleSubmit = async () => {
     ownerFirstName: form.ownerFirstName.trim(),
     ownerLastName:  form.ownerLastName.trim(),
     ownerPassword:  form.ownerPassword,
+    termsAccepted:  true,
   })
 
   submitting.value = false

@@ -115,6 +115,7 @@
       <!-- ── COMPOSE TAB ── -->
       <div v-if="activeTab === 'compose'" class="p-5 md:p-6 space-y-5">
 
+
         <!-- Recipients bar -->
         <div class="flex items-center gap-3 rounded-2xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/5 px-4 py-3.5">
           <div class="h-9 w-9 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
@@ -241,6 +242,194 @@
         </div>
       </div>
 
+      <!-- ── CSV BATCH TAB ── -->
+      <div v-else-if="activeTab === 'csv'" class="p-5 md:p-6 space-y-5">
+
+        <!-- Drop zone -->
+        <div
+          class="relative rounded-2xl border-2 border-dashed transition-colors cursor-pointer"
+          :class="csvDragging
+            ? 'border-blue-400 bg-blue-50/60 dark:bg-blue-500/5'
+            : 'border-slate-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-blue-500/40'"
+          @dragover.prevent="csvDragging = true"
+          @dragleave.prevent="csvDragging = false"
+          @drop.prevent="onCsvDrop"
+          @click="$refs.csvInput.click()"
+        >
+          <input ref="csvInput" type="file" accept=".csv,text/csv" class="hidden" @change="onCsvFileChange" />
+          <div class="flex flex-col items-center justify-center py-10 px-4 text-center gap-3">
+            <div class="h-12 w-12 rounded-2xl flex items-center justify-center" :class="csvFile ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-500'">
+              <i class="text-xl" :class="csvFile ? 'pi pi-file-check' : 'pi pi-upload'"></i>
+            </div>
+            <div v-if="csvFile">
+              <p class="text-sm font-semibold text-slate-800 dark:text-white">{{ csvFile.name }}</p>
+              <p class="text-xs text-slate-400 mt-0.5">Click to replace</p>
+            </div>
+            <div v-else>
+              <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">Drop your CSV here or click to browse</p>
+              <p class="text-xs text-slate-400 mt-1">First column must be phone number · Max 1 MB · 5,000 rows</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CSV template hint -->
+        <div class="flex items-start gap-3 rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 px-4 py-3.5">
+          <i class="pi pi-info-circle text-blue-500 text-sm mt-0.5 shrink-0"></i>
+          <div class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p class="font-semibold text-slate-700 dark:text-slate-300 mb-1">Expected CSV format</p>
+            <code class="block bg-slate-100 dark:bg-white/10 rounded-lg px-3 py-2 font-mono text-[11px] text-slate-600 dark:text-slate-300 whitespace-pre">phone_number,name,tag
+09171234567,Juan Dela Cruz,diabetic
+09189876543,Maria Santos,hypertension</code>
+            <p class="mt-1.5">Only <span class="font-medium">phone_number</span> is required. The header row is automatically skipped.</p>
+          </div>
+        </div>
+
+        <!-- Parse result -->
+        <Transition name="preview-fade">
+          <div v-if="csvParsed" class="grid grid-cols-2 gap-3">
+            <div class="rounded-2xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/5 p-4 text-center">
+              <p class="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{{ csvValidCount.toLocaleString() }}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Valid recipients</p>
+            </div>
+            <div class="rounded-2xl border p-4 text-center"
+              :class="csvInvalidCount > 0
+                ? 'border-amber-200 dark:border-amber-500/20 bg-amber-50/60 dark:bg-amber-500/5'
+                : 'border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5'"
+            >
+              <p class="text-2xl font-bold" :class="csvInvalidCount > 0 ? 'text-amber-600 dark:text-amber-300' : 'text-slate-400'">{{ csvInvalidCount.toLocaleString() }}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Skipped / invalid</p>
+            </div>
+          </div>
+        </Transition>
+
+        <!-- Batch name -->
+        <div class="space-y-2">
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+            Batch Name <span class="text-red-400">*</span>
+          </label>
+          <input
+            v-model="csvBatchName"
+            type="text"
+            maxlength="80"
+            placeholder="e.g. April Hypertension Follow-up"
+            class="w-full rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition"
+          />
+        </div>
+
+        <!-- Message area -->
+        <div class="space-y-2">
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+            Your Message
+          </label>
+          <textarea
+            v-model="csvMessage"
+            :maxlength="maxMessageLength"
+            rows="5"
+            placeholder="Type your message here…"
+            class="w-full resize-none rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3.5 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition leading-relaxed"
+          />
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
+              <div
+                class="h-full rounded-full transition-all duration-200"
+                :class="csvCharBarColor"
+                :style="{ width: `${Math.min((csvMessage.length / maxMessageLength) * 100, 100)}%` }"
+              />
+            </div>
+            <p class="text-xs text-slate-400 shrink-0">
+              <span :class="csvMessage.length >= maxMessageLength ? 'text-red-500 font-semibold' : ''">{{ csvMessage.length }}</span>
+              / {{ maxMessageLength }} chars
+            </p>
+          </div>
+        </div>
+
+        <!-- Live preview -->
+        <Transition name="preview-fade">
+          <div v-if="csvMessage.trim()" class="space-y-2">
+            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Message Preview</p>
+            <div class="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 px-4 py-4">
+              <div class="flex items-end gap-2">
+                <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center shrink-0">
+                  <i class="pi pi-mobile text-xs"></i>
+                </div>
+                <div class="max-w-xs rounded-2xl rounded-bl-md bg-slate-200 dark:bg-white/15 px-3.5 py-2.5">
+                  <p class="text-xs text-slate-800 dark:text-white leading-relaxed break-words">
+                    <span class="font-bold text-blue-600 dark:text-blue-400">[{{ clinicName }}]</span>
+                    {{ ' ' + csvMessage.trim() }}
+                  </p>
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-3 text-right">
+                {{ csvFinalMessage.length }} / 160 characters total
+                <span v-if="csvFinalMessage.length > 160" class="text-red-500 font-medium ml-1">· Exceeds limit</span>
+              </p>
+            </div>
+          </div>
+        </Transition>
+
+        <!-- Credit cost row -->
+        <div
+          v-if="csvValidCount > 0 && csvMessage.trim()"
+          class="rounded-2xl border px-4 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 transition-colors"
+          :class="csvHasEnoughCredits
+            ? 'border-slate-200/80 dark:border-white/10 bg-slate-50/60 dark:bg-white/5'
+            : 'border-red-200 dark:border-red-500/30 bg-red-50/60 dark:bg-red-500/5'"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
+              :class="csvHasEnoughCredits ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-500' : 'bg-red-100 dark:bg-red-500/10 text-red-500'"
+            >
+              <i :class="csvHasEnoughCredits ? 'pi pi-credit-card' : 'pi pi-exclamation-circle'" class="text-sm"></i>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800 dark:text-white">
+                {{ csvValidCount.toLocaleString() }} credits required
+              </p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <template v-if="csvHasEnoughCredits">
+                  {{ (smsStore.credits - csvValidCount).toLocaleString() }} credits remaining after send
+                </template>
+                <template v-else>
+                  You need {{ (csvValidCount - smsStore.credits).toLocaleString() }} more credits —
+                  <button class="text-blue-600 dark:text-blue-400 font-semibold hover:underline" @click="openShop">Buy now</button>
+                </template>
+              </p>
+            </div>
+          </div>
+          <Tag
+            :value="csvHasEnoughCredits ? 'Ready to send' : 'Insufficient credits'"
+            :severity="csvHasEnoughCredits ? 'success' : 'danger'"
+            rounded
+            class="shrink-0"
+          />
+        </div>
+
+        <!-- Consent checkbox -->
+        <div class="flex items-start gap-3 rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 px-4 py-3.5">
+          <input
+            id="csvConsent"
+            v-model="csvConsent"
+            type="checkbox"
+            class="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 shrink-0 cursor-pointer"
+          />
+          <label for="csvConsent" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed cursor-pointer">
+            I confirm that all recipients in this CSV have consented to receive SMS messages from this clinic, in compliance with <span class="font-semibold">RA 10173 (PDPA)</span>. I understand that written consent records must be kept on file.
+          </label>
+        </div>
+
+        <!-- Send button -->
+        <Button
+          :disabled="!csvCanSend"
+          :loading="smsStore.sending"
+          label="Send CSV Batch"
+          icon="pi pi-send"
+          class="w-full rounded-2xl font-semibold"
+          :class="!csvCanSend ? 'opacity-50' : ''"
+          @click="openCsvConfirm"
+        />
+      </div>
+
       <!-- ── HISTORY TAB ── -->
       <div v-else class="overflow-hidden">
         <div v-if="smsStore.loading && !smsStore.blasts.length" class="p-5 md:p-6 space-y-3">
@@ -268,12 +457,18 @@
               <i class="text-sm" :class="blastIcon(blast.status)"></i>
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-sm font-medium text-slate-800 dark:text-slate-100 line-clamp-2 leading-snug">{{ blast.message }}</p>
+              <div class="flex items-center gap-2 flex-wrap mb-0.5">
+                <p v-if="blast.batchName" class="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug">{{ blast.batchName }}</p>
+                <span v-if="blast.sourceType === 'csv'" class="inline-flex items-center gap-1 rounded-full bg-violet-100 dark:bg-violet-500/15 text-violet-600 dark:text-violet-300 text-[10px] font-bold px-2 py-0.5">
+                  <i class="pi pi-file text-[9px]"></i> CSV
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-snug">{{ blast.message }}</p>
               <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
                 <span class="text-xs text-slate-400">{{ formatDate(blast.createdAt) }}</span>
                 <span class="text-slate-300 dark:text-white/20 text-xs">·</span>
                 <span class="text-xs text-slate-500 dark:text-slate-400">
-                  <i class="pi pi-users text-[10px] mr-0.5"></i>{{ blast.recipientCount.toLocaleString() }} patients
+                  <i class="pi pi-users text-[10px] mr-0.5"></i>{{ blast.recipientCount.toLocaleString() }} recipients
                 </span>
                 <span v-if="blast.failedCount > 0" class="text-xs text-amber-500">
                   <i class="pi pi-exclamation-circle text-[10px] mr-0.5"></i>{{ blast.failedCount }} failed
@@ -561,6 +756,86 @@
       </div>
     </template>
   </Dialog>
+
+  <!-- ═══════════════════════════════════════════════════════
+       CSV BATCH CONFIRM DIALOG
+  ════════════════════════════════════════════════════════════ -->
+  <Dialog
+    v-model:visible="csvConfirmVisible"
+    modal
+    :draggable="false"
+    :closable="!smsStore.sending"
+    :style="{ width: 'min(420px, 95vw)' }"
+  >
+    <template #header>
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 text-white flex items-center justify-center">
+          <i class="pi pi-file-check text-sm"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-800 dark:text-white">Confirm CSV Batch</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Review before sending</p>
+        </div>
+      </div>
+    </template>
+
+    <div class="space-y-4 pt-1">
+      <div class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 p-4 space-y-3">
+        <div>
+          <p class="text-[10px] uppercase tracking-widest text-slate-400 mb-1">Batch</p>
+          <p class="text-sm font-semibold text-slate-800 dark:text-white">{{ csvBatchName }}</p>
+          <p class="text-xs text-slate-400 mt-0.5">{{ csvFile?.name }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] uppercase tracking-widest text-slate-400 mb-2">Message preview</p>
+          <div class="flex items-end gap-2">
+            <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center shrink-0">
+              <i class="pi pi-mobile text-xs"></i>
+            </div>
+            <div class="max-w-xs rounded-2xl rounded-bl-md bg-slate-200 dark:bg-white/15 px-3.5 py-2.5">
+              <p class="text-xs text-slate-800 dark:text-white leading-relaxed break-words">
+                <span class="font-bold text-blue-600 dark:text-blue-400">[{{ clinicName }}]</span>
+                {{ ' ' + csvMessage.trim() }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 p-3.5 text-center">
+          <p class="text-2xl font-bold text-slate-800 dark:text-white">{{ csvValidCount.toLocaleString() }}</p>
+          <p class="text-[11px] text-slate-400 mt-1">Recipients</p>
+        </div>
+        <div class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-slate-50/60 dark:bg-white/5 p-3.5 text-center">
+          <p class="text-2xl font-bold text-slate-800 dark:text-white">{{ csvValidCount.toLocaleString() }}</p>
+          <p class="text-[11px] text-slate-400 mt-1">Credits used</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-2 rounded-2xl border border-amber-200 dark:border-amber-500/20 bg-amber-50/60 dark:bg-amber-500/5 px-4 py-3">
+        <i class="pi pi-info-circle text-amber-500 text-xs mt-0.5 shrink-0"></i>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          Credits are deducted immediately. Failed sends are automatically refunded.
+        </p>
+      </div>
+    </div>
+
+    <template #footer>
+      <div class="flex gap-2 pt-1">
+        <button
+          :disabled="smsStore.sending"
+          class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition disabled:opacity-50"
+          @click="csvConfirmVisible = false"
+        >Cancel</button>
+        <Button
+          :loading="smsStore.sending"
+          label="Confirm Send"
+          icon="pi pi-send"
+          class="flex-1 rounded-xl font-semibold"
+          @click="confirmCsvSend"
+        />
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
@@ -586,7 +861,7 @@ const SMS_MAX_TOTAL    = 160
 const prefixLength     = computed(() => `[${clinicName.value}] `.length)
 const maxMessageLength = computed(() => SMS_MAX_TOTAL - prefixLength.value)
 
-const tabs       = [{ key: 'compose', label: 'Compose' }, { key: 'history', label: 'History' }]
+const tabs       = [{ key: 'compose', label: 'Compose' }, { key: 'csv', label: 'CSV Batch' }, { key: 'history', label: 'History' }]
 const activeTab  = ref('compose')
 const message    = ref('')
 const statsLoading = ref(true)
@@ -610,6 +885,120 @@ const charBarColor = computed(() => {
   if (pct >= 0.9) return 'bg-amber-500'
   return 'bg-blue-500'
 })
+
+// ── CSV Batch ─────────────────────────────────────────────
+const csvInput       = ref(null)
+const csvFile        = ref(null)
+const csvDragging    = ref(false)
+const csvBatchName   = ref('')
+const csvMessage     = ref('')
+const csvConsent     = ref(false)
+const csvConfirmVisible = ref(false)
+const csvValidCount  = ref(0)
+const csvInvalidCount = ref(0)
+const csvParsed      = ref(false)
+
+const csvFinalMessage   = computed(() => `[${clinicName.value}] ${csvMessage.value.trim()}`)
+const csvHasEnoughCredits = computed(() => smsStore.credits >= csvValidCount.value)
+const csvCharBarColor   = computed(() => {
+  const pct = csvMessage.value.length / maxMessageLength.value
+  if (pct >= 1)   return 'bg-red-500'
+  if (pct >= 0.9) return 'bg-amber-500'
+  return 'bg-blue-500'
+})
+const csvCanSend = computed(() =>
+  csvFile.value !== null &&
+  csvValidCount.value > 0 &&
+  csvBatchName.value.trim().length > 0 &&
+  csvMessage.value.trim().length > 0 &&
+  csvMessage.value.length <= maxMessageLength.value &&
+  csvFinalMessage.value.length <= 160 &&
+  csvConsent.value &&
+  csvHasEnoughCredits.value &&
+  !smsStore.sending
+)
+
+const normalizePhone = (raw) => {
+  if (!raw) return null
+  const digits = raw.replace(/\D/g, '')
+  if (digits.startsWith('639') && digits.length === 12) return `+${digits}`
+  if (digits.startsWith('09')  && digits.length === 11) return `+63${digits.slice(1)}`
+  if (digits.startsWith('63')  && digits.length === 12) return `+${digits}`
+  return null
+}
+
+const parseCsv = (text) => {
+  const lines = text.split(/\r?\n/).filter(l => l.trim())
+  if (!lines.length) return { valid: 0, invalid: 0 }
+  const start = /phone|number|mobile|contact/i.test(lines[0].split(',')[0]) ? 1 : 0
+  const seen = new Set()
+  let valid = 0, invalid = 0
+  for (let i = start; i < lines.length; i++) {
+    const raw = lines[i].split(',')[0]?.replace(/"/g, '').trim()
+    const normalized = normalizePhone(raw)
+    if (normalized && !seen.has(normalized)) {
+      seen.add(normalized)
+      valid++
+    } else {
+      invalid++
+    }
+  }
+  return { valid, invalid }
+}
+
+const processCsvFile = (file) => {
+  if (!file) return
+  csvFile.value = file
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const { valid, invalid } = parseCsv(e.target.result)
+    csvValidCount.value   = valid
+    csvInvalidCount.value = invalid
+    csvParsed.value       = true
+  }
+  reader.readAsText(file)
+}
+
+const onCsvFileChange = (e) => {
+  const file = e.target.files[0]
+  if (file) processCsvFile(file)
+  e.target.value = ''
+}
+
+const onCsvDrop = (e) => {
+  csvDragging.value = false
+  const file = e.dataTransfer.files[0]
+  if (file) processCsvFile(file)
+}
+
+const openCsvConfirm = () => { csvConfirmVisible.value = true }
+
+const confirmCsvSend = async () => {
+  const fd = new FormData()
+  fd.append('csvFile', csvFile.value)
+  fd.append('batchName', csvBatchName.value.trim())
+  fd.append('message', csvMessage.value.trim())
+  fd.append('consentAcknowledged', 'true')
+
+  const result = await smsStore.sendCsvBatch(fd)
+  csvConfirmVisible.value = false
+
+  if (result.success) {
+    toast.add({ severity: 'success', summary: 'Batch sent', detail: result.message, life: 4000 })
+    csvFile.value      = null
+    csvBatchName.value = ''
+    csvMessage.value   = ''
+    csvConsent.value   = false
+    csvValidCount.value   = 0
+    csvInvalidCount.value = 0
+    csvParsed.value    = false
+    await smsStore.fetchStats()
+    await smsStore.fetchBlasts()
+    activeTab.value = 'history'
+  } else {
+    toast.add({ severity: 'error', summary: 'Batch failed', detail: result.message, life: 5000 })
+  }
+}
 
 // ── Blast confirm ─────────────────────────────────────────
 const confirmVisible = ref(false)

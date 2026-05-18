@@ -15,6 +15,7 @@ const PricingPage      = () => import('../pages/PricingPage.vue');
 // Legal / informational pages — no auth required
 const PrivacyPolicyPage = () => import('../pages/PrivacyPolicyPage.vue');
 const TermsPage         = () => import('../pages/TermsPage.vue');
+const RefundPolicyPage  = () => import('../pages/RefundPolicyPage.vue');
 const ContactPage       = () => import('../pages/ContactPage.vue');
 
 // Tenant pages — lazy loaded
@@ -37,10 +38,12 @@ const TenantPatientManagePage   = () => import('../pages/TenantPatientManagePage
 const TenantSmsPage             = () => import('../pages/TenantSmsPage.vue');
 
 // Dev pages (accessed by users with role="dev" via tenant auth)
-const DevHomePage      = () => import('../pages/DevHomePage.vue');
-const DevTenantsPage   = () => import('../pages/DevTenantsPage.vue');
-const DevUsersPage     = () => import('../pages/DevUsersPage.vue');
-const DevPricingPage   = () => import('../pages/DevPricingPage.vue');
+const DevHomePage         = () => import('../pages/DevHomePage.vue');
+const DevTenantsPage      = () => import('../pages/DevTenantsPage.vue');
+const DevUsersPage        = () => import('../pages/DevUsersPage.vue');
+const DevPricingPage      = () => import('../pages/DevPricingPage.vue');
+const DevTransactionsPage = () => import('../pages/DevTransactionsPage.vue');
+const DevContactsPage     = () => import('../pages/DevContactsPage.vue');
 
 // Layout
 const TenantLayout = () => import('../layouts/TenantLayout.vue');
@@ -210,6 +213,18 @@ const routes = [
         component: DevPricingPage,
         meta: { roles: ['dev'] }
       },
+      {
+        path: '/transactions',
+        name: 'DevTransactions',
+        component: DevTransactionsPage,
+        meta: { roles: ['dev'] }
+      },
+      {
+        path: '/contacts',
+        name: 'DevContacts',
+        component: DevContactsPage,
+        meta: { roles: ['dev'] }
+      },
     ]
   },
 
@@ -223,6 +238,11 @@ const routes = [
     path: '/terms',
     name: 'Terms',
     component: TermsPage
+  },
+  {
+    path: '/refund-policy',
+    name: 'RefundPolicy',
+    component: RefundPolicyPage
   },
   {
     path: '/contact',
@@ -268,24 +288,27 @@ router.beforeEach(async (to, from, next) => {
   const tenantToken = localStorage.getItem('tenantToken');
   const tenantRole  = localStorage.getItem('tenantRole');
 
+  // Expire token first — must run before any redirect decisions so a user
+  // with a stale token visiting /signin lands there directly instead of being
+  // bounced to a protected route and then back.
+  if (tenantToken && isTokenExpired(tenantToken)) {
+    authTenantStore.logout();
+    if (to.meta.requiresTenantAuth || to.meta.roles?.length) {
+      return next('/signin');
+    }
+    return next();
+  }
+
   // Redirect to login if protected route accessed without token
   if (to.meta.requiresTenantAuth && !tenantToken) {
     return next('/signin');
   }
 
-  // Redirect away from login if already authenticated
+  // Redirect away from login if already authenticated (token is valid at this point)
   if (to.name === 'Signin' && tenantToken) {
     if (tenantRole === 'patient') return next('/patient');
     if (tenantRole === 'dev')     return next('/dev');
     return next('/tenant-home');
-  }
-
-  // Expire token check — only force redirect on protected routes
-  if (tenantToken && isTokenExpired(tenantToken)) {
-    authTenantStore.logout();
-    if (to.meta.requiresTenantAuth || (to.meta.roles && to.meta.roles.length)) {
-      return next('/signin');
-    }
   }
   // Re-hydrate tenant on refresh — skip for dev role (no tenant scope)
   if (tenantToken && !authTenantStore.tenant && tenantRole !== 'dev') {

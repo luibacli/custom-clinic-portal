@@ -262,6 +262,76 @@
         </div>
       </div>
 
+      <!-- Payment History -->
+      <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3">
+          <div>
+            <p class="text-sm font-semibold text-slate-800 dark:text-white">Payment History</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Recent transactions for this clinic.</p>
+          </div>
+          <Button
+            icon="pi pi-refresh"
+            severity="secondary"
+            outlined
+            rounded
+            size="small"
+            :loading="txLoading"
+            @click="loadTxHistory"
+          />
+        </div>
+
+        <div v-if="txLoading" class="p-5 space-y-3">
+          <div v-for="n in 3" :key="n" class="h-14 rounded-xl bg-slate-100 dark:bg-white/5 animate-pulse"></div>
+        </div>
+
+        <div v-else-if="!txList.length" class="flex flex-col items-center py-10 gap-2 text-slate-400 dark:text-slate-500">
+          <i class="pi pi-list text-2xl"></i>
+          <p class="text-sm">No transactions yet.</p>
+        </div>
+
+        <ul v-else class="divide-y divide-slate-100 dark:divide-white/5">
+          <li
+            v-for="tx in txList"
+            :key="tx._id"
+            class="flex items-center gap-4 px-5 py-4"
+          >
+            <div
+              class="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
+              :class="tx.type === 'subscription'
+                ? 'bg-blue-100 dark:bg-blue-500/15'
+                : 'bg-violet-100 dark:bg-violet-500/15'"
+            >
+              <i
+                :class="tx.type === 'subscription' ? 'pi pi-credit-card text-blue-600 dark:text-blue-300' : 'pi pi-mobile text-violet-600 dark:text-violet-300'"
+                class="text-sm"
+              ></i>
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                {{ tx.type === 'subscription'
+                  ? `${tx.plan ? tx.plan.charAt(0).toUpperCase() + tx.plan.slice(1) : 'Plan'} subscription${tx.billing ? ` · ${tx.billing}` : ''}`
+                  : `${tx.credits != null ? tx.credits + ' SMS credits' : 'SMS credits'} purchase` }}
+              </p>
+              <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{{ formatTxDate(tx.createdAt) }}</p>
+            </div>
+
+            <div class="text-right shrink-0">
+              <p class="text-sm font-bold text-slate-800 dark:text-slate-100">{{ formatTxAmount(tx.amount) }}</p>
+              <span
+                class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold mt-0.5"
+                :class="tx.status === 'success'
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
+                  : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'"
+              >
+                <span class="h-1.5 w-1.5 rounded-full" :class="tx.status === 'success' ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                {{ tx.status === 'success' ? 'Paid' : 'Failed' }}
+              </span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
       <!-- PDPA notice -->
       <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-5">
         <div class="flex items-start gap-3">
@@ -288,9 +358,31 @@ import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast'
 import api from '../lib/axios'
 import { useTenantStore } from '../stores/tenantStore'
+import { useTransactionStore } from '../stores/transactionStore'
 
-const toast       = useToast()
-const tenantStore = useTenantStore()
+const toast            = useToast()
+const tenantStore      = useTenantStore()
+const transactionStore = useTransactionStore()
+
+const txList    = ref([])
+const txLoading = ref(false)
+
+const loadTxHistory = async () => {
+  txLoading.value = true
+  await transactionStore.fetchTransactions({ limit: 10 })
+  txList.value    = transactionStore.transactions
+  txLoading.value = false
+}
+
+const formatTxAmount = (val) => {
+  if (val == null) return '—'
+  return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(val / 100)
+}
+
+const formatTxDate = (date) => {
+  if (!date) return '—'
+  return new Date(date).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' })
+}
 
 const loading = ref(true)
 const billing = ref('monthly')
@@ -493,5 +585,6 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+  loadTxHistory()
 })
 </script>

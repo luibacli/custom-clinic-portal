@@ -213,9 +213,9 @@ export const useAuthTenantStore = defineStore('authTenant', {
             }
             return true;
         },
-        async login(isTenant = false, tenantId = null) {
+        async login(credentials, isTenant = false, tenantId = null) {
             try {
-                const res = await api.post("/auth-tenant/login", this.loginForm);
+                const res = await api.post("/auth-tenant/login", credentials);
 
                 this.tenantToken = res.data.token;
 
@@ -439,10 +439,10 @@ export const useAuthTenantStore = defineStore('authTenant', {
             this.passwordForm.newPassword = "";
             this.passwordForm.confirmPassword = "";
         },
-        async registerClinic({ clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword }) {
+        async registerClinic({ clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword, termsAccepted }) {
             try {
                 const { data } = await api.post('/tenants/register', {
-                    clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword,
+                    clinicName, domain, ownerEmail, ownerFirstName, ownerLastName, ownerPassword, termsAccepted,
                 });
 
                 this.tenantToken = data.token;

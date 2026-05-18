@@ -243,13 +243,14 @@
             <div class="space-y-1.5">
               <label class="block text-sm font-medium text-slate-700">Email address</label>
               <InputText
-                v-model="loginForm.email"
+                v-model="email"
                 type="email"
                 class="w-full"
                 :class="{ 'input-error': loginError }"
                 placeholder="you@example.com"
                 autocomplete="email"
                 @input="loginError = ''"
+                @change="loginError = ''"
               />
             </div>
 
@@ -258,13 +259,14 @@
               <label class="block text-sm font-medium text-slate-700">Password</label>
               <div class="relative">
                 <InputText
-                  v-model="loginForm.password"
+                  v-model="password"
                   :type="showPassword ? 'text' : 'password'"
                   class="w-full pr-12"
                   :class="{ 'input-error': loginError }"
                   placeholder="Enter your password"
                   autocomplete="current-password"
                   @input="loginError = ''"
+                  @change="loginError = ''"
                 />
                 <button
                   type="button"
@@ -302,7 +304,7 @@
               icon="pi pi-arrow-right"
               icon-pos="right"
               :loading="isLoggingIn"
-              :disabled="!loginForm.email.trim() || !loginForm.password.trim()"
+              :disabled="!email.trim() || !password.trim()"
               type="submit"
               class="w-full !rounded-2xl !py-3 !text-sm !font-semibold"
             />
@@ -354,8 +356,12 @@ const tenantStore = useTenantStore()
 const { branding, brandGradientStyle } = useBranding()
 
 const { login } = authTenantStore
-const { loginForm } = storeToRefs(authTenantStore)
 const { tenant, tenantResolved } = storeToRefs(tenantStore)
+
+// Local form state — keeps credentials out of global store and ensures
+// the form resets on every mount instead of retaining stale Pinia state.
+const email    = ref('')
+const password = ref('')
 
 const showPassword   = ref(false)
 const isLoggingIn    = ref(false)
@@ -399,7 +405,11 @@ const handleLogin = async () => {
   loginError.value  = ''
   isLoggingIn.value = true
 
-  const res = await login(tenantResolved.value, tenant.value?.id)
+  const res = await login(
+    { email: email.value.trim(), password: password.value },
+    tenantResolved.value,
+    tenant.value?.id
+  )
   isLoggingIn.value = false
 
   if (!res?.success) {

@@ -180,6 +180,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import PublicLayout from '../layouts/PublicLayout.vue'
+import api from '../lib/axios'
 
 const form = reactive({ name: '', email: '', subject: '', message: '' })
 const errors = reactive({ name: '', email: '', subject: '', message: '' })
@@ -203,9 +204,21 @@ const validate = () => {
 const handleSubmit = async () => {
   if (!validate()) return
   sending.value = true
-  await new Promise(r => setTimeout(r, 900))
-  sending.value = false
-  submitted.value = true
+  try {
+    await api.post('/contact', {
+      name:    form.name.trim(),
+      email:   form.email.trim(),
+      subject: form.subject.trim(),
+      message: form.message.trim(),
+    })
+    submitted.value = true
+  } catch (err) {
+    const msg = err.response?.data?.message
+    if (msg) errors.message = msg
+    else errors.message = 'Something went wrong. Please try again.'
+  } finally {
+    sending.value = false
+  }
 }
 
 const resetForm = () => {

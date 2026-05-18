@@ -60,6 +60,19 @@ export const useSmsStore = defineStore('sms', {
         this.sending = false
       }
     },
+    async sendCsvBatch(formData) {
+      this.sending = true
+      try {
+        const { data } = await api.post('/sms/blast/csv', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        return { success: data.success, data, message: data.message }
+      } catch (error) {
+        return { success: false, message: error.response?.data?.message || 'Failed to send CSV batch' }
+      } finally {
+        this.sending = false
+      }
+    },
     async createCheckout(packageKey) {
       try {
         const { data } = await api.post('/sms/credits/checkout', { packageKey })

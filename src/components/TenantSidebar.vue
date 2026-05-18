@@ -143,6 +143,8 @@
         <NavDivider :collapsed="collapsed" label="Management" />
         <NavItem icon="pi-users" label="Users" to="/manage-users" :collapsed="collapsed" />
         <NavItem icon="pi-tag" label="Pricing" to="/pricing-config" :collapsed="collapsed" />
+        <NavItem icon="pi-credit-card" label="Transactions" to="/transactions" :collapsed="collapsed" />
+        <NavItem icon="pi-inbox" label="Contacts" to="/contacts" :collapsed="collapsed" />
         <NavDivider :collapsed="collapsed" label="Account" />
         <NavItem icon="pi-user" label="Profile" to="/profile" :collapsed="collapsed" exact />
       </template>
