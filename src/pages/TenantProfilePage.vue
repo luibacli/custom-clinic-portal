@@ -146,6 +146,7 @@
                 </label>
                 <InputText
                   v-model="userForm.firstName"
+                  v-capitalize
                   placeholder="Enter first name"
                   class="w-full"
                 />
@@ -157,6 +158,7 @@
                 </label>
                 <InputText
                   v-model="userForm.middleName"
+                  v-capitalize
                   placeholder="Enter middle name"
                   class="w-full"
                 />
@@ -168,6 +170,7 @@
                 </label>
                 <InputText
                   v-model="userForm.lastName"
+                  v-capitalize
                   placeholder="Enter last name"
                   class="w-full"
                 />

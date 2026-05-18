@@ -41,6 +41,7 @@ import { createPinia } from 'pinia';
 import { useTenantStore } from './stores/tenantStore';
 import { useAuthTenantStore } from './stores/authTenantStore';
 import { applyBrandingVars } from './composables/useBranding';
+import capitalize from './directives/capitalize';
 
 const bootstrap = async () => {
   const app = createApp(App);
@@ -112,6 +113,7 @@ const bootstrap = async () => {
   app.component('Password', Password);
 
   app.directive('tooltip', Tooltip);
+  app.directive('capitalize', capitalize);
 
 const tenantStore = useTenantStore(pinia);
 const authTenantStore = useAuthTenantStore(pinia);
