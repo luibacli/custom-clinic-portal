@@ -1,6 +1,8 @@
 <template>
   <Toast />
 
+  <LegalDialog v-model:visible="legalDialogVisible" :policy="legalDialogPolicy" />
+
   <div class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
 
     <!-- ─── LEFT — Value panel ─────────────────────────────── -->
@@ -371,10 +373,10 @@
                 </div>
                 <p class="text-xs text-slate-600 leading-relaxed">
                   I have read and agree to the
-                  <router-link to="/terms" class="text-blue-600 hover:underline font-semibold" @click.stop>Terms &amp; Conditions</router-link>,
-                  <router-link to="/privacy" class="text-blue-600 hover:underline font-semibold" @click.stop>Privacy Policy</router-link>,
+                  <button type="button" class="text-blue-600 hover:underline font-semibold" @click.stop="openLegalDialog('terms')">Terms &amp; Conditions</button>,
+                  <button type="button" class="text-blue-600 hover:underline font-semibold" @click.stop="openLegalDialog('privacy')">Privacy Policy</button>,
                   and
-                  <router-link to="/refund-policy" class="text-blue-600 hover:underline font-semibold" @click.stop>Refund Policy</router-link>.
+                  <button type="button" class="text-blue-600 hover:underline font-semibold" @click.stop="openLegalDialog('refund')">Refund Policy</button>.
                   I confirm I am authorized to register on behalf of my clinic.
                 </p>
               </div>
@@ -450,6 +452,7 @@ import { reactive, ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { useAuthTenantStore } from '../stores/authTenantStore'
 import api from '../lib/axios'
+import LegalDialog from '../components/LegalDialog.vue'
 
 const toast = useToast()
 const authStore = useAuthTenantStore()
@@ -460,6 +463,14 @@ const showConfirmPw = ref(false)
 const submitting    = ref(false)
 const serverError   = ref('')
 const termsAccepted = ref(false)
+
+const legalDialogVisible = ref(false)
+const legalDialogPolicy  = ref('terms')
+
+const openLegalDialog = (policy) => {
+  legalDialogPolicy.value  = policy
+  legalDialogVisible.value = true
+}
 
 // 'idle' | 'checking' | 'available' | 'taken'
 const slugStatus  = ref('idle')
