@@ -288,24 +288,27 @@ router.beforeEach(async (to, from, next) => {
   const tenantToken = localStorage.getItem('tenantToken');
   const tenantRole  = localStorage.getItem('tenantRole');
 
+  // Expire token first — must run before any redirect decisions so a user
+  // with a stale token visiting /signin lands there directly instead of being
+  // bounced to a protected route and then back.
+  if (tenantToken && isTokenExpired(tenantToken)) {
+    authTenantStore.logout();
+    if (to.meta.requiresTenantAuth || to.meta.roles?.length) {
+      return next('/signin');
+    }
+    return next();
+  }
+
   // Redirect to login if protected route accessed without token
   if (to.meta.requiresTenantAuth && !tenantToken) {
     return next('/signin');
   }
 
-  // Redirect away from login if already authenticated
+  // Redirect away from login if already authenticated (token is valid at this point)
   if (to.name === 'Signin' && tenantToken) {
     if (tenantRole === 'patient') return next('/patient');
     if (tenantRole === 'dev')     return next('/dev');
     return next('/tenant-home');
-  }
-
-  // Expire token check — only force redirect on protected routes
-  if (tenantToken && isTokenExpired(tenantToken)) {
-    authTenantStore.logout();
-    if (to.meta.requiresTenantAuth || (to.meta.roles && to.meta.roles.length)) {
-      return next('/signin');
-    }
   }
   // Re-hydrate tenant on refresh — skip for dev role (no tenant scope)
   if (tenantToken && !authTenantStore.tenant && tenantRole !== 'dev') {

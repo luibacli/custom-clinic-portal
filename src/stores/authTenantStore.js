@@ -213,9 +213,9 @@ export const useAuthTenantStore = defineStore('authTenant', {
             }
             return true;
         },
-        async login(isTenant = false, tenantId = null) {
+        async login(credentials, isTenant = false, tenantId = null) {
             try {
-                const res = await api.post("/auth-tenant/login", this.loginForm);
+                const res = await api.post("/auth-tenant/login", credentials);
 
                 this.tenantToken = res.data.token;
 
