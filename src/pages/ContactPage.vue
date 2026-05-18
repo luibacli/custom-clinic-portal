@@ -117,7 +117,7 @@
         <div class="space-y-4">
 
           <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-            <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-4">Clinic Information</h3>
+            <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-4">Business Information</h3>
             <div class="space-y-4 text-sm text-slate-600 dark:text-slate-400">
               <div class="flex items-start gap-3">
                 <span class="h-8 w-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
@@ -125,7 +125,7 @@
                 </span>
                 <div>
                   <p class="font-medium text-slate-700 dark:text-slate-300">Address</p>
-                  <p class="mt-0.5 leading-relaxed">Clinic Address<br />City, Province, Philippines</p>
+                  <p class="mt-0.5 leading-relaxed">Business Address<br />San Fernando, Cebu, Philippines</p>
                 </div>
               </div>
 
@@ -135,7 +135,7 @@
                 </span>
                 <div>
                   <p class="font-medium text-slate-700 dark:text-slate-300">Phone</p>
-                  <p class="mt-0.5">+63 (000) 000-0000</p>
+                  <p class="mt-0.5">+63 (967) 219-8311</p>
                 </div>
               </div>
 
@@ -145,7 +145,7 @@
                 </span>
                 <div>
                   <p class="font-medium text-slate-700 dark:text-slate-300">Email</p>
-                  <p class="mt-0.5">support@clinic.example.com</p>
+                  <p class="mt-0.5">info@myclinicaccess.com</p>
                 </div>
               </div>
 
@@ -163,11 +163,10 @@
 
           <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800 p-5">
             <p class="text-sm font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-2">
-              <i class="pi pi-info-circle"></i> Note
+              <i class="pi pi-clock"></i> Response Time
             </p>
             <p class="mt-2 text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
-              Contact details above are managed by the clinic. My Clinic Access does not handle direct patient support requests.
-              For system-level technical issues, please contact your clinic administrator.
+              We typically respond within 1–2 business days.
             </p>
           </div>
 
