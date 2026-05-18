@@ -367,17 +367,17 @@
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
               First Name <span class="text-red-500">*</span>
             </label>
-            <InputText v-model="form.firstName" placeholder="Juan" class="w-full" />
+            <InputText v-model="form.firstName" v-capitalize placeholder="Juan" class="w-full" />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Middle Name</label>
-            <InputText v-model="form.middleName" placeholder="Optional" class="w-full" />
+            <InputText v-model="form.middleName" v-capitalize placeholder="Optional" class="w-full" />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
               Last Name <span class="text-red-500">*</span>
             </label>
-            <InputText v-model="form.lastName" placeholder="Dela Cruz" class="w-full" />
+            <InputText v-model="form.lastName" v-capitalize placeholder="Dela Cruz" class="w-full" />
           </div>
         </div>
 
@@ -458,11 +458,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">First Name</label>
-            <InputText v-model="devForm.firstName" placeholder="First Name" class="w-full" />
+            <InputText v-model="devForm.firstName" v-capitalize placeholder="First Name" class="w-full" />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Last Name</label>
-            <InputText v-model="devForm.lastName" placeholder="Last Name" class="w-full" />
+            <InputText v-model="devForm.lastName" v-capitalize placeholder="Last Name" class="w-full" />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Birthday</label>

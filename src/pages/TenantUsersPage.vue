@@ -178,6 +178,7 @@
                 <label class="text-sm font-medium text-slate-700 dark:text-slate-200">First Name</label>
                 <InputText
                   v-model="userForm.firstName"
+                  v-capitalize
                   placeholder="First name"
                   type="text"
                   class="w-full"
@@ -189,6 +190,7 @@
                 <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Middle Name</label>
                 <InputText
                   v-model="userForm.middleName"
+                  v-capitalize
                   placeholder="Optional"
                   type="text"
                   class="w-full"
@@ -200,6 +202,7 @@
                 <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Last Name</label>
                 <InputText
                   v-model="userForm.lastName"
+                  v-capitalize
                   placeholder="Last name"
                   type="text"
                   class="w-full"

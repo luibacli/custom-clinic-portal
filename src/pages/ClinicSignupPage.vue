@@ -256,6 +256,7 @@
                   <label class="block text-sm font-semibold text-slate-700">First Name <span class="text-red-500">*</span></label>
                   <InputText
                     v-model="form.ownerFirstName"
+                    v-capitalize
                     placeholder="Juan"
                     class="w-full"
                     :class="{ 'input-error': errors.ownerFirstName }"
@@ -266,6 +267,7 @@
                   <label class="block text-sm font-semibold text-slate-700">Last Name <span class="text-red-500">*</span></label>
                   <InputText
                     v-model="form.ownerLastName"
+                    v-capitalize
                     placeholder="Santos"
                     class="w-full"
                     :class="{ 'input-error': errors.ownerLastName }"
